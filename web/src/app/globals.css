@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+/*
+  ─────────────────────────────────────────────────────────────────────────
+  Clutch — global design tokens
+  Dark neutral base + cool cyan/violet accents. Built for the esports look:
+  deep blacks, soft grid, neon highlights, no gimmicks.
+  ─────────────────────────────────────────────────────────────────────────
+*/
+
+:root {
+  --background: #07080b;
+  --background-elevated: #0d0f14;
+  --surface: #11141b;
+  --surface-2: #161a24;
+  --border: #1f2330;
+  --border-strong: #2a3042;
+  --foreground: #e6e8ee;
+  --foreground-muted: #9aa1b2;
+  --foreground-subtle: #6b7283;
+
+  --accent: #22d3ee;          /* cyan-400 */
+  --accent-strong: #06b6d4;   /* cyan-500 */
+  --accent-glow: rgba(34, 211, 238, 0.35);
+
+  --accent-2: #a78bfa;        /* violet-400 */
+  --accent-2-strong: #8b5cf6; /* violet-500 */
+
+  --danger: #f87171;
+  --success: #34d399;
+  --warning: #fbbf24;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-glow);
+  color: #fff;
+}
+
+/* Subtle radial spotlight used behind hero sections */
+.bg-spotlight {
+  background:
+    radial-gradient(60% 60% at 50% 0%, rgba(34, 211, 238, 0.10) 0%, transparent 60%),
+    radial-gradient(40% 40% at 80% 20%, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+    var(--background);
+}
+
+/* Faint grid pattern behind certain panels */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center;
+}
+
+.bg-grid-fade {
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+
+/* Animated gradient border (used on hero CTA card) */
+.gradient-border {
+  position: relative;
+  isolation: isolate;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(34, 211, 238, 0.6),
+    rgba(167, 139, 250, 0.4) 50%,
+    rgba(34, 211, 238, 0.1));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Reusable text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #67e8f9 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+/* Soft glow on hover for icons / buttons */
+.glow-cyan {
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.25),
+    0 8px 30px rgba(34, 211, 238, 0.15);
+}
+
+/* Subtle scroll fade for marquees / logos rows */
+.fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4256;
+}
