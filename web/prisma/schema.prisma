@@ -1,0 +1,82 @@
+// ─────────────────────────────────────────────────────────────────────────
+//  Clutch — Prisma schema
+//  Defines every table in your Supabase Postgres database.
+//
+//  How to use:
+//    1. Edit this file when you want to add/remove tables or columns.
+//    2. Run `npx prisma migrate dev --name "what-changed"` to apply changes.
+//    3. Run `npx prisma studio` to browse your data in a visual UI.
+// ─────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// A player who can be scouted by an org.
+// Mirrors the `Player` TypeScript type in src/lib/mock-data.ts so the UI
+// keeps working unchanged when we swap mock data for real DB queries.
+model Player {
+  id           String   @id @default(cuid())
+  handle       String   @unique
+  avatarHue    Int
+  game         String
+  role         String
+  rank         String
+  region       String
+  school       String?
+  age          Int
+  winRate      Float
+  kda          Float
+  hoursPerWeek Int
+  fitScore     Int
+  tags         String[] @default([])
+  status       String   @default("Available")
+  verified     Boolean  @default(false)
+
+  // Where this profile originally came from. Useful when we add data from
+  // PandaScore, Riot API, or direct user signups later.
+  externalSrc String?
+  externalId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([game])
+  @@index([region])
+  @@index([rank])
+}
+
+// A brand willing to sponsor amateur or collegiate orgs.
+// Mirrors the `Sponsor` TypeScript type in src/lib/mock-data.ts.
+model Sponsor {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  industry       String
+  tier           String
+  checkSize      String
+  regions        String[] @default([])
+  games          String[] @default([])
+  audience       String
+  applicationUrl String
+  contact        String?
+  description    String
+  brandHue       Int
+  active         Boolean  @default(true)
+
+  // Where this sponsor record came from: "manual_curation" | "apify_scrape" |
+  // "user_submission". Helps you trust newer entries appropriately.
+  source         String   @default("manual_curation")
+  lastVerifiedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([industry])
+  @@index([tier])
+}
