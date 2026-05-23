@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────────────────
+# Repo-wide ignore — keep build artifacts and OS junk out of version control.
+# Each sub-project (e.g. web/) has its own .gitignore for project-specific
+# rules. This file just covers things that can show up anywhere.
+# ─────────────────────────────────────────────────────────────────────────
+
+# Accidental installs at the root (npm install should always run inside web/)
+/node_modules
+/package-lock.json
+/package.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env files (real secrets live inside web/.env)
+.env
+.env.*
+!.env.example

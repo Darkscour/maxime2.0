@@ -4,6 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, Zap } from "lucide-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,7 +43,9 @@ export function Navbar() {
           {links.map((link) => {
             const active =
               pathname === link.href ||
-              (link.href !== "/" && pathname.startsWith(link.href.split("#")[0]) && !link.href.includes("#"));
+              (link.href !== "/" &&
+                pathname.startsWith(link.href.split("#")[0]) &&
+                !link.href.includes("#"));
             return (
               <Link
                 key={link.href}
@@ -55,12 +64,27 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button href="#" variant="ghost" size="sm">
-            Sign in
-          </Button>
-          <Button href="#" variant="primary" size="sm">
-            Get started
-          </Button>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button variant="ghost" size="sm">
+                Sign in
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button variant="primary" size="sm">
+                Get started
+              </Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30",
+                },
+              }}
+            />
+          </SignedIn>
         </div>
 
         <button
@@ -86,12 +110,23 @@ export function Navbar() {
               </Link>
             ))}
             <div className="mt-2 flex gap-2">
-              <Button href="#" variant="ghost" size="sm" className="flex-1">
-                Sign in
-              </Button>
-              <Button href="#" variant="primary" size="sm" className="flex-1">
-                Get started
-              </Button>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button variant="ghost" size="sm" className="flex-1">
+                    Sign in
+                  </Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button variant="primary" size="sm" className="flex-1">
+                    Get started
+                  </Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex flex-1 items-center justify-end px-2">
+                  <UserButton />
+                </div>
+              </SignedIn>
             </div>
           </Container>
         </div>
