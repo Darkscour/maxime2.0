@@ -52,7 +52,7 @@ export function Hero() {
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
           <Button href="/recruitment" size="lg">
-            Explore Recruitment Portal
+            See how recruitment works
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button href="/sponsorships" variant="outline" size="lg">

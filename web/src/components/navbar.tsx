@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "/", label: "Home" },
   { href: "/recruitment", label: "Recruitment" },
   { href: "/sponsorships", label: "Sponsorships" },
   { href: "/#features", label: "Features" },
@@ -34,8 +35,7 @@ export function Navbar() {
             <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
           </span>
           <span className="text-base font-semibold tracking-tight text-white">
-            Clutch
-            <span className="text-cyan-400">.gg</span>
+            Maxime
           </span>
         </Link>
 

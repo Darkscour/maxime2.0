@@ -6,15 +6,15 @@ import { SectionHeader } from "./features";
 
 type Cell = "yes" | "partial" | "no";
 
-const rows: { label: string; clutch: Cell; pro: Cell; mobalytics: Cell; sheets: Cell }[] = [
-  { label: "Player scouting + AI fit score", clutch: "yes", pro: "yes", mobalytics: "no", sheets: "no" },
-  { label: "Sponsorship discovery + outreach", clutch: "yes", pro: "no", mobalytics: "no", sheets: "no" },
-  { label: "Roster + contract management", clutch: "yes", pro: "no", mobalytics: "no", sheets: "partial" },
-  { label: "AI coaching assistant", clutch: "yes", pro: "no", mobalytics: "yes", sheets: "no" },
-  { label: "Multi‑game support", clutch: "yes", pro: "partial", mobalytics: "no", sheets: "yes" },
-  { label: "Discord & start.gg integration", clutch: "yes", pro: "no", mobalytics: "no", sheets: "no" },
-  { label: "Affordable for amateur orgs", clutch: "yes", pro: "no", mobalytics: "yes", sheets: "yes" },
-  { label: "Built for collegiate & grassroots", clutch: "yes", pro: "no", mobalytics: "no", sheets: "partial" },
+const rows: { label: string; maxime: Cell; pro: Cell; mobalytics: Cell; sheets: Cell }[] = [
+  { label: "Player scouting + AI fit score", maxime: "yes", pro: "yes", mobalytics: "no", sheets: "no" },
+  { label: "Sponsorship discovery + outreach", maxime: "yes", pro: "no", mobalytics: "no", sheets: "no" },
+  { label: "Roster + contract management", maxime: "yes", pro: "no", mobalytics: "no", sheets: "partial" },
+  { label: "AI coaching assistant", maxime: "yes", pro: "no", mobalytics: "yes", sheets: "no" },
+  { label: "Multi‑game support", maxime: "yes", pro: "partial", mobalytics: "no", sheets: "yes" },
+  { label: "Discord & start.gg integration", maxime: "yes", pro: "no", mobalytics: "no", sheets: "no" },
+  { label: "Affordable for amateur orgs", maxime: "yes", pro: "no", mobalytics: "yes", sheets: "yes" },
+  { label: "Built for collegiate & grassroots", maxime: "yes", pro: "no", mobalytics: "no", sheets: "partial" },
 ];
 
 function CellIcon({ value }: { value: Cell }) {
@@ -34,9 +34,9 @@ export function Compare() {
     <section className="py-24 sm:py-32">
       <Container>
         <SectionHeader
-          eyebrow="Why Clutch"
+          eyebrow="Why Maxime"
           title="The market has tools for pros and tools for solo grinders. Nothing for everyone in between."
-          subtitle="We mapped every competitor in the space. Here's where Clutch fits — and why no single tool replaces it."
+          subtitle="We mapped every competitor in the space. Here's where Maxime fits — and why no single tool replaces it."
         />
 
         <div className="mt-14 overflow-hidden rounded-2xl border border-white/5 bg-[var(--surface)]">
@@ -46,7 +46,7 @@ export function Compare() {
                 <tr className="border-b border-white/5 bg-white/[0.02] text-left text-xs uppercase tracking-wider text-zinc-500">
                   <th className="px-6 py-4 font-medium">Capability</th>
                   <th className="px-6 py-4 text-center font-semibold text-cyan-300">
-                    Clutch
+                    Maxime
                   </th>
                   <th className="px-6 py-4 text-center font-medium">
                     Pro analytics
@@ -80,7 +80,7 @@ export function Compare() {
                   >
                     <td className="px-6 py-4 text-zinc-200">{row.label}</td>
                     <td className="bg-cyan-400/[0.04] px-6 py-4">
-                      <CellIcon value={row.clutch} />
+                      <CellIcon value={row.maxime} />
                     </td>
                     <td className="px-6 py-4">
                       <CellIcon value={row.pro} />
@@ -100,7 +100,7 @@ export function Compare() {
 
         <p className="mx-auto mt-6 max-w-2xl text-center text-sm text-zinc-500">
           The real incumbent isn't a competitor — it's a Google Sheet pinned in
-          a Discord channel. Clutch replaces it.
+          a Discord channel. Maxime replaces it.
         </p>
       </Container>
     </section>

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const faqs = [
   {
-    q: "Who is Clutch built for?",
+    q: "Who is Maxime built for?",
     a: "Collegiate esports clubs, semi‑pro orgs, and grassroots teams below the top tier. If you have a roster and a Discord, you're our audience.",
   },
   {

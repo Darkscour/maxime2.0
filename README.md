@@ -1,4 +1,4 @@
-# Clutch.gg — AI Operating System for Collegiate Esports
+# Maxime — AI Operating System for Collegiate Esports
 
 > An all‑in‑one platform for collegiate and grassroots esports orgs.
 > Built to replace the spreadsheets, Discord chaos, and cold sponsor DMs
@@ -48,7 +48,7 @@ Everything uses mock data in `web/src/lib/mock-data.ts`. The mock data shape mat
 - Logos row (game titles supported)
 - 8 feature cards with status badges (Live / Coming soon / Planned)
 - 4‑step "How it works" section
-- **Competitor comparison table** — Clutch vs. Esports One vs. Mobalytics vs. Sheets+Discord
+- **Competitor comparison table** — Maxime vs. Esports One vs. Mobalytics vs. Sheets+Discord
 - FAQ accordion
 - Final CTA banner
 
@@ -136,7 +136,7 @@ esports project/
 
 | You want to change... | Edit this file |
 |---|---|
-| Brand name (currently "Clutch.gg") | `web/src/components/navbar.tsx` + `web/src/components/footer.tsx` + `web/src/app/layout.tsx` (metadata) |
+| Brand name (currently "Maxime") | `web/src/components/navbar.tsx` + `web/src/components/footer.tsx` + `web/src/app/layout.tsx` (metadata) |
 | Hero headline / subheadline | `web/src/components/home/hero.tsx` |
 | Accent color (cyan → something else) | search `cyan-400` in `globals.css` + components |
 | Feature cards content | `web/src/components/home/features.tsx` |

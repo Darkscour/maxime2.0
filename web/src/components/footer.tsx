@@ -42,7 +42,7 @@ export function Footer() {
               <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
             </span>
             <span className="text-base font-semibold tracking-tight text-white">
-              Clutch<span className="text-cyan-400">.gg</span>
+              Maxime
             </span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-zinc-400">
@@ -50,7 +50,7 @@ export function Footer() {
             organizations. Built by ex‑players for the next generation of teams.
           </p>
           <p className="mt-6 text-xs text-zinc-600">
-            © {new Date().getFullYear()} Clutch.gg — All rights reserved.
+            © {new Date().getFullYear()} Maxime — All rights reserved.
           </p>
         </div>
 

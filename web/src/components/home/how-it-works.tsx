@@ -9,13 +9,13 @@ const steps = [
     number: "01",
     title: "Onboard your team in 60 seconds",
     description:
-      "Pick your games, import your roster, link your Discord. Clutch builds a team profile that's the source of truth for every other feature.",
+      "Pick your games, import your roster, link your Discord. Maxime builds a team profile that's the source of truth for every other feature.",
   },
   {
     number: "02",
     title: "Let the AI scout for you",
     description:
-      "Set your recruitment criteria — role, rank floor, region, play style. Clutch ranks candidates across every connected database and shows why each is a fit.",
+      "Set your recruitment criteria — role, rank floor, region, play style. Maxime ranks candidates across every connected database and shows why each is a fit.",
   },
   {
     number: "03",
@@ -41,7 +41,7 @@ export function HowItWorks() {
         <SectionHeader
           eyebrow="How it works"
           title="From signup to season‑ready in one afternoon"
-          subtitle="No analyst, no GM, no problem. Clutch automates the work that used to require a five‑person back office."
+          subtitle="No analyst, no GM, no problem. Maxime automates the work that used to require a five‑person back office."
         />
 
         <div className="mt-16 grid gap-8 lg:grid-cols-2">

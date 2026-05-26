@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clutch — The AI Operating System for Esports Orgs",
+  title: "Maxime — The AI Operating System for Esports Orgs",
   description:
-    "Clutch is the all-in-one platform for collegiate and grassroots esports organizations. AI-powered recruitment, sponsorship discovery, and team management — in one place.",
+    "Maxime is the all-in-one platform for collegiate and grassroots esports organizations. AI-powered recruitment, sponsorship discovery, and team management — in one place.",
   keywords: [
     "esports",
     "collegiate esports",
