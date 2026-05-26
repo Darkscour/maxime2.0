@@ -44,7 +44,7 @@ function PageHeader() {
         <Badge tone="cyan">
           <Target className="h-3.5 w-3.5" /> Recruitment Portal
         </Badge>
-        <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h1 className="font-heading mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
           Scout players that actually{" "}
           <span className="text-gradient">fit your roster</span>
         </h1>
@@ -70,7 +70,7 @@ function EarlyAccess() {
     <section className="border-t border-white/5 py-20 sm:py-24">
       <Container>
         <div className="mx-auto max-w-3xl rounded-2xl border border-white/5 bg-[var(--surface)] p-8 text-center sm:p-12">
-          <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          <h2 className="font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             Get access when recruitment goes live
           </h2>
           <p className="mt-3 text-sm leading-6 text-zinc-400">

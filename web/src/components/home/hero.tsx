@@ -28,7 +28,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.05 }}
-          className="mx-auto mt-6 max-w-4xl text-center text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl"
+          className="font-heading mx-auto mt-6 max-w-4xl text-center text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl"
         >
           The all‑in‑one OS for{" "}
           <span className="text-gradient">collegiate esports</span>
@@ -121,7 +121,7 @@ function StatCard({
         {icon}
       </div>
       <div>
-        <div className="text-2xl font-semibold tracking-tight text-white">
+        <div className="font-heading text-2xl font-semibold tracking-tight text-white">
           {value}
         </div>
         <div className="text-sm text-zinc-400">{label}</div>

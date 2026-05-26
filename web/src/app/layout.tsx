@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Saira_Condensed,
-  Space_Grotesk,
-  Inter,
-} from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
@@ -21,22 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const sairaCondensed = Saira_Condensed({
-  variable: "--font-saira-condensed",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
-});
-
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-});
-
-const interDisplay = Inter({
-  variable: "--font-inter-display",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -71,7 +53,7 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} ${sairaCondensed.variable} ${spaceGrotesk.variable} ${interDisplay.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
       >
         <body className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-cyan-500/30">
           <Navbar />

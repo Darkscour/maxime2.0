@@ -41,7 +41,7 @@ export function Footer() {
             <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500">
               <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
             </span>
-            <span className="text-base font-semibold tracking-tight text-white">
+            <span className="font-heading text-base font-semibold tracking-tight text-white">
               Maxime
             </span>
           </div>

@@ -61,7 +61,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-4 text-left"
       >
-        <span className="text-base font-medium text-white">{q}</span>
+        <span className="font-heading text-base font-medium text-white">{q}</span>
         <ChevronDown
           className={cn(
             "h-5 w-5 shrink-0 text-zinc-400 transition-transform",

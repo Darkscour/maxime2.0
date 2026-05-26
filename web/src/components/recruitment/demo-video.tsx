@@ -26,7 +26,7 @@ export function RecruitmentDemoVideo() {
           <Badge tone="cyan">
             <Video className="h-3.5 w-3.5" /> Product demo
           </Badge>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          <h2 className="font-heading mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             See how searching for players will work
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">

@@ -28,7 +28,7 @@ export function SponsorCard({
       <div className="flex items-start gap-4">
         <BrandMark hue={sponsor.brandHue} name={sponsor.name} />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-white">
+          <h3 className="font-heading truncate text-base font-semibold text-white">
             {sponsor.name}
           </h3>
           <p className="mt-0.5 text-xs text-zinc-500">{sponsor.industry}</p>

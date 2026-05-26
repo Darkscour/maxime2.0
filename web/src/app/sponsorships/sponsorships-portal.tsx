@@ -111,7 +111,7 @@ function PageHeader() {
         <Badge tone="violet">
           <Handshake className="h-3.5 w-3.5" /> Sponsorship Portal
         </Badge>
-        <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h1 className="font-heading mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
           The sponsors actually open to{" "}
           <span className="text-gradient">collegiate orgs</span>
         </h1>
@@ -179,7 +179,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
   return (
     <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[var(--surface)] py-16 text-center">
       <Handshake className="h-8 w-8 text-zinc-600" />
-      <h3 className="mt-3 text-base font-semibold text-white">
+      <h3 className="font-heading mt-3 text-base font-semibold text-white">
         No sponsors match those filters
       </h3>
       <p className="mt-1 max-w-sm text-sm text-zinc-400">

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   RecruitmentArt,
   SponsorshipsArt,
@@ -13,19 +13,6 @@ import {
   VodReviewArt,
   DiscordArt,
 } from "./feature-art";
-
-type FontOption = {
-  key: "geist" | "saira" | "space" | "inter";
-  label: string;
-  varName: string;
-};
-
-const FONTS: readonly FontOption[] = [
-  { key: "geist", label: "Geist (current)", varName: "--font-geist-sans" },
-  { key: "saira", label: "Saira Condensed", varName: "--font-saira-condensed" },
-  { key: "space", label: "Space Grotesk", varName: "--font-space-grotesk" },
-  { key: "inter", label: "Inter Display", varName: "--font-inter-display" },
-] as const;
 
 type FeatureCard = {
   illustration: React.ReactNode;
@@ -66,61 +53,39 @@ const secondary: FeatureCard[] = [
     description: "Match teams at your level, on your schedule.",
   },
   {
-    illustration: <VodReviewArt />,
-    title: "AI VOD Review",
-    description: "Key moments, timestamped automatically.",
-  },
-  {
     illustration: <DiscordArt />,
     title: "Discord-native",
     description: "Lives where your team already is.",
   },
 ];
 
-export function Features() {
-  const [font, setFont] = useState<FontOption>(FONTS[0]);
-  const headingStyle = { fontFamily: `var(${font.varName})` } as const;
+/**
+ * Features that are designed but not yet shipping. Visually subordinate to the
+ * pillars and secondary grid so visitors don't expect them today. Add new
+ * items here as the roadmap firms up.
+ */
+const roadmap: FeatureCard[] = [
+  {
+    illustration: <VodReviewArt />,
+    title: "AI VOD Review",
+    description: "Key moments, timestamped automatically.",
+  },
+];
 
+export function Features() {
   return (
     <section id="features" className="relative py-24 sm:py-32">
       <Container>
-        <div className="mb-12 flex flex-wrap items-center justify-center gap-2">
-          <span className="mr-2 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500">
-            Preview font:
-          </span>
-          {FONTS.map((f) => {
-            const active = f.key === font.key;
-            return (
-              <button
-                key={f.key}
-                onClick={() => setFont(f)}
-                className={cn(
-                  "rounded-full px-3 py-1 text-xs transition-colors",
-                  active
-                    ? "bg-cyan-400/15 text-cyan-200 ring-1 ring-inset ring-cyan-400/40"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white",
-                )}
-                style={{ fontFamily: `var(${f.varName})` }}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
             The platform
           </p>
-          <h2
-            className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl"
-            style={headingStyle}
-          >
-            Three things, done seriously.
+          <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+            The whole stack of a pro org — without the staff to match.
           </h2>
           <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
-            Built for the captain running a roster, a budget, and a Discord —
-            alone.
+            For the captain running a roster, a budget, and a Discord — alone.
+            Maxime handles the rest.
           </p>
         </div>
 
@@ -136,10 +101,7 @@ export function Features() {
             >
               {p.illustration}
               <div className="px-3 pt-5 pb-3">
-                <h3
-                  className="text-base font-semibold text-white"
-                  style={headingStyle}
-                >
+                <h3 className="font-heading text-base font-semibold text-white">
                   {p.title}
                 </h3>
                 <p className="mt-1.5 text-sm leading-6 text-zinc-400">
@@ -150,7 +112,7 @@ export function Features() {
           ))}
         </div>
 
-        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {secondary.map((s, i) => (
             <motion.div
               key={s.title}
@@ -162,10 +124,7 @@ export function Features() {
             >
               {s.illustration}
               <div className="px-2.5 pt-4 pb-2">
-                <h3
-                  className="text-sm font-semibold text-white"
-                  style={headingStyle}
-                >
+                <h3 className="font-heading text-sm font-semibold text-white">
                   {s.title}
                 </h3>
                 <p className="mt-1 text-xs leading-5 text-zinc-400">
@@ -175,8 +134,59 @@ export function Features() {
             </motion.div>
           ))}
         </div>
+
+        <RoadmapRow items={roadmap} />
       </Container>
     </section>
+  );
+}
+
+function RoadmapRow({ items }: { items: FeatureCard[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-20">
+      <div className="flex items-center gap-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          On the roadmap
+        </p>
+        <div className="h-px flex-1 bg-white/5" aria-hidden />
+      </div>
+
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((r, i) => (
+          <motion.div
+            key={r.title}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4, delay: i * 0.05 }}
+            className={
+              "group relative flex flex-col rounded-xl border border-dashed border-white/10 bg-[var(--surface)]/60 p-2.5 opacity-75 transition-all hover:border-amber-400/30 hover:bg-[var(--surface-2)] hover:opacity-100" +
+              // Center the card when it's the only item in the row on desktop
+              (items.length === 1 ? " lg:col-start-2" : "")
+            }
+          >
+            <div className="relative">
+              {r.illustration}
+              <div className="absolute right-3 top-3">
+                <Badge tone="amber">
+                  <Clock className="h-3 w-3" />
+                  Coming soon
+                </Badge>
+              </div>
+            </div>
+            <div className="px-2.5 pt-4 pb-2">
+              <h3 className="font-heading text-sm font-semibold text-white">
+                {r.title}
+              </h3>
+              <p className="mt-1 text-xs leading-5 text-zinc-400">
+                {r.description}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -199,7 +209,7 @@ export function SectionHeader({
           {eyebrow}
         </p>
       )}
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+      <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
         {title}
       </h2>
       {subtitle && (

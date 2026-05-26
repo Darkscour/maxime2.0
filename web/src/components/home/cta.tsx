@@ -24,7 +24,7 @@ export function CTA() {
             />
             <div className="relative mx-auto max-w-2xl text-center">
               <Sparkles className="mx-auto h-8 w-8 text-cyan-400" />
-              <h2 className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <h2 className="font-heading mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                 Ready to level up your org?
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">

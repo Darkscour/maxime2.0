@@ -36,6 +36,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Display font for headlines, brand wordmark, and prominent numbers.
+     Body copy stays on --font-sans (Geist) for legibility at small sizes. */
+  --font-heading: var(--font-space-grotesk);
 }
 
 html,
