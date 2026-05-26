@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
+import { cn } from "@/lib/utils";
 import {
   RecruitmentArt,
   SponsorshipsArt,
@@ -11,6 +13,19 @@ import {
   VodReviewArt,
   DiscordArt,
 } from "./feature-art";
+
+type FontOption = {
+  key: "geist" | "saira" | "space" | "inter";
+  label: string;
+  varName: string;
+};
+
+const FONTS: readonly FontOption[] = [
+  { key: "geist", label: "Geist (current)", varName: "--font-geist-sans" },
+  { key: "saira", label: "Saira Condensed", varName: "--font-saira-condensed" },
+  { key: "space", label: "Space Grotesk", varName: "--font-space-grotesk" },
+  { key: "inter", label: "Inter Display", varName: "--font-inter-display" },
+] as const;
 
 type FeatureCard = {
   illustration: React.ReactNode;
@@ -63,14 +78,51 @@ const secondary: FeatureCard[] = [
 ];
 
 export function Features() {
+  const [font, setFont] = useState<FontOption>(FONTS[0]);
+  const headingStyle = { fontFamily: `var(${font.varName})` } as const;
+
   return (
     <section id="features" className="relative py-24 sm:py-32">
       <Container>
-        <SectionHeader
-          eyebrow="The platform"
-          title="Three things, done seriously."
-          subtitle="Built for the captain running a roster, a budget, and a Discord — alone."
-        />
+        <div className="mb-12 flex flex-wrap items-center justify-center gap-2">
+          <span className="mr-2 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500">
+            Preview font:
+          </span>
+          {FONTS.map((f) => {
+            const active = f.key === font.key;
+            return (
+              <button
+                key={f.key}
+                onClick={() => setFont(f)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-xs transition-colors",
+                  active
+                    ? "bg-cyan-400/15 text-cyan-200 ring-1 ring-inset ring-cyan-400/40"
+                    : "text-zinc-400 hover:bg-white/5 hover:text-white",
+                )}
+                style={{ fontFamily: `var(${f.varName})` }}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+            The platform
+          </p>
+          <h2
+            className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl"
+            style={headingStyle}
+          >
+            Three things, done seriously.
+          </h2>
+          <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
+            Built for the captain running a roster, a budget, and a Discord —
+            alone.
+          </p>
+        </div>
 
         <div className="mt-16 grid gap-5 lg:grid-cols-3">
           {pillars.map((p, i) => (
@@ -84,7 +136,10 @@ export function Features() {
             >
               {p.illustration}
               <div className="px-3 pt-5 pb-3">
-                <h3 className="text-base font-semibold text-white">
+                <h3
+                  className="text-base font-semibold text-white"
+                  style={headingStyle}
+                >
                   {p.title}
                 </h3>
                 <p className="mt-1.5 text-sm leading-6 text-zinc-400">
@@ -107,7 +162,12 @@ export function Features() {
             >
               {s.illustration}
               <div className="px-2.5 pt-4 pb-2">
-                <h3 className="text-sm font-semibold text-white">{s.title}</h3>
+                <h3
+                  className="text-sm font-semibold text-white"
+                  style={headingStyle}
+                >
+                  {s.title}
+                </h3>
                 <p className="mt-1 text-xs leading-5 text-zinc-400">
                   {s.description}
                 </p>

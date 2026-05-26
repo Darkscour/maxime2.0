@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/", label: "Home" },
   { href: "/recruitment", label: "Recruitment" },
   { href: "/sponsorships", label: "Sponsorships" },
   { href: "/#features", label: "Features" },
