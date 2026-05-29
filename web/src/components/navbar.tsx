@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/recruitment", label: "Recruitment" },
-  { href: "/sponsorships", label: "Sponsorships" },
+  { href: "/#sponsorships", label: "Sponsorships" },
   { href: "/#features", label: "Features" },
   { href: "/#how-it-works", label: "How it works" },
 ];
@@ -25,6 +25,11 @@ const links = [
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const resolveHref = (href: string) => {
+    if (!href.includes("#")) return href;
+    const hash = href.slice(href.indexOf("#"));
+    return pathname === "/" ? hash : href;
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-xl">
@@ -48,7 +53,7 @@ export function Navbar() {
             return (
               <Link
                 key={link.href}
-                href={link.href}
+                href={resolveHref(link.href)}
                 className={cn(
                   "rounded-full px-3 py-1.5 text-sm transition-colors",
                   active
@@ -101,7 +106,7 @@ export function Navbar() {
             {links.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={resolveHref(link.href)}
                 onClick={() => setOpen(false)}
                 className="rounded-md px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
               >

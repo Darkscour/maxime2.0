@@ -1,12 +1,15 @@
 "use client";
 
 /**
- * Client-side filter/sort UI for the sponsorship portal.
- * Receives the sponsor list as a prop from the server (see ./page.tsx).
+ * Sponsorship portal — hybrid public demo + signed-in experience.
+ *
+ * Visitors: browse sample sponsors, filters work, Apply/Save gated behind Clerk.
+ * Signed-in: same UI with Apply enabled; pipeline/AI pitch stubbed until built.
  */
 
 import { useMemo, useState } from "react";
-import { Handshake, Sparkles } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { Handshake } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { type Sponsor } from "@/lib/mock-data";
@@ -16,10 +19,17 @@ import {
   type SponsorshipFilters,
 } from "@/components/sponsorships/filters";
 import { SponsorCard } from "@/components/sponsorships/sponsor-card";
+import {
+  PreviewModeBanner,
+  SignedInBanner,
+} from "@/components/sponsorships/preview-banner";
 
 type SortKey = "best" | "tier" | "alpha";
 
 export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
+  const { isSignedIn, isLoaded } = useAuth();
+  const previewMode = isLoaded && !isSignedIn;
+
   const [filters, setFilters] = useState<SponsorshipFilters>(
     DEFAULT_SPONSOR_FILTERS,
   );
@@ -72,9 +82,12 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
 
   return (
     <>
-      <PageHeader />
+      <PageHeader previewMode={previewMode} />
       <section className="pb-24">
         <Container>
+          {isLoaded &&
+            (previewMode ? <PreviewModeBanner /> : <SignedInBanner />)}
+
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
             <SponsorFiltersPanel
               filters={filters}
@@ -91,7 +104,12 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
               ) : (
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
                   {filtered.map((s, i) => (
-                    <SponsorCard key={s.id} sponsor={s} index={i} />
+                    <SponsorCard
+                      key={s.id}
+                      sponsor={s}
+                      index={i}
+                      previewMode={previewMode}
+                    />
                   ))}
                 </div>
               )}
@@ -103,7 +121,7 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
   );
 }
 
-function PageHeader() {
+function PageHeader({ previewMode }: { previewMode: boolean }) {
   return (
     <section className="relative overflow-hidden border-b border-white/5 bg-spotlight">
       <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
@@ -116,18 +134,16 @@ function PageHeader() {
           <span className="text-gradient">collegiate orgs</span>
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-          A curated database of brands sponsoring grassroots and collegiate
-          teams. Filter by industry, region, and game focus — then generate a
-          personalized pitch in one click.
+          {previewMode
+            ? "Explore sample sponsors below. Filter by industry, region, and game — then sign in to apply and track your outreach."
+            : "Browse curated sponsors, apply when there’s a fit, and build your pipeline from one place."}
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
-          <Badge tone="cyan">
-            <Sparkles className="h-3.5 w-3.5" /> Demo data — replace with
-            curated DB
-          </Badge>
-          <Badge tone="zinc">
-            Coverage: Clearbit · Hunter · Apify · manual curation
-          </Badge>
+          {previewMode ? (
+            <Badge tone="amber">Preview — sample sponsor data</Badge>
+          ) : (
+            <Badge tone="cyan">Signed in — apply enabled</Badge>
+          )}
         </div>
       </Container>
     </section>
