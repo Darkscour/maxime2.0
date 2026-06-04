@@ -6,15 +6,20 @@ import { SponsorshipsPreview } from "@/components/home/sponsorships-preview";
 import { Compare } from "@/components/home/compare";
 import { FAQ } from "@/components/home/faq";
 import { CTA } from "@/components/home/cta";
+import { fetchSponsorsForDisplay } from "@/lib/fetch-sponsors";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const dbResult = await fetchSponsorsForDisplay();
+
   return (
     <>
       <Hero />
       <Logos />
       <HowItWorks />
       <Features />
-      <SponsorshipsPreview />
+      <SponsorshipsPreview dbResult={dbResult} />
       <Compare />
       <FAQ />
       <CTA />
