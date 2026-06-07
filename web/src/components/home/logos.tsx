@@ -13,7 +13,7 @@ const games = [
 
 export function Logos() {
   return (
-    <section className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-10">
+    <section id="logos" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-10">
       <Container>
         <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
           Built for every collegiate title

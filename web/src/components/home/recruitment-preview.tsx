@@ -1,55 +1,47 @@
-import { ArrowRight, Filter, Handshake, ListChecks } from "lucide-react";
+import { ArrowRight, Filter, Shield, Users } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import type { SponsorFetchResult } from "@/lib/fetch-sponsors";
-import { SponsorPreviewPanel } from "./sponsor-preview-panel";
+import { RecruitmentDemoPanel } from "@/components/recruitment/recruitment-demo-panel";
 
 const bullets = [
   {
     icon: Filter,
-    title: "Filter by fit",
+    title: "Filter by role, rank, and region",
     description:
-      "Industry and sponsorship difficulty — find brands that match your org.",
+      "Narrow candidates by game, competitive rank, and availability.",
   },
   {
-    icon: Handshake,
-    title: "Curated sponsor directory",
+    icon: Shield,
+    title: "AI fit score",
     description:
-      "Four sponsors in preview — sign in for the full live directory.",
+      "Every profile includes a fit score ranked against your team’s criteria.",
   },
   {
-    icon: ListChecks,
-    title: "AI apply advice",
+    icon: Users,
+    title: "Verified collegiate talent",
     description:
-      "Ask whether a deal fits your team before you spend hours on an application.",
+      "Four sample profiles in this preview — the full scout database after sign-in.",
   },
 ];
 
-export function SponsorshipsPreview({
-  dbResult,
-}: {
-  dbResult: SponsorFetchResult;
-}) {
-  const liveSponsors =
-    dbResult.source === "database" ? dbResult.sponsors : [];
-
+export function RecruitmentPreview() {
   return (
     <section
-      id="sponsorships"
-      className="relative border-y border-white/5 bg-[var(--background-elevated)]/30 py-24 sm:py-32"
+      id="recruitment"
+      className="relative border-y border-white/5 py-24 sm:py-32"
     >
       <Container>
         <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-              Sponsorships
+              Recruitment
             </p>
             <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Land sponsors that actually fund collegiate teams
+              Scout players that actually fit your roster
             </h2>
             <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
-              Preview four sponsors — the last card is blurred until you sign in
-              for the full curated directory and apply tools.
+              Preview four sample profiles — the last card stays blurred until
+              you sign in for the full scout directory.
             </p>
 
             <ul className="mt-8 space-y-5">
@@ -71,14 +63,14 @@ export function SponsorshipsPreview({
             </ul>
 
             <div className="mt-10">
-              <Button href="/sponsorships" size="lg">
-                Open sponsorship portal
+              <Button href="/recruitment" size="lg">
+                Open recruitment portal
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          <SponsorPreviewPanel liveSponsors={liveSponsors} />
+          <RecruitmentDemoPanel compact previewLimit={4} />
         </div>
       </Container>
     </section>

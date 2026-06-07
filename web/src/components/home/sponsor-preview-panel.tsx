@@ -2,35 +2,67 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 import {
   DEMO_SPONSOR_LISTINGS,
   type SponsorListing,
 } from "@/lib/sponsor-listing";
 import { SponsorMinimalCard } from "@/components/sponsorships/sponsor-minimal-card";
+import {
+  capForPublicPreview,
+  GatedBlurCard,
+  PUBLIC_PORTAL_CARD_LIMIT,
+} from "@/components/ui/gated-blur-card";
 
-export function SponsorDemoPanel() {
+/** Homepage sponsorship preview: 4 cards max — last one blurred when signed out. */
+export function SponsorPreviewPanel({
+  liveSponsors = [],
+}: {
+  liveSponsors?: SponsorListing[];
+}) {
+  const { isSignedIn, isLoaded } = useAuth();
+  const gateLast = isLoaded && !isSignedIn;
+
+  const catalog = useMemo(() => {
+    const demos = DEMO_SPONSOR_LISTINGS;
+    const live = liveSponsors.slice(0, 1);
+    const mixed: (SponsorListing & { cardTag: "Demo" | "Live DB" })[] = [];
+
+    for (let i = 0; i < 3 && i < demos.length; i++) {
+      mixed.push({ ...demos[i], cardTag: "Demo" });
+    }
+    if (live[0]) {
+      mixed.push({ ...live[0], cardTag: "Live DB" });
+    } else if (demos[3]) {
+      mixed.push({ ...demos[3], cardTag: "Demo" });
+    }
+
+    return mixed.slice(0, PUBLIC_PORTAL_CARD_LIMIT);
+  }, [liveSponsors]);
+
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("");
   const [difficulty, setDifficulty] = useState("");
 
   const industries = useMemo(
-    () => [...new Set(DEMO_SPONSOR_LISTINGS.map((s) => s.industry))],
-    [],
+    () => [...new Set(catalog.map((s) => s.industry))],
+    [catalog],
   );
   const difficulties = useMemo(
-    () => [...new Set(DEMO_SPONSOR_LISTINGS.map((s) => s.difficulty))],
-    [],
+    () => [...new Set(catalog.map((s) => s.difficulty))],
+    [catalog],
   );
 
   const filtered = useMemo(() => {
-    return DEMO_SPONSOR_LISTINGS.filter((s) => {
+    const matches = catalog.filter((s) => {
       if (search && !s.name.toLowerCase().includes(search.toLowerCase()))
         return false;
       if (industry && s.industry !== industry) return false;
       if (difficulty && s.difficulty !== difficulty) return false;
       return true;
     });
-  }, [search, industry, difficulty]);
+    return gateLast ? capForPublicPreview(matches) : matches;
+  }, [catalog, search, industry, difficulty, gateLast]);
 
   return (
     <div className="rounded-xl border border-white/5 bg-[var(--surface)]/80 p-4 sm:p-5">
@@ -38,7 +70,8 @@ export function SponsorDemoPanel() {
         Interactive preview
       </p>
       <p className="mt-1 text-sm text-zinc-500">
-        Sample sponsors — not your live database.
+        {PUBLIC_PORTAL_CARD_LIMIT} sponsor preview
+        {gateLast ? " — last card blurred until you sign in" : ""}.
       </p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -66,14 +99,39 @@ export function SponsorDemoPanel() {
       </div>
 
       <p className="mt-3 text-xs text-zinc-500">
-        {filtered.length} sample sponsor{filtered.length === 1 ? "" : "s"}
+        Showing {filtered.length} preview sponsor{filtered.length === 1 ? "" : "s"}
       </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {filtered.map((s) => (
-          <SponsorMinimalCard key={s.id} sponsor={s} tag="Demo" />
-        ))}
+        {filtered.map((s, i) => {
+          const isLastGated =
+            gateLast && filtered.length > 1 && i === filtered.length - 1;
+          const card = (
+            <SponsorMinimalCard
+              sponsor={s}
+              tag={s.cardTag}
+              showAi={false}
+            />
+          );
+
+          return (
+            <GatedBlurCard
+              key={`${s.cardTag}-${s.id}`}
+              gated={isLastGated}
+              redirectUrl="/sponsorships"
+              message="Sign in to browse every sponsor in your directory"
+            >
+              {card}
+            </GatedBlurCard>
+          );
+        })}
       </div>
+
+      {filtered.length === 0 && (
+        <p className="mt-4 text-center text-sm text-zinc-500">
+          No sponsors match those filters.
+        </p>
+      )}
     </div>
   );
 }

@@ -3,6 +3,8 @@
  * Maps both Prisma schema rows and manually imported Supabase columns.
  */
 
+import type { Sponsor } from "@/lib/mock-data";
+
 export type SponsorListing = {
   id: string;
   name: string;
@@ -59,6 +61,23 @@ export function mapPrismaSponsor(row: {
   };
 }
 
+/** Map a full portal sponsor into the listing shape used by AI + minimal cards. */
+export function sponsorToListing(sponsor: {
+  id: string;
+  name: string;
+  industry: string;
+  applicationUrl: string;
+  tier: string;
+}): SponsorListing {
+  return {
+    id: sponsor.id,
+    name: sponsor.name,
+    industry: sponsor.industry,
+    sponsorLink: sponsor.applicationUrl,
+    difficulty: sponsor.tier,
+  };
+}
+
 /** Rows imported via Supabase UI with spreadsheet-style column names. */
 export function mapManualImportRow(row: Record<string, unknown>): SponsorListing | null {
   const id = pickString(row, ["ID", "id"]);
@@ -79,6 +98,49 @@ export function mapManualImportRow(row: Record<string, unknown>): SponsorListing
         "Tier",
         "difficulty",
       ]) || "—",
+  };
+}
+
+const KNOWN_INDUSTRIES = new Set<string>([
+  "Energy Drinks",
+  "Peripherals",
+  "Apparel",
+  "Gaming Chairs",
+  "PC Hardware",
+  "Fintech",
+  "Food & QSR",
+  "ISP / Telecom",
+  "Insurance",
+  "Local Business",
+]);
+
+const TIER_VALUES = new Set<string>(["Starter", "Growth", "Established"]);
+
+/** Map a DB listing into the full portal card shape (defaults for missing columns). */
+export function listingToPortalSponsor(listing: SponsorListing): Sponsor {
+  const industry = KNOWN_INDUSTRIES.has(listing.industry)
+    ? (listing.industry as Sponsor["industry"])
+    : "Local Business";
+  const tier = TIER_VALUES.has(listing.difficulty)
+    ? (listing.difficulty as Sponsor["tier"])
+    : "Growth";
+
+  return {
+    id: listing.id,
+    name: listing.name,
+    industry,
+    tier,
+    checkSize: "—",
+    regions: ["NA East"],
+    games: ["All"],
+    audience: "Collegiate esports teams",
+    applicationUrl:
+      listing.sponsorLink && listing.sponsorLink !== "#"
+        ? listing.sponsorLink
+        : "#",
+    description: `${listing.name} — imported from your sponsor database.`,
+    brandHue: 195,
+    active: true,
   };
 }
 

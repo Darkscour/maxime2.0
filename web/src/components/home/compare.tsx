@@ -31,7 +31,7 @@ function CellIcon({ value }: { value: Cell }) {
 
 export function Compare() {
   return (
-    <section className="py-24 sm:py-32">
+    <section id="compare" className="py-24 sm:py-32">
       <Container>
         <SectionHeader
           eyebrow="Why Maxime"

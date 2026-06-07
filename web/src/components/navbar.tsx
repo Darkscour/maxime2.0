@@ -16,10 +16,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/recruitment", label: "Recruitment" },
+  { href: "/#recruitment", label: "Recruitment" },
   { href: "/#sponsorships", label: "Sponsorships" },
   { href: "/#features", label: "Features" },
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#test-display-data", label: "Test display data" },
 ];
 
 export function Navbar() {
@@ -74,13 +75,19 @@ export function Navbar() {
                 Sign in
               </Button>
             </SignInButton>
-            <SignUpButton mode="modal">
+            <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
               <Button variant="primary" size="sm">
                 Get started
               </Button>
             </SignUpButton>
           </SignedOut>
           <SignedIn>
+            <Link
+              href="/onboarding"
+              className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
+            >
+              Onboarding
+            </Link>
             <UserButton
               appearance={{
                 elements: {
@@ -120,14 +127,21 @@ export function Navbar() {
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton mode="modal">
+                <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
                   <Button variant="primary" size="sm" className="flex-1">
                     Get started
                   </Button>
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
-                <div className="flex flex-1 items-center justify-end px-2">
+                <Link
+                  href="/onboarding"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 rounded-md px-3 py-2 text-center text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
+                >
+                  Onboarding
+                </Link>
+                <div className="flex items-center justify-end px-2">
                   <UserButton />
                 </div>
               </SignedIn>

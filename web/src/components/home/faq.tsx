@@ -35,7 +35,7 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-24 sm:py-32">
+    <section id="faq" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-24 sm:py-32">
       <Container>
         <SectionHeader
           eyebrow="FAQ"

@@ -1,12 +1,8 @@
 /**
  * Recruitment overview page.
  *
- * Public-facing preview of what the AI recruitment portal will do. The live
- * player browser and filter UI are intentionally not exposed here — they
- * need real data sources (PandaScore, Riot, FACEIT) and signed-in team
- * profiles before they can be useful to visitors. For now this page is a
- * focused product preview: short pitch, embedded demo video, early-access
- * CTA.
+ * Public-facing preview with sample player profiles and filters.
+ * Full live scout database opens for signed-in teams when built.
  */
 
 import Link from "next/link";
@@ -14,7 +10,7 @@ import { ArrowRight, Sparkles, Target } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RecruitmentDemoVideo } from "@/components/recruitment/demo-video";
+import { RecruitmentDemoPanel } from "@/components/recruitment/recruitment-demo-panel";
 
 export const metadata = {
   title: "Recruitment — Maxime",
@@ -26,9 +22,9 @@ export default function RecruitmentPage() {
   return (
     <>
       <PageHeader />
-      <section className="py-16 sm:py-20">
+      <section className="pb-16 sm:pb-20">
         <Container>
-          <RecruitmentDemoVideo />
+          <RecruitmentDemoPanel previewLimit={4} showFilters={false} />
         </Container>
       </section>
       <EarlyAccess />
@@ -49,15 +45,12 @@ function PageHeader() {
           <span className="text-gradient">fit your roster</span>
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-          An AI recruitment portal designed for collegiate and lower-tier
-          esports orgs. Search verified players across every major title and
-          rank candidates against your team&apos;s criteria — without ever
-          touching a spreadsheet.
+          Preview four sample profiles — the last card is blurred until you
+          sign in for the full scout database and outreach tools.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           <Badge tone="amber">
-            <Sparkles className="h-3.5 w-3.5" /> Preview — full portal opens
-            with early access
+            <Sparkles className="h-3.5 w-3.5" /> Preview — sample player data
           </Badge>
         </div>
       </Container>

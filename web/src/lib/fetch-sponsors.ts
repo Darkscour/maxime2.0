@@ -45,9 +45,7 @@ export async function fetchSponsorsForDisplay(): Promise<SponsorFetchResult> {
 
   const manual = await fetchManualImportRows();
   if (manual.sponsors.length > 0) {
-    return prismaError
-      ? { ...manual, error: `Using manual Supabase columns. ${prismaError}` }
-      : manual;
+    return manual;
   }
 
   if (prismaError) {

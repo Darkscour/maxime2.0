@@ -41,9 +41,10 @@ export function SponsorDbValidation({
             {status.label}
           </p>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
-            Live rows from your <code className="text-zinc-300">Sponsor</code>{" "}
-            table. Signed-in teams will use this data in the full portal (with
-            pipeline features coming next).
+            All rows from your <code className="text-zinc-300">Sponsor</code>{" "}
+            table. Each card includes an AI assistant for sponsor-specific
+            guidance. Hide this section before a public launch if you do not want
+            live data visible on the marketing site.
           </p>
           {result.error && (
             <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-xs leading-5 text-amber-100/90">
@@ -55,11 +56,11 @@ export function SponsorDbValidation({
 
       {result.sponsors.length > 0 ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {result.sponsors.slice(0, 12).map((s) => (
+          {result.sponsors.map((s) => (
             <SponsorMinimalCard
               key={s.id}
               sponsor={s}
-              showAi={false}
+              showAi
               tag="Live DB"
             />
           ))}
@@ -70,12 +71,6 @@ export function SponsorDbValidation({
           URLs, confirm rows exist in Supabase, and ensure each row has a
           non-empty <code className="text-zinc-400">id</code> /{" "}
           <code className="text-zinc-400">ID</code>.
-        </p>
-      )}
-
-      {result.sponsors.length > 12 && (
-        <p className="mt-4 text-center text-xs text-zinc-500">
-          Showing first 12 of {result.sponsors.length} rows.
         </p>
       )}
     </div>

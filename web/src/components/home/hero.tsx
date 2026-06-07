@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-spotlight">
+    <section id="hero" className="relative overflow-hidden bg-spotlight">
       <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
 
       <Container className="relative pt-24 pb-28 lg:pt-32 lg:pb-36">

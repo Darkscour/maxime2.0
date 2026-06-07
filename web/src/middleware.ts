@@ -12,9 +12,10 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
  */
 
 const isProtectedRoute = createRouteMatcher([
-  // Add your private routes here, e.g.:
-  // "/dashboard(.*)",
-  // "/team(.*)",
+  "/onboarding(.*)",
+  "/api/onboarding/team",
+  "/api/onboarding/player",
+  "/api/onboarding/join",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

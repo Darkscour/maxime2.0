@@ -30,18 +30,27 @@ export function PreviewModeBanner() {
   );
 }
 
-export function SignedInBanner() {
+export function SignedInBanner({
+  liveCount,
+  dbConnected,
+}: {
+  liveCount: number;
+  dbConnected: boolean;
+}) {
   return (
     <div className="mb-6 rounded-xl border border-violet-400/20 bg-violet-400/[0.06] px-4 py-4 sm:px-5">
       <div className="flex gap-3">
         <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-violet-300" />
         <div>
           <p className="text-sm font-medium text-violet-100">
-            You&apos;re signed in — full portal access
+            Team portal —{" "}
+            {dbConnected
+              ? `${liveCount} sponsors from your database`
+              : "signed-in view"}
           </p>
           <p className="mt-1 text-sm leading-6 text-zinc-400">
-            Apply to sponsors and use Save to build your pipeline. Pipeline
-            tracking and AI pitch drafting are coming in the next update.
+            This view is different from the public marketing demo. Apply and
+            save leads here; pipeline tracking and AI pitch drafting are next.
           </p>
         </div>
       </div>

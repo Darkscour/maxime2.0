@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 import type { Sponsor } from "@/lib/mock-data";
+import { sponsorToListing } from "@/lib/sponsor-listing";
 import { Badge } from "@/components/ui/badge";
+import { SponsorAiAdvisor } from "./sponsor-ai-advisor";
 import { cn } from "@/lib/utils";
 
 function tierTone(tier: Sponsor["tier"]) {
@@ -130,6 +132,8 @@ export function SponsorCard({
           <Mail className="h-3 w-3" /> {sponsor.contact}
         </p>
       )}
+
+      <SponsorAiAdvisor sponsor={sponsorToListing(sponsor)} />
     </motion.article>
   );
 }

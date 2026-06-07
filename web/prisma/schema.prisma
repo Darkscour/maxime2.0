@@ -80,3 +80,85 @@ model Sponsor {
   @@index([industry])
   @@index([tier])
 }
+
+// ── Onboarding: accounts, teams, player profiles ─────────────────────────
+
+// Links a Clerk user to Maxime — one row per signed-in person.
+model UserAccount {
+  id                 String   @id @default(cuid())
+  clerkId            String   @unique
+  email              String?
+  displayName        String?
+  accountType        String?  // "team_manager" | "player"
+  onboardingComplete Boolean  @default(false)
+
+  membership    TeamMembership?
+  playerProfile PlayerProfile?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Org profile created by a captain / manager during team onboarding.
+model Team {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  school             String?
+  games              String[] @default([])
+  region             String?
+  rosterSize         Int?
+  avgViewers         Int?
+  discordUrl         String?
+  inviteCode         String   @unique @default(cuid())
+  onboardingComplete Boolean  @default(false)
+
+  members TeamMembership[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([inviteCode])
+}
+
+// Connects a UserAccount to a Team (captain, manager, or player).
+model TeamMembership {
+  id     String @id @default(cuid())
+  teamId String
+  userId String @unique
+  role   String // "captain" | "manager" | "player"
+  status String @default("active")
+
+  team Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teamId])
+}
+
+// Individual player profile — separate from scout-pool `Player` listings.
+model PlayerProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  handle       String   @unique
+  game         String
+  role         String
+  rank         String
+  region       String
+  school       String?
+  age          Int?
+  hoursPerWeek Int?
+  status       String   @default("Available")
+  tags         String[] @default([])
+  bio          String?
+
+  user UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([game])
+  @@index([region])
+}

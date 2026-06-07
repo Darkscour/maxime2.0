@@ -20,15 +20,31 @@ import {
 } from "@/components/sponsorships/filters";
 import { SponsorCard } from "@/components/sponsorships/sponsor-card";
 import {
+  capForPublicPreview,
+  GatedBlurCard,
+  PUBLIC_PORTAL_CARD_LIMIT,
+} from "@/components/ui/gated-blur-card";
+import {
   PreviewModeBanner,
   SignedInBanner,
 } from "@/components/sponsorships/preview-banner";
 
 type SortKey = "best" | "tier" | "alpha";
 
-export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
+export function SponsorshipsPortal({
+  previewSponsors,
+  fullSponsors,
+  liveCount,
+  dbConnected,
+}: {
+  previewSponsors: Sponsor[];
+  fullSponsors: Sponsor[];
+  liveCount: number;
+  dbConnected: boolean;
+}) {
   const { isSignedIn, isLoaded } = useAuth();
   const previewMode = isLoaded && !isSignedIn;
+  const sponsors = previewMode ? previewSponsors : fullSponsors;
 
   const [filters, setFilters] = useState<SponsorshipFilters>(
     DEFAULT_SPONSOR_FILTERS,
@@ -42,7 +58,7 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
   };
 
   const filtered = useMemo(() => {
-    return sponsors
+    const results = sponsors
       .filter((s) => {
         if (filters.search) {
           const q = filters.search.toLowerCase();
@@ -78,15 +94,25 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
           (tierWeight[a.tier] * 10 + a.regions.length)
         );
       });
-  }, [sponsors, filters, sort]);
+
+    return previewMode ? capForPublicPreview(results) : results;
+  }, [sponsors, filters, sort, previewMode]);
 
   return (
     <>
-      <PageHeader previewMode={previewMode} />
+      <PageHeader
+        previewMode={previewMode}
+        liveCount={liveCount}
+        dbConnected={dbConnected}
+      />
       <section className="pb-24">
         <Container>
           {isLoaded &&
-            (previewMode ? <PreviewModeBanner /> : <SignedInBanner />)}
+            (previewMode ? (
+              <PreviewModeBanner />
+            ) : (
+              <SignedInBanner liveCount={liveCount} dbConnected={dbConnected} />
+            ))}
 
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
             <SponsorFiltersPanel
@@ -103,14 +129,30 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
                 />
               ) : (
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-                  {filtered.map((s, i) => (
-                    <SponsorCard
-                      key={s.id}
-                      sponsor={s}
-                      index={i}
-                      previewMode={previewMode}
-                    />
-                  ))}
+                  {filtered.map((s, i) => {
+                    const isLastGated =
+                      previewMode &&
+                      filtered.length > 1 &&
+                      i === filtered.length - 1;
+                    const card = (
+                      <SponsorCard
+                        sponsor={s}
+                        index={i}
+                        previewMode={previewMode}
+                      />
+                    );
+
+                    return (
+                      <GatedBlurCard
+                        key={s.id}
+                        gated={isLastGated}
+                        redirectUrl="/sponsorships"
+                        message="Sign in to unlock every sponsor and apply links"
+                      >
+                        {card}
+                      </GatedBlurCard>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -121,7 +163,15 @@ export function SponsorshipsPortal({ sponsors }: { sponsors: Sponsor[] }) {
   );
 }
 
-function PageHeader({ previewMode }: { previewMode: boolean }) {
+function PageHeader({
+  previewMode,
+  liveCount,
+  dbConnected,
+}: {
+  previewMode: boolean;
+  liveCount: number;
+  dbConnected: boolean;
+}) {
   return (
     <section className="relative overflow-hidden border-b border-white/5 bg-spotlight">
       <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
@@ -130,19 +180,34 @@ function PageHeader({ previewMode }: { previewMode: boolean }) {
           <Handshake className="h-3.5 w-3.5" /> Sponsorship Portal
         </Badge>
         <h1 className="font-heading mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          The sponsors actually open to{" "}
-          <span className="text-gradient">collegiate orgs</span>
+          {previewMode ? (
+            <>
+              See how sponsorship discovery{" "}
+              <span className="text-gradient">works on Maxime</span>
+            </>
+          ) : (
+            <>
+              Your team&apos;s sponsor directory —{" "}
+              <span className="text-gradient">
+                {dbConnected ? `${liveCount} live brands` : "curated brands"}
+              </span>
+            </>
+          )}
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
           {previewMode
-            ? "Explore sample sponsors below. Filter by industry, region, and game — then sign in to apply and track your outreach."
-            : "Browse curated sponsors, apply when there’s a fit, and build your pipeline from one place."}
+            ? "Try filters and sample cards below. Sign in to unlock your full curated directory, apply links, and pipeline tools."
+            : "Browse your live sponsor list from Supabase, apply when there’s a fit, and build your outreach pipeline from one place."}
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           {previewMode ? (
-            <Badge tone="amber">Preview — sample sponsor data</Badge>
+            <Badge tone="amber">
+              Preview — {PUBLIC_PORTAL_CARD_LIMIT} sponsors, last blurred
+            </Badge>
           ) : (
-            <Badge tone="cyan">Signed in — apply enabled</Badge>
+            <Badge tone="cyan">
+              Team portal — {dbConnected ? `${liveCount} sponsors` : "apply enabled"}
+            </Badge>
           )}
         </div>
       </Container>

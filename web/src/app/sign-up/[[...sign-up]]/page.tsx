@@ -8,6 +8,7 @@ export default function SignUpPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <SignUp
+        forceRedirectUrl="/onboarding"
         appearance={{
           variables: {
             colorPrimary: "#22d3ee",
