@@ -38,6 +38,7 @@ Everything uses mock data in `web/src/lib/mock-data.ts`. The mock data shape mat
 | **[`docs/02-APIS-AND-DATA-SOURCES.md`](./docs/02-APIS-AND-DATA-SOURCES.md)** | Every API you'll need for real player + sponsor data, with sign‑up links and costs. |
 | **[`docs/03-COMPETITOR-ANALYSIS.md`](./docs/03-COMPETITOR-ANALYSIS.md)** | Market map, where the gap is, and 17 features to consider in priority order. |
 | **[`docs/04-BUILD-ROADMAP.md`](./docs/04-BUILD-ROADMAP.md)** | Week‑by‑week plan from this repo to paying customers. |
+| **[`docs/06-PROJECT-STATUS.md`](./docs/06-PROJECT-STATUS.md)** | **Current project state** — what's done, tech used, what's next (read this in new AI chats). |
 
 ---
 
