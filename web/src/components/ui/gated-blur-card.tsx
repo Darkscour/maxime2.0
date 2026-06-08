@@ -3,6 +3,7 @@
 import { Lock } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 export const PUBLIC_PORTAL_CARD_LIMIT = 4;
 
@@ -41,7 +42,11 @@ export function GatedBlurCard({
         <p className="max-w-[200px] text-center text-xs font-medium leading-5 text-white sm:text-sm">
           {message}
         </p>
-        <SignInButton mode="modal" forceRedirectUrl={redirectUrl}>
+        <SignInButton
+          mode="modal"
+          forceRedirectUrl={redirectUrl}
+          appearance={clerkAuthAppearance}
+        >
           <Button variant="primary" size="sm">
             Sign up free
           </Button>

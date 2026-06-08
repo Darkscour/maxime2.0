@@ -14,6 +14,7 @@ import {
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 const links = [
   { href: "/#recruitment", label: "Recruitment" },
@@ -69,12 +70,20 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2 md:flex">
           <SignedOut>
-            <SignInButton mode="modal" forceRedirectUrl="/auth/continue">
+            <SignInButton
+              mode="modal"
+              forceRedirectUrl="/auth/continue"
+              appearance={clerkAuthAppearance}
+            >
               <Button variant="ghost" size="sm">
                 Sign in
               </Button>
             </SignInButton>
-            <SignUpButton mode="modal" forceRedirectUrl="/auth/continue">
+            <SignUpButton
+              mode="modal"
+              forceRedirectUrl="/auth/continue"
+              appearance={clerkAuthAppearance}
+            >
               <Button variant="primary" size="sm">
                 Get started
               </Button>
@@ -89,7 +98,9 @@ export function Navbar() {
             </Link>
             <UserButton
               appearance={{
+                ...clerkAuthAppearance,
                 elements: {
+                  ...(clerkAuthAppearance as any).elements,
                   avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30",
                 },
               }}
@@ -121,12 +132,20 @@ export function Navbar() {
             ))}
             <div className="mt-2 flex gap-2">
               <SignedOut>
-                <SignInButton mode="modal" forceRedirectUrl="/auth/continue">
+                <SignInButton
+                  mode="modal"
+                  forceRedirectUrl="/auth/continue"
+                  appearance={clerkAuthAppearance}
+                >
                   <Button variant="ghost" size="sm" className="flex-1">
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton mode="modal" forceRedirectUrl="/auth/continue">
+                <SignUpButton
+                  mode="modal"
+                  forceRedirectUrl="/auth/continue"
+                  appearance={clerkAuthAppearance}
+                >
                   <Button variant="primary" size="sm" className="flex-1">
                     Get started
                   </Button>
@@ -141,7 +160,7 @@ export function Navbar() {
                   Dashboard
                 </Link>
                 <div className="flex items-center justify-end px-2">
-                  <UserButton />
+                  <UserButton appearance={clerkAuthAppearance} />
                 </div>
               </SignedIn>
             </div>

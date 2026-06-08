@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -58,7 +59,11 @@ export function DashboardShell({
         <div className="border-t border-white/5 p-4">
           <UserButton
             appearance={{
-              elements: { avatarBox: "h-9 w-9 ring-1 ring-cyan-400/30" },
+              ...clerkAuthAppearance,
+              elements: {
+                ...(clerkAuthAppearance as any).elements,
+                avatarBox: "h-9 w-9 ring-1 ring-cyan-400/30",
+              },
             }}
           />
         </div>
@@ -120,7 +125,11 @@ export function DashboardShell({
           <div className="ml-auto flex items-center gap-2 lg:hidden">
             <UserButton
               appearance={{
-                elements: { avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30" },
+                ...clerkAuthAppearance,
+                elements: {
+                  ...(clerkAuthAppearance as any).elements,
+                  avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30",
+                },
               }}
             />
           </div>

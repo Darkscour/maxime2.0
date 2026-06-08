@@ -141,3 +141,20 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #3a4256;
 }
+
+/* ── Clerk UI overrides (dark mode readability) ──────────────────────────
+   UserButton popover menu text is showing too dark in some environments.
+   Force readable colors for anything matching Clerk popover classnames.
+*/
+[class*="userButtonPopover"] {
+  color: #e6e8ee !important;
+}
+[class*="userButtonPopover"] a,
+[class*="userButtonPopover"] button,
+[class*="userButtonPopover"] [role="menuitem"] {
+  color: #e6e8ee !important;
+}
+[class*="userButtonPopover"] a:hover,
+[class*="userButtonPopover"] button:hover {
+  color: #ffffff !important;
+}

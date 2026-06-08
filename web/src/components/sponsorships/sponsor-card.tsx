@@ -15,6 +15,7 @@ import { sponsorToListing } from "@/lib/sponsor-listing";
 import { Badge } from "@/components/ui/badge";
 import { SponsorAiAdvisor } from "./sponsor-ai-advisor";
 import { cn } from "@/lib/utils";
+import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 function tierTone(tier: Sponsor["tier"]) {
   if (tier === "Established") return "violet" as const;
@@ -150,7 +151,7 @@ function GatedAction({
   primary?: boolean;
 }) {
   return (
-    <SignInButton mode="modal">
+    <SignInButton mode="modal" appearance={clerkAuthAppearance}>
       <button
         type="button"
         className={cn(
