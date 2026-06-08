@@ -3,28 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import {
-  Building2,
-  Handshake,
-  Home,
-  LayoutDashboard,
-  Menu,
-  UserRound,
-  Users,
-  X,
-  Zap,
-} from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
+import { LogOut, Menu, X, Zap } from "lucide-react";
+import { SignOutButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { clerkAuthAppearance } from "@/lib/clerk-appearance";
-
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/sponsorships", label: "Sponsorships", icon: Handshake },
-  { href: "/dashboard/settings", label: "Profile", icon: UserRound },
-  { href: "/recruitment", label: "Recruitment", icon: Users },
-  { href: "/", label: "Homepage", icon: Home, exact: true },
-];
+import { ClerkUserButton } from "@/components/auth/clerk-user-button";
+import { getDashboardNavItems } from "@/lib/dashboard-nav";
 
 export function DashboardShell({
   children,
@@ -35,41 +18,26 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navItems = getDashboardNavItems(accountType);
 
   return (
     <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
-      {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
         <SidebarHeader accountType={accountType} />
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="space-y-1 px-3 py-4">
           {navItems.map((item) => (
             <SidebarLink
               key={item.href}
               href={item.href}
               label={item.label}
               icon={item.icon}
-              active={
-                "exact" in item && item.exact
-                  ? pathname === item.href
-                  : pathname === item.href || pathname.startsWith(`${item.href}/`)
-              }
+              active={item.isActive?.(pathname) ?? pathname === item.href}
             />
           ))}
         </nav>
-        <div className="border-t border-white/5 p-4">
-          <UserButton
-            appearance={{
-              ...clerkAuthAppearance,
-              elements: {
-                ...(clerkAuthAppearance as any).elements,
-                avatarBox: "h-9 w-9 ring-1 ring-cyan-400/30",
-              },
-            }}
-          />
-        </div>
+        <SidebarFooter />
       </aside>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
@@ -93,22 +61,19 @@ export function DashboardShell({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="space-y-1 px-3 py-4">
           {navItems.map((item) => (
             <SidebarLink
               key={item.href}
               href={item.href}
               label={item.label}
               icon={item.icon}
-              active={
-                "exact" in item && item.exact
-                  ? pathname === item.href
-                  : pathname === item.href || pathname.startsWith(`${item.href}/`)
-              }
+              active={item.isActive?.(pathname) ?? pathname === item.href}
               onNavigate={() => setMobileOpen(false)}
             />
           ))}
         </nav>
+        <SidebarFooter onSignOut={() => setMobileOpen(false)} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -123,15 +88,7 @@ export function DashboardShell({
           </button>
           <p className="text-sm text-zinc-500 lg:hidden">Maxime</p>
           <div className="ml-auto flex items-center gap-2 lg:hidden">
-            <UserButton
-              appearance={{
-                ...clerkAuthAppearance,
-                elements: {
-                  ...(clerkAuthAppearance as any).elements,
-                  avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30",
-                },
-              }}
-            />
+            <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
           </div>
         </header>
         <div className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">{children}</div>
@@ -162,6 +119,27 @@ function SidebarHeader({
           </div>
         )}
       </Link>
+    </div>
+  );
+}
+
+function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
+  return (
+    <div className="mt-2 space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
+      <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-3 py-2.5 ring-1 ring-inset ring-white/5">
+        <ClerkUserButton avatarClassName="h-9 w-9 ring-1 ring-cyan-400/30" />
+        <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
+      </div>
+      <SignOutButton redirectUrl="/sign-in">
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+        >
+          <LogOut className="h-4 w-4 text-zinc-500" />
+          Sign out
+        </button>
+      </SignOutButton>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireTeamMembership } from "@/lib/sponsor-lead-auth";
+import {
+  permissionErrorResponse,
+  requireTeamMembership,
+} from "@/lib/permissions";
 import { scoreSponsorFit, isSponsorLeadStatus } from "@/lib/sponsor-fit";
 import {
   findLeadsByTeamId,
@@ -14,14 +17,12 @@ export async function GET() {
     const leads = await findLeadsByTeamId(teamId);
     return NextResponse.json({ ok: true, leads });
   } catch (e) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED") {
-      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-    }
-    if (e instanceof Error && e.message === "NO_TEAM") {
-      return NextResponse.json({ error: "Join or create a team first." }, { status: 403 });
+    const err = permissionErrorResponse(e);
+    if (err.status < 500) {
+      return NextResponse.json(err.body, { status: err.status });
     }
     console.error("[sponsorship/leads GET]", e);
-    return NextResponse.json({ error: "Could not load pipeline." }, { status: 500 });
+    return NextResponse.json(err.body, { status: 500 });
   }
 }
 
@@ -66,14 +67,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, lead });
   } catch (e) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED") {
-      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-    }
-    if (e instanceof Error && e.message === "NO_TEAM") {
-      return NextResponse.json({ error: "Join or create a team first." }, { status: 403 });
+    const err = permissionErrorResponse(e);
+    if (err.status < 500) {
+      return NextResponse.json(err.body, { status: err.status });
     }
     console.error("[sponsorship/leads POST]", e);
-    return NextResponse.json({ error: "Could not save sponsor." }, { status: 500 });
+    return NextResponse.json(err.body, { status: 500 });
   }
 }
 
@@ -107,13 +106,11 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json({ ok: true, lead });
   } catch (e) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED") {
-      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
-    }
-    if (e instanceof Error && e.message === "NO_TEAM") {
-      return NextResponse.json({ error: "Join or create a team first." }, { status: 403 });
+    const err = permissionErrorResponse(e);
+    if (err.status < 500) {
+      return NextResponse.json(err.body, { status: err.status });
     }
     console.error("[sponsorship/leads PATCH]", e);
-    return NextResponse.json({ error: "Could not update lead." }, { status: 500 });
+    return NextResponse.json(err.body, { status: 500 });
   }
 }

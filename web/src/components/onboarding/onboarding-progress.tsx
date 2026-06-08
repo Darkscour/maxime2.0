@@ -1,60 +1,93 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
-  { id: "role", label: "Role", match: ["/onboarding"] },
-  { id: "profile", label: "Profile", match: ["/onboarding/team", "/onboarding/player", "/onboarding/join"] },
-  { id: "done", label: "Done", match: ["/onboarding/done"] },
+  { id: "role", label: "Role" },
+  { id: "profile", label: "Profile" },
+  { id: "done", label: "Done" },
 ] as const;
 
+const CIRCLE_SIZE = 32; // h-8
+
+function getActiveStepIndex(pathname: string): number {
+  if (
+    pathname === "/onboarding/done" ||
+    pathname.startsWith("/onboarding/done/")
+  ) {
+    return 2;
+  }
+
+  if (
+    pathname === "/onboarding/team" ||
+    pathname === "/onboarding/player" ||
+    pathname === "/onboarding/join" ||
+    pathname.startsWith("/onboarding/team/") ||
+    pathname.startsWith("/onboarding/player/") ||
+    pathname.startsWith("/onboarding/join/")
+  ) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function connectorClass(leftStepIndex: number, activeIndex: number) {
+  return leftStepIndex < activeIndex ? "bg-emerald-400/30" : "bg-white/10";
+}
+
 export function OnboardingProgress({ pathname }: { pathname: string }) {
-  const activeIndex = STEPS.findIndex((step) =>
-    step.match.some(
-      (path) => pathname === path || pathname.startsWith(`${path}/`),
-    ),
-  );
-  const current = activeIndex === -1 ? 0 : activeIndex;
+  const activeIndex = getActiveStepIndex(pathname);
 
   return (
     <nav aria-label="Onboarding progress" className="mb-10">
-      <ol className="flex items-center gap-2">
+      <div className="mx-auto flex max-w-xs items-start sm:max-w-sm">
         {STEPS.map((step, index) => {
-          const done = index < current;
-          const active = index === current;
+          const done = index < activeIndex;
+          const active = index === activeIndex;
+
           return (
-            <li key={step.id} className="flex flex-1 items-center gap-2">
-              <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+            <Fragment key={step.id}>
+              {index > 0 && (
+                <div
+                  aria-hidden
+                  className="flex flex-1 items-center px-2 sm:px-3"
+                  style={{ height: CIRCLE_SIZE }}
+                >
+                  <div
+                    className={cn(
+                      "h-px w-full",
+                      connectorClass(index - 1, activeIndex),
+                    )}
+                  />
+                </div>
+              )}
+
+              <div className="flex w-14 shrink-0 flex-col items-center sm:w-16">
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold ring-1 ring-inset transition-colors",
+                    "flex h-8 w-8 items-center justify-center rounded-full bg-[#0a0c10] text-xs font-semibold ring-1 ring-inset transition-colors",
                     done && "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
                     active && "bg-cyan-400/15 text-cyan-200 ring-cyan-400/35",
-                    !done && !active && "bg-white/[0.03] text-zinc-500 ring-white/10",
+                    !done && !active && "text-zinc-500 ring-white/10",
                   )}
+                  aria-current={active ? "step" : undefined}
                 >
                   {index + 1}
                 </span>
                 <span
                   className={cn(
-                    "text-xs font-medium",
-                    active ? "text-white" : "text-zinc-500",
+                    "mt-2 whitespace-nowrap text-center text-xs font-medium",
+                    active ? "text-white" : done ? "text-emerald-300/80" : "text-zinc-500",
                   )}
                 >
                   {step.label}
                 </span>
               </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={cn(
-                    "mb-5 h-px flex-1",
-                    index < current ? "bg-emerald-400/30" : "bg-white/10",
-                  )}
-                />
-              )}
-            </li>
+            </Fragment>
           );
         })}
-      </ol>
+      </div>
     </nav>
   );
 }
@@ -69,7 +102,7 @@ export function OnboardingBackLink({
   return (
     <Link
       href={href}
-      className="mb-6 inline-flex text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+      className="mb-6 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
     >
       {children}
     </Link>

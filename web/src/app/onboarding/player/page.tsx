@@ -1,14 +1,26 @@
-import { redirect } from "next/navigation";
-import { getOnboardingStatus } from "@/lib/auth-user";
+import { Suspense } from "react";
+import {
+  enforceOnboardingRoute,
+  isOnboardingReviseMode,
+  isOnboardingTestMode,
+} from "@/lib/onboarding-guards";
 import { PlayerOnboardingForm } from "./player-onboarding-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function PlayerOnboardingPage() {
-  const status = await getOnboardingStatus();
-  if (status.onboardingComplete && status.hasPlayerProfile) {
-    redirect("/dashboard");
-  }
-
-  return <PlayerOnboardingForm />;
+export default async function PlayerOnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ test?: string; revise?: string }>;
+}) {
+  const params = await searchParams;
+  await enforceOnboardingRoute("/onboarding/player", {
+    testMode: isOnboardingTestMode(params),
+    reviseMode: isOnboardingReviseMode(params),
+  });
+  return (
+    <Suspense fallback={null}>
+      <PlayerOnboardingForm />
+    </Suspense>
+  );
 }

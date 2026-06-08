@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, Building2, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Settings, UserRound } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { cn } from "@/lib/utils";
+import { canEditTeam } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
-
-function canEditTeam(role: string | null) {
-  return role === "captain" || role === "manager";
-}
 
 export default async function SettingsIndexPage() {
   const ctx = await getDashboardContext();
@@ -24,24 +21,39 @@ export default async function SettingsIndexPage() {
   }
 
   if (!hasProfile && !hasTeamEdit) {
-    redirect("/dashboard");
+    redirect("/dashboard/settings/account");
   }
 
   const options = [
     {
-      href: "/dashboard/settings/profile",
-      title: "Player profile",
-      description: "Handle, competitive info, play time, and scout card.",
-      icon: UserRound,
-      tone: "cyan" as const,
+      href: "/dashboard/settings/account",
+      title: "User account",
+      description: "Email, display name, sign-in, role, and permissions.",
+      icon: Settings,
+      tone: "emerald" as const,
     },
-    {
-      href: "/dashboard/settings/team",
-      title: "Team profile",
-      description: "Org name, titles, region, and sponsorship signals.",
-      icon: Building2,
-      tone: "violet" as const,
-    },
+    ...(hasProfile
+      ? [
+          {
+            href: "/dashboard/settings/profile",
+            title: "Player profile",
+            description: "Handle, competitive info, play time, and scout card.",
+            icon: UserRound,
+            tone: "cyan" as const,
+          },
+        ]
+      : []),
+    ...(hasTeamEdit
+      ? [
+          {
+            href: "/dashboard/settings/team",
+            title: "Team profile",
+            description: "Org name, titles, region, and sponsorship signals.",
+            icon: Building2,
+            tone: "violet" as const,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -60,11 +72,11 @@ export default async function SettingsIndexPage() {
             Settings
           </p>
           <h1 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            What do you want to update?
+            Settings
           </h1>
           <p className="mt-2 max-w-lg text-sm leading-7 text-zinc-400">
-            Your player card and team org profile are separate — pick the workspace
-            you need to refine.
+            Your user account is separate from player and team profiles — pick what
+            you need to view or update.
           </p>
         </div>
       </header>
@@ -78,7 +90,9 @@ export default async function SettingsIndexPage() {
               "group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--surface)]/90 p-6 transition-all",
               opt.tone === "cyan"
                 ? "hover:border-cyan-400/25 hover:shadow-[0_0_40px_rgba(34,211,238,0.06)]"
-                : "hover:border-violet-400/25 hover:shadow-[0_0_40px_rgba(167,139,250,0.06)]",
+                : opt.tone === "emerald"
+                  ? "hover:border-emerald-400/25 hover:shadow-[0_0_40px_rgba(52,211,153,0.06)]"
+                  : "hover:border-violet-400/25 hover:shadow-[0_0_40px_rgba(167,139,250,0.06)]",
             )}
           >
             <span
@@ -86,7 +100,9 @@ export default async function SettingsIndexPage() {
                 "flex h-11 w-11 items-center justify-center rounded-xl ring-1 ring-inset ring-white/10",
                 opt.tone === "cyan"
                   ? "bg-cyan-400/10 text-cyan-400"
-                  : "bg-violet-400/10 text-violet-400",
+                  : opt.tone === "emerald"
+                    ? "bg-emerald-400/10 text-emerald-400"
+                    : "bg-violet-400/10 text-violet-400",
               )}
             >
               <opt.icon className="h-5 w-5" />

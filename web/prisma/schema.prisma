@@ -91,6 +91,9 @@ model UserAccount {
   displayName        String?
   accountType        String?  // "team_manager" | "player"
   onboardingComplete Boolean  @default(false)
+  managerTitle       String?
+  managerOrgEmail    String?
+  managerVerificationStatus String? // "verified" | "pending"
 
   membership    TeamMembership?
   playerProfile PlayerProfile?

@@ -13,7 +13,9 @@
     "db:migrate": "prisma migrate dev",
     "db:onboarding": "tsx scripts/setup-onboarding-tables.ts",
     "db:sponsor-leads": "tsx scripts/setup-sponsor-leads-table.ts",
-    "db:reset-onboarding": "tsx scripts/reset-onboarding-local.ts"
+    "db:reset-onboarding": "tsx scripts/reset-onboarding-local.ts",
+    "db:delete-user": "tsx scripts/delete-user-by-email.ts",
+    "db:manager-columns": "tsx scripts/add-manager-verification-columns.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

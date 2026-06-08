@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Building2, UserRound } from "lucide-react";
+import { ArrowLeft, Building2, Settings, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const inputClass =
@@ -173,12 +173,17 @@ export function SettingsNav({
 }) {
   const pathname = usePathname();
 
-  if (!showPlayer || !showTeam) return null;
-
   const tabs = [
-    { href: "/dashboard/settings/profile", label: "Player", icon: UserRound },
-    { href: "/dashboard/settings/team", label: "Team", icon: Building2 },
+    { href: "/dashboard/settings/account", label: "Account", icon: Settings },
+    ...(showPlayer
+      ? [{ href: "/dashboard/settings/profile", label: "Player", icon: UserRound }]
+      : []),
+    ...(showTeam
+      ? [{ href: "/dashboard/settings/team", label: "Team", icon: Building2 }]
+      : []),
   ];
+
+  if (tabs.length <= 1) return null;
 
   return (
     <nav className="mb-8 flex gap-1 rounded-2xl border border-white/[0.06] bg-[var(--surface)]/60 p-1.5">

@@ -105,8 +105,8 @@ export function LiveSponsorshipDirectory({
       {!hasTeam && (
         <div className="mb-6 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-4 text-sm text-zinc-300">
           Join or create a team to save sponsors to your shared pipeline.{" "}
-          <Link href="/onboarding/join" className="text-cyan-400 hover:text-cyan-300">
-            Join a team →
+          <Link href="/dashboard/settings/team" className="text-cyan-400 hover:text-cyan-300">
+            Set up your team →
           </Link>
         </div>
       )}

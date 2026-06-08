@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { getOrCreateUserAccount } from "@/lib/auth-user";
 import { db } from "@/lib/db";
+import {
+  permissionErrorResponse,
+  requirePlayerProfile,
+} from "@/lib/permissions";
 
 type PlayTimeBody = {
   hoursPerWeek?: number;
@@ -8,14 +11,7 @@ type PlayTimeBody = {
 
 export async function PATCH(req: Request) {
   try {
-    const account = await getOrCreateUserAccount();
-
-    if (!account.playerProfile) {
-      return NextResponse.json(
-        { error: "Create a player profile before reporting play time." },
-        { status: 400 },
-      );
-    }
+    const account = await requirePlayerProfile();
 
     const body = (await req.json()) as PlayTimeBody;
     const hours = body.hoursPerWeek;
@@ -51,13 +47,11 @@ export async function PATCH(req: Request) {
       updatedAt: profile.updatedAt.toISOString(),
     });
   } catch (e) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED") {
-      return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+    const err = permissionErrorResponse(e);
+    if (err.status < 500) {
+      return NextResponse.json(err.body, { status: err.status });
     }
     console.error("[player/play-time]", e);
-    return NextResponse.json(
-      { error: "Could not save play time. Try again." },
-      { status: 500 },
-    );
+    return NextResponse.json(err.body, { status: 500 });
   }
 }

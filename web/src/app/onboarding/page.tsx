@@ -1,25 +1,28 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Building2, UserRound } from "lucide-react";
-import { getOnboardingStatus } from "@/lib/auth-user";
+import {
+  enforceOnboardingRoute,
+  isOnboardingTestMode,
+} from "@/lib/onboarding-guards";
+import { buildOnboardingHref } from "@/lib/onboarding-path";
+import { OnboardingHomeLink } from "@/components/onboarding/onboarding-home-link";
 import { StepHeader } from "@/components/onboarding/form-fields";
 
 export const dynamic = "force-dynamic";
 
-export default async function OnboardingPage() {
-  const status = await getOnboardingStatus();
+export default async function OnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ test?: string }>;
+}) {
+  const params = await searchParams;
+  const testMode = isOnboardingTestMode(params);
+  await enforceOnboardingRoute("/onboarding", {
+    testMode,
+  });
 
-  if (status.onboardingComplete) {
-    redirect("/dashboard");
-  }
-
-  if (status.accountType === "team_manager" && !status.hasTeam) {
-    redirect("/onboarding/team");
-  }
-
-  if (status.accountType === "player" && !status.hasPlayerProfile) {
-    redirect("/onboarding/player");
-  }
+  const teamHref = buildOnboardingHref("/onboarding/team", { test: testMode });
+  const playerHref = buildOnboardingHref("/onboarding/player", { test: testMode });
 
   return (
     <div>
@@ -31,14 +34,14 @@ export default async function OnboardingPage() {
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         <RoleCard
-          href="/onboarding/team"
+          href={teamHref}
           icon={Building2}
           title="I'm managing a team"
           description="Create your org profile — games, region, roster size — and share an invite code with players."
           tone="cyan"
         />
         <RoleCard
-          href="/onboarding/player"
+          href={playerHref}
           icon={UserRound}
           title="I'm a player"
           description="Build your player profile and join a team with an invite code from your captain."
@@ -47,10 +50,8 @@ export default async function OnboardingPage() {
       </div>
 
       <p className="mt-8 text-center text-sm text-zinc-500">
-        Already finished?{" "}
-        <Link href="/dashboard" className="text-cyan-400 hover:text-cyan-300">
-          Open your dashboard →
-        </Link>
+        Not ready to finish?{" "}
+        <OnboardingHomeLink className="text-cyan-400 hover:text-cyan-300" />
       </p>
     </div>
   );

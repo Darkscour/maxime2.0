@@ -1,9 +1,7 @@
 "use client";
 
 import { Info, Sparkles } from "lucide-react";
-import { SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 export function PreviewModeBanner() {
   return (
@@ -21,11 +19,9 @@ export function PreviewModeBanner() {
             </p>
           </div>
         </div>
-        <SignUpButton mode="modal" appearance={clerkAuthAppearance}>
-          <Button variant="primary" size="sm" className="shrink-0">
-            Create free account
-          </Button>
-        </SignUpButton>
+        <Button href="/sign-up" variant="primary" size="sm" className="shrink-0">
+          Create free account
+        </Button>
       </div>
     </div>
   );

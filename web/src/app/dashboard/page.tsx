@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import { Clock, Sparkles } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { isDeveloperEmail } from "@/lib/developer";
@@ -11,7 +11,9 @@ import {
 } from "@/components/dashboard/dashboard-cards";
 import { PlayTimeReport } from "@/components/dashboard/play-time-report";
 import { TeamOverviewCard } from "@/components/dashboard/team-overview-card";
-import { Building2, Handshake, UserRound, Users } from "lucide-react";
+import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analytics-card";
+import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
+import { Building2, Handshake, Settings, UserRound, Users } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
+      <Suspense fallback={null}>
+        <AuthNoticeBanner />
+      </Suspense>
       {showDevPreview && <DeveloperMarketingPreview />}
 
       <header className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-cyan-400/[0.08] via-[var(--surface)] to-violet-500/[0.06] p-8 sm:p-10">
@@ -37,7 +42,7 @@ export default async function DashboardPage() {
           <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
             {isManager
               ? "Manage sponsorship outreach, scout players, and keep your org profile in one place."
-              : "Your player profile is live. Explore sponsorships, get discovered, and stay connected with your team."}
+              : "Your player profile is live. Browse registered teams, join a roster, and keep your scout card up to date."}
           </p>
           {ctx.email && (
             <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
@@ -75,7 +80,9 @@ export default async function DashboardPage() {
                 ? ctx.team.games.length <= 2
                   ? ctx.team.games.join(", ")
                   : `${ctx.team.games.length} active titles`
-                : "Add titles in team settings"
+                : isManager
+                  ? "Add titles in team settings"
+                  : "Browse teams to find a roster"
           }
           icon={UserRound}
         />
@@ -105,11 +112,14 @@ export default async function DashboardPage() {
         />
       )}
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="space-y-6">
+        <DashboardAnalyticsCard accountType={ctx.accountType} />
+
         {ctx.team && (
           <TeamOverviewCard
             team={ctx.team}
             membershipRole={ctx.membershipRole}
+            managerVerificationStatus={ctx.managerVerificationStatus}
           />
         )}
 
@@ -156,12 +166,9 @@ export default async function DashboardPage() {
               <Button href="/dashboard/settings/profile" size="sm" variant="outline">
                 Edit profile
               </Button>
-              <Button href="/recruitment" size="sm" variant="outline">
-                View recruitment portal
-              </Button>
               {!ctx.team && (
-                <Button href="/onboarding/join" size="sm" variant="ghost">
-                  Join a team
+                <Button href="/dashboard/teams" size="sm" variant="ghost">
+                  Browse teams
                 </Button>
               )}
             </div>
@@ -181,44 +188,66 @@ export default async function DashboardPage() {
       </section>
 
       <section>
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <h2 className="font-heading text-xl font-semibold text-white">
-              Platform features
-            </h2>
-            <p className="mt-1 text-sm text-zinc-500">
-              Jump into the tools you set up during onboarding.
-            </p>
-          </div>
-          <Link
-            href="/"
-            className="hidden text-sm text-zinc-500 hover:text-zinc-300 sm:inline"
-          >
-            Marketing site →
-          </Link>
+        <div className="mb-5">
+          <h2 className="font-heading text-xl font-semibold text-white">
+            Platform features
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            {isManager
+              ? "Jump into the tools you set up during onboarding."
+              : "Find a team and manage your player profile."}
+          </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <FeatureTile
-            href="/dashboard/sponsorships"
-            title="Sponsorship discovery"
-            description="Browse live Supabase sponsors, filter by fit, and manage your team pipeline."
-            icon={Handshake}
-            tone="cyan"
-          />
-          <FeatureTile
-            href="/recruitment"
-            title="Player recruitment"
-            description="Scout talent, compare profiles, and manage roster fit for your titles."
-            icon={Users}
-            tone="violet"
-          />
-          <FeatureTile
-            href="/dashboard/settings"
-            title="Profile settings"
-            description="Refine your player card, play time, and org details."
-            icon={UserRound}
-            tone="cyan"
-          />
+          {isManager ? (
+            <>
+              <FeatureTile
+                href="/dashboard/sponsorships"
+                title="Sponsorship discovery"
+                description="Browse live Supabase sponsors, filter by fit, and manage your team pipeline."
+                icon={Handshake}
+                tone="cyan"
+              />
+              <FeatureTile
+                href="/recruitment"
+                title="Player recruitment"
+                description="Scout talent, compare profiles, and manage roster fit for your titles."
+                icon={Users}
+                tone="violet"
+              />
+              <FeatureTile
+                href="/dashboard/settings"
+                title="Profile settings"
+                description="Refine your org details, titles, and sponsorship signals."
+                icon={Settings}
+                tone="cyan"
+              />
+            </>
+          ) : (
+            <>
+              <FeatureTile
+                href="/dashboard/teams"
+                title="Browse teams"
+                description="View orgs registered on Maxime and join one with an invite code."
+                icon={Building2}
+                tone="cyan"
+              />
+              <FeatureTile
+                href="/dashboard/settings/profile"
+                title="Player profile"
+                description="Update your handle, competitive info, play time, and scout card."
+                icon={UserRound}
+                tone="violet"
+              />
+              <FeatureTile
+                href="/dashboard/settings/account"
+                title="Account settings"
+                description="Email, display name, sign-in, and account preferences."
+                icon={Settings}
+                tone="cyan"
+              />
+            </>
+          )}
         </div>
       </section>
     </div>

@@ -8,9 +8,8 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
-  SignUpButton,
-  UserButton,
 } from "@clerk/nextjs";
+import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -72,22 +71,16 @@ export function Navbar() {
           <SignedOut>
             <SignInButton
               mode="modal"
-              forceRedirectUrl="/auth/continue"
+              forceRedirectUrl="/auth/continue?intent=sign-in"
               appearance={clerkAuthAppearance}
             >
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-white">
                 Sign in
               </Button>
             </SignInButton>
-            <SignUpButton
-              mode="modal"
-              forceRedirectUrl="/auth/continue"
-              appearance={clerkAuthAppearance}
-            >
-              <Button variant="primary" size="sm">
-                Get started
-              </Button>
-            </SignUpButton>
+            <Button href="/sign-up" variant="primary" size="sm">
+              Get started
+            </Button>
           </SignedOut>
           <SignedIn>
             <Link
@@ -96,15 +89,7 @@ export function Navbar() {
             >
               Dashboard
             </Link>
-            <UserButton
-              appearance={{
-                ...clerkAuthAppearance,
-                elements: {
-                  ...(clerkAuthAppearance as any).elements,
-                  avatarBox: "h-8 w-8 ring-1 ring-cyan-400/30",
-                },
-              }}
-            />
+            <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
           </SignedIn>
         </div>
 
@@ -134,22 +119,16 @@ export function Navbar() {
               <SignedOut>
                 <SignInButton
                   mode="modal"
-                  forceRedirectUrl="/auth/continue"
+                  forceRedirectUrl="/auth/continue?intent=sign-in"
                   appearance={clerkAuthAppearance}
                 >
-                  <Button variant="ghost" size="sm" className="flex-1">
+                  <Button variant="ghost" size="sm" className="flex-1 text-white">
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton
-                  mode="modal"
-                  forceRedirectUrl="/auth/continue"
-                  appearance={clerkAuthAppearance}
-                >
-                  <Button variant="primary" size="sm" className="flex-1">
-                    Get started
-                  </Button>
-                </SignUpButton>
+                <Button href="/sign-up" variant="primary" size="sm" className="flex-1">
+                  Get started
+                </Button>
               </SignedOut>
               <SignedIn>
                 <Link
@@ -160,7 +139,7 @@ export function Navbar() {
                   Dashboard
                 </Link>
                 <div className="flex items-center justify-end px-2">
-                  <UserButton appearance={clerkAuthAppearance} />
+                  <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
                 </div>
               </SignedIn>
             </div>

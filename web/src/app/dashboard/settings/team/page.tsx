@@ -9,9 +9,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function canEditTeam(role: string | null) {
-  return role === "captain" || role === "manager";
-}
+import { canEditTeam } from "@/lib/permissions";
 
 function toFormData(
   team: NonNullable<Awaited<ReturnType<typeof getDashboardContext>>["team"]>,
@@ -22,7 +20,6 @@ function toFormData(
     games: team.games,
     region: team.region ?? "",
     rosterSize: team.rosterSize != null ? String(team.rosterSize) : "",
-    avgViewers: team.avgViewers != null ? String(team.avgViewers) : "",
     discordUrl: team.discordUrl ?? "",
   };
 }
@@ -31,7 +28,10 @@ export default async function TeamSettingsPage() {
   const ctx = await getDashboardContext();
 
   if (!ctx.team) {
-    redirect("/onboarding/join");
+    if (ctx.accountType === "team_manager") {
+      redirect("/dashboard");
+    }
+    redirect("/dashboard/teams");
   }
 
   if (!canEditTeam(ctx.membershipRole)) {

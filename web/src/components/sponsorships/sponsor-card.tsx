@@ -151,7 +151,11 @@ function GatedAction({
   primary?: boolean;
 }) {
   return (
-    <SignInButton mode="modal" appearance={clerkAuthAppearance}>
+    <SignInButton
+      mode="modal"
+      forceRedirectUrl="/auth/continue?intent=sign-in"
+      appearance={clerkAuthAppearance}
+    >
       <button
         type="button"
         className={cn(

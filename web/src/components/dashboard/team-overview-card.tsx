@@ -3,12 +3,13 @@ import {
   Calendar,
   ExternalLink,
   MapPin,
-  Radio,
-  UserPlus,
   Users,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { canEditTeam } from "@/lib/permissions";
+import { isVerifiedManager } from "@/lib/manager-verification";
+import { TeamInvitePanel } from "@/components/dashboard/team-invite-panel";
 
 export type TeamOverviewData = {
   id: string;
@@ -17,7 +18,6 @@ export type TeamOverviewData = {
   games: string[];
   region: string | null;
   rosterSize: number | null;
-  avgViewers: number | null;
   discordUrl: string | null;
   inviteCode: string;
   createdAt: Date;
@@ -32,21 +32,24 @@ function formatPlatformDate(date: Date) {
   });
 }
 
-function rosterLabel(memberCount: number, rosterSize: number | null) {
+function rosterDisplay(rosterSize: number | null) {
   if (rosterSize != null && rosterSize > 0) {
-    return `${memberCount} of ${rosterSize} slots filled`;
+    return String(rosterSize);
   }
-  return `${memberCount} active member${memberCount === 1 ? "" : "s"}`;
+  return "Not set";
 }
 
 export function TeamOverviewCard({
   team,
   membershipRole,
+  managerVerificationStatus,
 }: {
   team: TeamOverviewData;
   membershipRole: string | null;
+  managerVerificationStatus?: string | null;
 }) {
-  const isCaptain = membershipRole === "captain";
+  const canManage = canEditTeam(membershipRole);
+  const verified = isVerifiedManager(managerVerificationStatus ?? null);
   const titles = team.games.length > 0 ? team.games : ["No titles listed yet"];
 
   return (
@@ -62,13 +65,13 @@ export function TeamOverviewCard({
           )}
         </div>
         {membershipRole && (
-          <Badge tone={isCaptain ? "cyan" : "violet"} className="capitalize">
+          <Badge tone={membershipRole === "captain" ? "cyan" : "violet"} className="capitalize">
             {membershipRole}
           </Badge>
         )}
       </div>
 
-      <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <MetricItem
           icon={Calendar}
           label="On Maxime since"
@@ -76,18 +79,11 @@ export function TeamOverviewCard({
         />
         <MetricItem
           icon={Users}
-          label="Roster"
-          value={rosterLabel(team.memberCount, team.rosterSize)}
+          label="Roster size"
+          value={rosterDisplay(team.rosterSize)}
         />
         {team.region && (
           <MetricItem icon={MapPin} label="Region" value={team.region} />
-        )}
-        {team.avgViewers != null && (
-          <MetricItem
-            icon={Radio}
-            label="Avg. stream viewers"
-            value={String(team.avgViewers)}
-          />
         )}
       </dl>
 
@@ -111,6 +107,15 @@ export function TeamOverviewCard({
         </div>
       </div>
 
+      {canManage && <TeamInvitePanel inviteCode={team.inviteCode} />}
+
+      {canManage && !verified && (
+        <p className="mt-3 text-xs leading-5 text-amber-200/80">
+          Your manager account is pending verification. You can share this invite code,
+          but sponsorship tools unlock after verification with an official org email.
+        </p>
+      )}
+
       <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/5 pt-5">
         {team.discordUrl && (
           <Button
@@ -125,19 +130,13 @@ export function TeamOverviewCard({
             <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         )}
-        {isCaptain && (
-          <Button
-            href={`/onboarding/done?invite=${encodeURIComponent(team.inviteCode)}`}
-            size="sm"
-            variant="ghost"
-            className="gap-1.5"
-          >
-            <UserPlus className="h-3.5 w-3.5" />
-            Invite players
+        {canManage && (
+          <Button href="/dashboard/settings/team" size="sm" variant="ghost">
+            Edit team profile
           </Button>
         )}
-        {!isCaptain && (
-          <Link href="/onboarding/done" className="text-sm text-zinc-500 hover:text-zinc-300">
+        {!canManage && (
+          <Link href="/dashboard/settings/team" className="text-sm text-zinc-500 hover:text-zinc-300">
             View team profile →
           </Link>
         )}

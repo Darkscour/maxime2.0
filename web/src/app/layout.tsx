@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 import "./globals.css";
 import { MarketingOnly } from "@/components/app-chrome";
 import { Navbar } from "@/components/navbar";
@@ -42,16 +43,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider
-      appearance={{
-        variables: {
-          colorPrimary: "#22d3ee",
-          colorBackground: "#11141b",
-          colorText: "#e6e8ee",
-          colorInputBackground: "#0d0f14",
-          colorInputText: "#e6e8ee",
-          borderRadius: "0.75rem",
-        },
-      }}
+      appearance={clerkAuthAppearance}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/auth/continue?intent=sign-in"
+      afterSignUpUrl="/auth/continue?intent=sign-up"
     >
       <html
         lang="en"

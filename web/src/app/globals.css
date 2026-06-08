@@ -158,3 +158,57 @@ body {
 [class*="userButtonPopover"] button:hover {
   color: #ffffff !important;
 }
+
+/* Clerk sign-in / sign-up modals — force readable light text */
+[class*="cl-modalContent"],
+[class*="cl-card"],
+[class*="cl-headerTitle"],
+[class*="cl-headerSubtitle"],
+[class*="cl-socialButtonsBlockButton"],
+[class*="cl-socialButtonsBlockButtonText"],
+[class*="cl-formFieldLabel"],
+[class*="cl-formFieldInput"],
+[class*="cl-footerActionText"],
+[class*="cl-footerActionLink"],
+[class*="cl-dividerText"],
+[class*="cl-identityPreviewText"],
+[class*="cl-alternativeMethodsBlockButton"] {
+  color: #e6e8ee !important;
+}
+
+[class*="cl-headerSubtitle"],
+[class*="cl-footerActionText"],
+[class*="cl-dividerText"] {
+  color: #a1a1aa !important;
+}
+
+[class*="cl-formFieldInput"],
+[class*="cl-otpCodeFieldInput"] {
+  color: #e6e8ee !important;
+  background-color: #0d0f14 !important;
+}
+
+[class*="cl-footerActionLink"],
+[class*="cl-identityPreviewEditButton"],
+[class*="cl-formResendCodeLink"] {
+  color: #22d3ee !important;
+}
+
+/* Hide "(Optional)" hints on Clerk sign-up name fields */
+[class*="formFieldHintText"],
+.sign-up-clerk-panel [class*="formFieldHintText"] {
+  display: none !important;
+}
+
+.sign-up-clerk-panel [class*="formFieldInput"] {
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: #0a0c10 !important;
+  color: #e6e8ee !important;
+  padding: 0.875rem 1rem !important;
+}
+
+.sign-up-clerk-panel [class*="formFieldLabel"] {
+  color: #e4e4e7 !important;
+  font-weight: 500 !important;
+}

@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 /**
  * Clerk middleware — runs on every request before pages render.
@@ -19,13 +20,36 @@ const isProtectedRoute = createRouteMatcher([
   "/api/onboarding/player",
   "/api/onboarding/join",
   "/api/player/play-time",
+  "/api/player/profile",
+  "/api/team/profile",
   "/api/sponsorship/leads",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+
+  if (
+    userId &&
+    req.nextUrl.pathname === "/" &&
+    req.nextUrl.searchParams.get("browse") !== "1"
+  ) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/auth/continue";
+    url.search = "intent=sign-in";
+    return NextResponse.redirect(url);
+  }
+
   if (isProtectedRoute(req)) {
     await auth.protect();
   }
+
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-url", req.url);
+  requestHeaders.set("x-search", req.nextUrl.search);
+
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 });
 
 export const config = {

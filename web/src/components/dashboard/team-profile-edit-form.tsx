@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Globe, Radio, Users } from "lucide-react";
+import { Building2, Globe, Users } from "lucide-react";
 import { ONBOARDING_GAMES, ONBOARDING_REGIONS } from "@/lib/onboarding-options";
 import {
   SettingsAlert,
@@ -21,7 +21,6 @@ export type TeamProfileFormData = {
   games: string[];
   region: string;
   rosterSize: string;
-  avgViewers: string;
   discordUrl: string;
 };
 
@@ -34,7 +33,6 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
   const [games, setGames] = useState<string[]>(initial.games);
   const [region, setRegion] = useState(initial.region);
   const [rosterSize, setRosterSize] = useState(initial.rosterSize);
-  const [avgViewers, setAvgViewers] = useState(initial.avgViewers);
   const [discordUrl, setDiscordUrl] = useState(initial.discordUrl);
 
   function toggleGame(game: string) {
@@ -58,7 +56,6 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
           games,
           region: region || undefined,
           rosterSize: rosterSize ? Number(rosterSize) : undefined,
-          avgViewers: avgViewers ? Number(avgViewers) : undefined,
           discordUrl: discordUrl || undefined,
         }),
       });
@@ -83,7 +80,7 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
       <SettingsHero
         eyebrow="Team"
         title="Org profile"
-        description="Your team's public identity — titles, region, and metrics that power sponsorship fit."
+        description="Your team's public identity — titles, region, and roster size."
         preview={
           <div className="inline-flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 backdrop-blur-sm">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400/30 to-cyan-400/20 ring-1 ring-inset ring-white/10">
@@ -151,7 +148,7 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
         <SettingsSection
           icon={Globe}
           title="Region & roster"
-          description="Location and size signals for recruitment and sponsors."
+          description="Location and roster size for recruitment and sponsors."
         >
           <div className="grid gap-6 sm:grid-cols-2">
             <SettingsField label="Primary region">
@@ -178,31 +175,13 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
               />
             </SettingsField>
           </div>
-        </SettingsSection>
-
-        <SettingsSection
-          icon={Radio}
-          title="Sponsorship signals"
-          description="Optional metrics that improve sponsor matching."
-        >
-          <div className="grid gap-6 sm:grid-cols-2">
-            <SettingsField label="Avg. stream viewers">
-              <SettingsInput
-                type="number"
-                min={0}
-                value={avgViewers}
-                onChange={(e) => setAvgViewers(e.target.value)}
-                placeholder="45"
-              />
-            </SettingsField>
-            <SettingsField label="Discord invite">
-              <SettingsInput
-                value={discordUrl}
-                onChange={(e) => setDiscordUrl(e.target.value)}
-                placeholder="https://discord.gg/..."
-              />
-            </SettingsField>
-          </div>
+          <SettingsField label="Discord invite">
+            <SettingsInput
+              value={discordUrl}
+              onChange={(e) => setDiscordUrl(e.target.value)}
+              placeholder="https://discord.gg/..."
+            />
+          </SettingsField>
         </SettingsSection>
       </div>
 

@@ -25,9 +25,7 @@ function toFormData(
   };
 }
 
-function canEditTeam(role: string | null) {
-  return role === "captain" || role === "manager";
-}
+import { canEditTeam } from "@/lib/permissions";
 
 export default async function ProfileSettingsPage() {
   const ctx = await getDashboardContext();
@@ -36,7 +34,7 @@ export default async function ProfileSettingsPage() {
     if (ctx.team && canEditTeam(ctx.membershipRole)) {
       redirect("/dashboard/settings/team");
     }
-    redirect("/onboarding/player");
+    redirect("/dashboard");
   }
 
   return <PlayerProfileEditForm initial={toFormData(ctx.playerProfile)} />;

@@ -21,6 +21,13 @@ export async function POST(req: Request) {
   try {
     const account = await getOrCreateUserAccount();
 
+    if (account.accountType === "team_manager") {
+      return NextResponse.json(
+        { error: "Team managers use the team profile, not a player profile." },
+        { status: 403 },
+      );
+    }
+
     if (account.playerProfile) {
       return NextResponse.json(
         { error: "Player profile already exists." },

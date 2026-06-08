@@ -1,30 +1,47 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ArrowRight, CheckCircle2, LayoutDashboard } from "lucide-react";
-import { getOnboardingStatus } from "@/lib/auth-user";
+import {
+  enforceOnboardingRoute,
+  isOnboardingTestMode,
+} from "@/lib/onboarding-guards";
+import { buildOnboardingHref } from "@/lib/onboarding-path";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InviteCodeCopy } from "./invite-code-copy";
+import { OnboardingBackNav } from "@/components/onboarding/onboarding-back-nav";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingDonePage({
   searchParams,
 }: {
-  searchParams: Promise<{ invite?: string }>;
+  searchParams: Promise<{ invite?: string; test?: string }>;
 }) {
   const params = await searchParams;
-  const status = await getOnboardingStatus();
-
-  if (!status.onboardingComplete && !status.hasTeam && !status.hasPlayerProfile) {
-    redirect("/onboarding");
-  }
+  const testMode = isOnboardingTestMode(params);
+  const status = await enforceOnboardingRoute("/onboarding/done", {
+    testMode,
+  });
 
   const isCaptain = status.membershipRole === "captain";
   const inviteCode = params.invite || status.team?.inviteCode;
+  const profileBackHref =
+    status.accountType === "team_manager"
+      ? "/onboarding/team"
+      : "/onboarding/player";
 
   return (
     <div className="text-center">
+      <Suspense fallback={null}>
+        <div className="mb-2 text-left">
+          <OnboardingBackNav
+            href={profileBackHref}
+            label="Back to profile"
+            revise
+          />
+        </div>
+      </Suspense>
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/25">
         <CheckCircle2 className="h-7 w-7 text-emerald-400" />
       </div>
@@ -110,7 +127,10 @@ export default async function OnboardingDonePage({
       {!status.hasTeam && status.hasPlayerProfile && (
         <p className="mt-6 text-sm text-zinc-500">
           Have an invite code?{" "}
-          <Link href="/onboarding/join" className="text-cyan-400 hover:text-cyan-300">
+          <Link
+            href={buildOnboardingHref("/onboarding/join", { test: testMode })}
+            className="text-cyan-400 hover:text-cyan-300"
+          >
             Join a team →
           </Link>
         </p>

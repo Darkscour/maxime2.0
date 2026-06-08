@@ -9,5 +9,9 @@ export async function GET() {
   }
 
   const status = await getOnboardingStatus();
-  return NextResponse.json({ signedIn: true, ...status });
+  return NextResponse.json({
+    signedIn: true,
+    ...status,
+    onboardingComplete: status.onboardingComplete,
+  });
 }

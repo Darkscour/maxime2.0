@@ -6,6 +6,13 @@ export async function POST(req: Request) {
   try {
     const account = await getOrCreateUserAccount();
 
+    if (account.accountType === "team_manager") {
+      return NextResponse.json(
+        { error: "Team managers cannot join a team with an invite code." },
+        { status: 403 },
+      );
+    }
+
     if (account.membership) {
       return NextResponse.json(
         { error: "You are already on a team." },

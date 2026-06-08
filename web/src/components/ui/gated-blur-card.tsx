@@ -12,20 +12,28 @@ export function capForPublicPreview<T>(items: T[], limit = PUBLIC_PORTAL_CARD_LI
   return items.slice(0, limit);
 }
 
+function isSignUpDestination(url: string) {
+  return url === "/sign-up" || url.includes("intent=sign-up");
+}
+
 export function GatedBlurCard({
   children,
   gated,
-  redirectUrl = "/sign-in",
+  redirectUrl = "/auth/continue?intent=sign-in",
   message = "Sign in to unlock the full directory",
+  ctaLabel = "Sign up free",
 }: {
   children: React.ReactNode;
   gated: boolean;
   redirectUrl?: string;
   message?: string;
+  ctaLabel?: string;
 }) {
   if (!gated) {
     return <>{children}</>;
   }
+
+  const signUpFlow = isSignUpDestination(redirectUrl);
 
   return (
     <div className="relative overflow-hidden rounded-xl">
@@ -42,15 +50,21 @@ export function GatedBlurCard({
         <p className="max-w-[200px] text-center text-xs font-medium leading-5 text-white sm:text-sm">
           {message}
         </p>
-        <SignInButton
-          mode="modal"
-          forceRedirectUrl={redirectUrl}
-          appearance={clerkAuthAppearance}
-        >
-          <Button variant="primary" size="sm">
-            Sign up free
+        {signUpFlow ? (
+          <Button href="/sign-up" variant="primary" size="sm">
+            {ctaLabel}
           </Button>
-        </SignInButton>
+        ) : (
+          <SignInButton
+            mode="modal"
+            forceRedirectUrl={redirectUrl}
+            appearance={clerkAuthAppearance}
+          >
+            <Button variant="primary" size="sm">
+              {ctaLabel}
+            </Button>
+          </SignInButton>
+        )}
       </div>
     </div>
   );

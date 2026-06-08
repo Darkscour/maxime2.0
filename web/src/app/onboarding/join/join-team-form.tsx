@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +10,16 @@ import {
   FormError,
   StepHeader,
 } from "@/components/onboarding/form-fields";
+import { OnboardingBackNav } from "@/components/onboarding/onboarding-back-nav";
+import {
+  buildOnboardingHref,
+  onboardingQueryFromSearchParams,
+} from "@/lib/onboarding-path";
 
 export function JoinTeamForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const onboardingQuery = onboardingQueryFromSearchParams(searchParams);
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +40,7 @@ export function JoinTeamForm() {
         setError(data.error || "Could not join team.");
         return;
       }
-      router.push("/onboarding/done");
+      router.push(buildOnboardingHref("/onboarding/done", onboardingQuery));
       router.refresh();
     } catch {
       setError("Network error. Try again.");
@@ -44,6 +51,7 @@ export function JoinTeamForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      <OnboardingBackNav href="/onboarding/player" label="Back to player profile" />
       <StepHeader
         step="Join a team"
         title="Enter your invite code"
@@ -65,8 +73,11 @@ export function JoinTeamForm() {
         <Button type="submit" size="lg" disabled={loading || !inviteCode.trim()}>
           {loading ? "Joining…" : "Join team"}
         </Button>
-        <Link href="/onboarding/done" className="text-sm text-zinc-400 hover:text-white">
-          ← Back
+        <Link
+          href={buildOnboardingHref("/onboarding/done", onboardingQuery)}
+          className="text-sm text-zinc-400 hover:text-white"
+        >
+          Skip for now
         </Link>
       </div>
     </form>
