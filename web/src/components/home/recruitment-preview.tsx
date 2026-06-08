@@ -1,7 +1,7 @@
 import { ArrowRight, Filter, Shield, Users } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { RecruitmentDemoPanel } from "@/components/recruitment/recruitment-demo-panel";
+import { DemoRecruitmentDirectory } from "@/components/recruitment/demo-recruitment-directory";
 
 const bullets = [
   {
@@ -70,7 +70,7 @@ export function RecruitmentPreview() {
             </div>
           </div>
 
-          <RecruitmentDemoPanel compact previewLimit={4} />
+          <DemoRecruitmentDirectory compact />
         </div>
       </Container>
     </section>

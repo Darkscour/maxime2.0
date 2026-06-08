@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Clock, Sparkles } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
+import { isDeveloperEmail } from "@/lib/developer";
+import { DeveloperMarketingPreview } from "@/components/dashboard/developer-marketing-preview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +19,13 @@ export default async function DashboardPage() {
   const ctx = await getDashboardContext();
   const firstName = ctx.displayName?.split(" ")[0] ?? "there";
   const isManager = ctx.accountType === "team_manager";
+  const hasProfile = !!ctx.playerProfile;
+  const showDevPreview = isDeveloperEmail(ctx.email);
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
+      {showDevPreview && <DeveloperMarketingPreview />}
+
       <header className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-cyan-400/[0.08] via-[var(--surface)] to-violet-500/[0.06] p-8 sm:p-10">
         <div className="relative z-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
@@ -54,17 +60,17 @@ export default async function DashboardPage() {
           icon={Building2}
         />
         <DashboardStatCard
-          label={ctx.playerProfile ? "Your game" : "Titles"}
+          label={hasProfile ? "Your game" : "Titles"}
           value={
-            ctx.playerProfile
-              ? ctx.playerProfile.game
+            hasProfile
+              ? ctx.playerProfile!.game
               : ctx.team?.games.length
                 ? String(ctx.team.games.length)
                 : "—"
           }
           hint={
-            ctx.playerProfile
-              ? `${ctx.playerProfile.role} · ${ctx.playerProfile.rank}`
+            hasProfile
+              ? `${ctx.playerProfile!.role} · ${ctx.playerProfile!.rank}`
               : ctx.team?.games.length
                 ? ctx.team.games.length <= 2
                   ? ctx.team.games.join(", ")
@@ -74,20 +80,20 @@ export default async function DashboardPage() {
           icon={UserRound}
         />
         <DashboardStatCard
-          label={ctx.playerProfile ? "Play time" : "Status"}
+          label={hasProfile ? "Play time" : "Status"}
           value={
             ctx.playerProfile?.hoursPerWeek != null
               ? `${ctx.playerProfile.hoursPerWeek} hrs/wk`
               : ctx.playerProfile?.status ?? "Active"
           }
           hint={
-            ctx.playerProfile
-              ? ctx.playerProfile.hoursPerWeek != null
-                ? `Self-reported · ${ctx.playerProfile.game}`
+            hasProfile
+              ? ctx.playerProfile!.hoursPerWeek != null
+                ? `Self-reported · ${ctx.playerProfile!.game}`
                 : "Report your hours below"
               : (ctx.team?.region ?? "Region not set")
           }
-          icon={ctx.playerProfile ? Clock : Users}
+          icon={hasProfile ? Clock : Users}
         />
       </section>
 
@@ -101,7 +107,10 @@ export default async function DashboardPage() {
 
       <section className="grid gap-6 lg:grid-cols-2">
         {ctx.team && (
-          <TeamOverviewCard team={ctx.team} membershipRole={ctx.membershipRole} />
+          <TeamOverviewCard
+            team={ctx.team}
+            membershipRole={ctx.membershipRole}
+          />
         )}
 
         {ctx.playerProfile && (
@@ -144,6 +153,9 @@ export default async function DashboardPage() {
               </div>
             )}
             <div className="mt-5 flex flex-wrap gap-2">
+              <Button href="/dashboard/settings/profile" size="sm" variant="outline">
+                Edit profile
+              </Button>
               <Button href="/recruitment" size="sm" variant="outline">
                 View recruitment portal
               </Button>
@@ -187,9 +199,9 @@ export default async function DashboardPage() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <FeatureTile
-            href="/sponsorships"
+            href="/dashboard/sponsorships"
             title="Sponsorship discovery"
-            description="Browse brand partners, filter by fit, and build outreach lists for your org."
+            description="Browse live Supabase sponsors, filter by fit, and manage your team pipeline."
             icon={Handshake}
             tone="cyan"
           />
@@ -201,10 +213,10 @@ export default async function DashboardPage() {
             tone="violet"
           />
           <FeatureTile
-            href="/onboarding/done"
-            title="Profile & invite codes"
-            description="Review what you entered during onboarding and share team invite codes."
-            icon={Building2}
+            href="/dashboard/settings"
+            title="Profile settings"
+            description="Refine your player card, play time, and org details."
+            icon={UserRound}
             tone="cyan"
           />
         </div>

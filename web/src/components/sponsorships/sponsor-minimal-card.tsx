@@ -19,16 +19,12 @@ export function SponsorMinimalCard({
   showAi = true,
   tag,
   lead,
-  fitScore,
-  fitReason,
   showPipeline = false,
 }: {
   sponsor: SponsorListing;
   showAi?: boolean;
   tag?: string;
   lead?: SponsorLeadRecord | null;
-  fitScore?: number;
-  fitReason?: string;
   showPipeline?: boolean;
 }) {
   return (
@@ -67,14 +63,7 @@ export function SponsorMinimalCard({
         </Row>
       </dl>
 
-      {showPipeline && (
-        <SponsorLeadActions
-          sponsor={sponsor}
-          lead={lead}
-          fitScore={fitScore}
-          fitReason={fitReason}
-        />
-      )}
+      {showPipeline && <SponsorLeadActions sponsor={sponsor} lead={lead} />}
 
       {showAi && <SponsorAiAdvisor sponsor={sponsor} />}
     </article>

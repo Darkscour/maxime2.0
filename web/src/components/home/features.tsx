@@ -166,19 +166,17 @@ function RoadmapRow({ items }: { items: FeatureCard[] }) {
               (items.length === 1 ? " lg:col-start-2" : "")
             }
           >
-            <div className="relative">
-              {r.illustration}
-              <div className="absolute right-3 top-3">
-                <Badge tone="amber">
+            <div>{r.illustration}</div>
+            <div className="px-2.5 pt-4 pb-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-heading text-sm font-semibold text-white">
+                  {r.title}
+                </h3>
+                <Badge tone="amber" className="shrink-0 text-[10px]">
                   <Clock className="h-3 w-3" />
                   Coming soon
                 </Badge>
               </div>
-            </div>
-            <div className="px-2.5 pt-4 pb-2">
-              <h3 className="font-heading text-sm font-semibold text-white">
-                {r.title}
-              </h3>
               <p className="mt-1 text-xs leading-5 text-zinc-400">
                 {r.description}
               </p>

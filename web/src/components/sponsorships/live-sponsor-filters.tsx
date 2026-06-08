@@ -21,15 +21,22 @@ export function LiveSponsorFiltersPanel({
   industries,
   difficulties,
   resultsCount,
+  resultsLabel = "sponsors from Supabase",
+  sticky = true,
 }: {
   filters: LiveSponsorFilters;
   setFilters: (f: LiveSponsorFilters) => void;
   industries: string[];
   difficulties: string[];
   resultsCount: number;
+  resultsLabel?: string;
+  /** Sticky sidebar — off for homepage embeds so filters don't float over other sections. */
+  sticky?: boolean;
 }) {
   return (
-    <aside className="lg:sticky lg:top-20 lg:self-start">
+    <aside
+      className={cn(sticky && "lg:sticky lg:top-20 lg:self-start")}
+    >
       <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-white">
@@ -101,7 +108,7 @@ export function LiveSponsorFiltersPanel({
 
         <div className="mt-6 rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs text-zinc-400">
           <span className="font-semibold text-violet-300">{resultsCount}</span>{" "}
-          sponsors from Supabase
+          {resultsLabel}
         </div>
       </div>
     </aside>

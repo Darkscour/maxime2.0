@@ -20,7 +20,7 @@ export function DashboardStatCard({
           <p className="font-heading mt-2 text-2xl font-semibold text-white">{value}</p>
           {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
         </div>
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
           <Icon className="h-4 w-4 text-cyan-400" />
         </span>
       </div>

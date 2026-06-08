@@ -20,8 +20,6 @@ export async function getOrCreateUserAccount() {
     },
   });
 
-  if (existing) return existing;
-
   const email =
     clerkUser?.emailAddresses.find((e) => e.id === clerkUser.primaryEmailAddressId)
       ?.emailAddress ?? clerkUser?.emailAddresses[0]?.emailAddress;
@@ -30,6 +28,20 @@ export async function getOrCreateUserAccount() {
     [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ") ||
     clerkUser?.username ||
     undefined;
+
+  if (existing) {
+    if (existing.email !== email || existing.displayName !== displayName) {
+      return db.userAccount.update({
+        where: { id: existing.id },
+        data: { email: email ?? null, displayName: displayName ?? null },
+        include: {
+          membership: { include: { team: true } },
+          playerProfile: true,
+        },
+      });
+    }
+    return existing;
+  }
 
   return db.userAccount.create({
     data: {

@@ -25,14 +25,10 @@ function statusTone(status: SponsorLeadStatus) {
 export function SponsorLeadActions({
   sponsor,
   lead,
-  fitScore,
-  fitReason,
   compact = false,
 }: {
   sponsor: SponsorListing;
   lead?: SponsorLeadRecord | null;
-  fitScore?: number;
-  fitReason?: string;
   compact?: boolean;
 }) {
   const router = useRouter();
@@ -93,9 +89,6 @@ export function SponsorLeadActions({
     }
   }
 
-  const displayScore = localLead?.fitScore ?? fitScore;
-  const displayReason = localLead?.fitReason ?? fitReason;
-
   return (
     <div
       className={cn(
@@ -103,22 +96,6 @@ export function SponsorLeadActions({
         compact ? "mt-3" : "mt-5",
       )}
     >
-      {displayScore != null && (
-        <div className="mb-3 rounded-lg bg-white/[0.02] p-3">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs uppercase tracking-wider text-zinc-500">
-              Team fit
-            </span>
-            <span className="font-heading text-sm font-semibold text-cyan-300">
-              {displayScore}%
-            </span>
-          </div>
-          {displayReason && (
-            <p className="mt-1 text-xs leading-5 text-zinc-500">{displayReason}</p>
-          )}
-        </div>
-      )}
-
       {error && (
         <p className="mb-2 text-xs text-red-300">{error}</p>
       )}

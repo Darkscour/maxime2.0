@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   Building2,
   Handshake,
+  Home,
   LayoutDashboard,
   Menu,
   UserRound,
@@ -17,9 +18,11 @@ import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/sponsorships", label: "Sponsorships", icon: Handshake },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/sponsorships", label: "Sponsorships", icon: Handshake },
+  { href: "/dashboard/settings", label: "Profile", icon: UserRound },
   { href: "/recruitment", label: "Recruitment", icon: Users },
+  { href: "/", label: "Homepage", icon: Home, exact: true },
 ];
 
 export function DashboardShell({
@@ -44,7 +47,11 @@ export function DashboardShell({
               href={item.href}
               label={item.label}
               icon={item.icon}
-              active={pathname === item.href}
+              active={
+                "exact" in item && item.exact
+                  ? pathname === item.href
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`)
+              }
             />
           ))}
         </nav>
@@ -88,7 +95,11 @@ export function DashboardShell({
               href={item.href}
               label={item.label}
               icon={item.icon}
-              active={pathname === item.href}
+              active={
+                "exact" in item && item.exact
+                  ? pathname === item.href
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`)
+              }
               onNavigate={() => setMobileOpen(false)}
             />
           ))}

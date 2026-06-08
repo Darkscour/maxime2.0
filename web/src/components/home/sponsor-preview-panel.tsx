@@ -3,10 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
-import {
-  DEMO_SPONSOR_LISTINGS,
-  type SponsorListing,
-} from "@/lib/sponsor-listing";
+import { DEMO_SPONSOR_LISTINGS } from "@/lib/sponsor-listing";
 import { SponsorMinimalCard } from "@/components/sponsorships/sponsor-minimal-card";
 import {
   capForPublicPreview,
@@ -14,31 +11,15 @@ import {
   PUBLIC_PORTAL_CARD_LIMIT,
 } from "@/components/ui/gated-blur-card";
 
-/** Homepage sponsorship preview: 4 cards max — last one blurred when signed out. */
-export function SponsorPreviewPanel({
-  liveSponsors = [],
-}: {
-  liveSponsors?: SponsorListing[];
-}) {
+/** Homepage sponsorship preview: 4 demo cards — last one blurred when signed out. */
+export function SponsorPreviewPanel() {
   const { isSignedIn, isLoaded } = useAuth();
   const gateLast = isLoaded && !isSignedIn;
 
-  const catalog = useMemo(() => {
-    const demos = DEMO_SPONSOR_LISTINGS;
-    const live = liveSponsors.slice(0, 1);
-    const mixed: (SponsorListing & { cardTag: "Demo" | "Live DB" })[] = [];
-
-    for (let i = 0; i < 3 && i < demos.length; i++) {
-      mixed.push({ ...demos[i], cardTag: "Demo" });
-    }
-    if (live[0]) {
-      mixed.push({ ...live[0], cardTag: "Live DB" });
-    } else if (demos[3]) {
-      mixed.push({ ...demos[3], cardTag: "Demo" });
-    }
-
-    return mixed.slice(0, PUBLIC_PORTAL_CARD_LIMIT);
-  }, [liveSponsors]);
+  const catalog = useMemo(
+    () => DEMO_SPONSOR_LISTINGS.slice(0, PUBLIC_PORTAL_CARD_LIMIT),
+    [],
+  );
 
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("");
@@ -70,7 +51,7 @@ export function SponsorPreviewPanel({
         Interactive preview
       </p>
       <p className="mt-1 text-sm text-zinc-500">
-        {PUBLIC_PORTAL_CARD_LIMIT} sponsor preview
+        {PUBLIC_PORTAL_CARD_LIMIT} sample sponsors
         {gateLast ? " — last card blurred until you sign in" : ""}.
       </p>
 
@@ -107,19 +88,15 @@ export function SponsorPreviewPanel({
           const isLastGated =
             gateLast && filtered.length > 1 && i === filtered.length - 1;
           const card = (
-            <SponsorMinimalCard
-              sponsor={s}
-              tag={s.cardTag}
-              showAi={false}
-            />
+            <SponsorMinimalCard sponsor={s} tag="Sample" showAi={false} />
           );
 
           return (
             <GatedBlurCard
-              key={`${s.cardTag}-${s.id}`}
+              key={s.id}
               gated={isLastGated}
-              redirectUrl="/sponsorships"
-              message="Sign in to browse every sponsor in your directory"
+              redirectUrl="/sign-up"
+              message="Sign in for the live sponsor directory on your dashboard"
             >
               {card}
             </GatedBlurCard>

@@ -20,7 +20,6 @@ const links = [
   { href: "/#sponsorships", label: "Sponsorships" },
   { href: "/#features", label: "Features" },
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#test-display-data", label: "Test display data" },
 ];
 
 export function Navbar() {

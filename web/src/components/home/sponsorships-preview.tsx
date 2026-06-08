@@ -1,8 +1,7 @@
 import { ArrowRight, Filter, Handshake, ListChecks } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import type { SponsorFetchResult } from "@/lib/fetch-sponsors";
-import { SponsorPreviewPanel } from "./sponsor-preview-panel";
+import { DemoSponsorshipDirectory } from "@/components/sponsorships/demo-sponsorship-directory";
 
 const bullets = [
   {
@@ -15,7 +14,7 @@ const bullets = [
     icon: Handshake,
     title: "Curated sponsor directory",
     description:
-      "Four sponsors in preview — sign in for the full live directory.",
+      "Four sample sponsors in preview — sign in for the live directory on your dashboard.",
   },
   {
     icon: ListChecks,
@@ -25,14 +24,7 @@ const bullets = [
   },
 ];
 
-export function SponsorshipsPreview({
-  dbResult,
-}: {
-  dbResult: SponsorFetchResult;
-}) {
-  const liveSponsors =
-    dbResult.source === "database" ? dbResult.sponsors : [];
-
+export function SponsorshipsPreview() {
   return (
     <section
       id="sponsorships"
@@ -48,8 +40,8 @@ export function SponsorshipsPreview({
               Land sponsors that actually fund collegiate teams
             </h2>
             <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
-              Preview four sponsors — the last card is blurred until you sign in
-              for the full curated directory and apply tools.
+              Preview four sample sponsors — the last card is blurred until you
+              sign in for the live directory and pipeline tools on your dashboard.
             </p>
 
             <ul className="mt-8 space-y-5">
@@ -78,7 +70,7 @@ export function SponsorshipsPreview({
             </div>
           </div>
 
-          <SponsorPreviewPanel liveSponsors={liveSponsors} />
+          <DemoSponsorshipDirectory compact />
         </div>
       </Container>
     </section>
