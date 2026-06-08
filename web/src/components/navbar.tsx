@@ -70,12 +70,12 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2 md:flex">
           <SignedOut>
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" forceRedirectUrl="/auth/continue">
               <Button variant="ghost" size="sm">
                 Sign in
               </Button>
             </SignInButton>
-            <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
+            <SignUpButton mode="modal" forceRedirectUrl="/auth/continue">
               <Button variant="primary" size="sm">
                 Get started
               </Button>
@@ -83,10 +83,10 @@ export function Navbar() {
           </SignedOut>
           <SignedIn>
             <Link
-              href="/onboarding"
+              href="/dashboard"
               className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
             >
-              Onboarding
+              Dashboard
             </Link>
             <UserButton
               appearance={{
@@ -122,12 +122,12 @@ export function Navbar() {
             ))}
             <div className="mt-2 flex gap-2">
               <SignedOut>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" forceRedirectUrl="/auth/continue">
                   <Button variant="ghost" size="sm" className="flex-1">
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton mode="modal" forceRedirectUrl="/onboarding">
+                <SignUpButton mode="modal" forceRedirectUrl="/auth/continue">
                   <Button variant="primary" size="sm" className="flex-1">
                     Get started
                   </Button>
@@ -135,11 +135,11 @@ export function Navbar() {
               </SignedOut>
               <SignedIn>
                 <Link
-                  href="/onboarding"
+                  href="/dashboard"
                   onClick={() => setOpen(false)}
                   className="flex-1 rounded-md px-3 py-2 text-center text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
                 >
-                  Onboarding
+                  Dashboard
                 </Link>
                 <div className="flex items-center justify-end px-2">
                   <UserButton />

@@ -10,7 +10,7 @@ export default async function OnboardingPage() {
   const status = await getOnboardingStatus();
 
   if (status.onboardingComplete) {
-    redirect("/onboarding/done");
+    redirect("/dashboard");
   }
 
   if (status.accountType === "team_manager" && !status.hasTeam) {
@@ -48,8 +48,8 @@ export default async function OnboardingPage() {
 
       <p className="mt-8 text-center text-sm text-zinc-500">
         Already finished?{" "}
-        <Link href="/onboarding/done" className="text-cyan-400 hover:text-cyan-300">
-          View your profile →
+        <Link href="/dashboard" className="text-cyan-400 hover:text-cyan-300">
+          Open your dashboard →
         </Link>
       </p>
     </div>

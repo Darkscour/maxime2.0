@@ -2,8 +2,10 @@
 
 import { ExternalLink } from "lucide-react";
 import type { SponsorListing } from "@/lib/sponsor-listing";
+import type { SponsorLeadRecord } from "@/lib/sponsor-pipeline";
 import { Badge } from "@/components/ui/badge";
 import { SponsorAiAdvisor } from "./sponsor-ai-advisor";
+import { SponsorLeadActions } from "./sponsor-lead-actions";
 
 function difficultyTone(difficulty: string) {
   const d = difficulty.toLowerCase();
@@ -16,10 +18,18 @@ export function SponsorMinimalCard({
   sponsor,
   showAi = true,
   tag,
+  lead,
+  fitScore,
+  fitReason,
+  showPipeline = false,
 }: {
   sponsor: SponsorListing;
   showAi?: boolean;
   tag?: string;
+  lead?: SponsorLeadRecord | null;
+  fitScore?: number;
+  fitReason?: string;
+  showPipeline?: boolean;
 }) {
   return (
     <article className="relative flex flex-col rounded-xl border border-white/5 bg-[var(--surface)] p-5 transition-colors hover:border-cyan-400/25 hover:bg-[var(--surface-2)]">
@@ -56,6 +66,15 @@ export function SponsorMinimalCard({
           </Badge>
         </Row>
       </dl>
+
+      {showPipeline && (
+        <SponsorLeadActions
+          sponsor={sponsor}
+          lead={lead}
+          fitScore={fitScore}
+          fitReason={fitReason}
+        />
+      )}
 
       {showAi && <SponsorAiAdvisor sponsor={sponsor} />}
     </article>

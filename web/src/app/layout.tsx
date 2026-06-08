@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { MarketingOnly } from "@/components/app-chrome";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
@@ -57,9 +58,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
       >
         <body className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-cyan-500/30">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <MarketingOnly>
+            <Navbar />
+          </MarketingOnly>
+          <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+          <MarketingOnly>
+            <Footer />
+          </MarketingOnly>
         </body>
       </html>
     </ClerkProvider>

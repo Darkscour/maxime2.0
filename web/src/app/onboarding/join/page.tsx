@@ -12,7 +12,7 @@ export default async function JoinTeamPage() {
   }
 
   if (status.hasTeam) {
-    redirect("/onboarding/done");
+    redirect("/dashboard");
   }
 
   return <JoinTeamForm />;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, LayoutDashboard } from "lucide-react";
 import { getOnboardingStatus } from "@/lib/auth-user";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,16 +25,18 @@ export default async function OnboardingDonePage({
 
   return (
     <div className="text-center">
-      <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
-      <h1 className="font-heading mt-4 text-3xl font-semibold text-white sm:text-4xl">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/25">
+        <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+      </div>
+      <h1 className="font-heading mt-5 text-3xl font-semibold text-white sm:text-4xl">
         You&apos;re set up on Maxime
       </h1>
       <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-400">
         {status.accountType === "team_manager"
-          ? "Your team profile is saved. Share the invite code below so players can join."
+          ? "Your team profile is saved. Head to your dashboard to explore sponsorships, recruitment, and org tools."
           : status.hasTeam
-            ? `You're on ${status.team?.name}. Your player profile is ready for recruitment.`
-            : "Your player profile is saved. Join a team anytime with an invite code from your captain."}
+            ? `You're on ${status.team?.name}. Your player profile is ready — your dashboard has everything in one place.`
+            : "Your player profile is saved. Open your dashboard to explore the platform, or join a team with an invite code."}
       </p>
 
       <div className="mx-auto mt-8 max-w-md rounded-2xl border border-white/5 bg-[var(--surface)] p-6 text-left">
@@ -94,12 +96,14 @@ export default async function OnboardingDonePage({
         )}
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Button href="/sponsorships" size="lg">
-          Open sponsorships
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Button href="/dashboard" size="lg" className="min-w-[220px] gap-2">
+          <LayoutDashboard className="h-4 w-4" />
+          Go to dashboard
+          <ArrowRight className="h-4 w-4" />
         </Button>
-        <Button href="/recruitment" variant="ghost" size="lg">
-          Browse recruitment
+        <Button href="/sponsorships" variant="outline" size="lg">
+          Browse sponsorships
         </Button>
       </div>
 

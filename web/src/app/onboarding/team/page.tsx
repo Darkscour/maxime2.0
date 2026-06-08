@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function TeamOnboardingPage() {
   const status = await getOnboardingStatus();
   if (status.onboardingComplete && status.hasTeam) {
-    redirect("/onboarding/done");
+    redirect("/dashboard");
   }
 
   return <TeamOnboardingForm />;

@@ -173,14 +173,14 @@ export function PlayerOnboardingForm() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <FormField label="Hours per week" hint="Optional">
+        <FormField label="Hours played per week" hint="Self-reported estimate for your primary game — include ranked, scrims, and practice">
           <TextInput
             type="number"
             min={0}
             max={168}
             value={hoursPerWeek}
             onChange={(e) => setHoursPerWeek(e.target.value)}
-            placeholder="25"
+            placeholder="20"
           />
         </FormField>
 

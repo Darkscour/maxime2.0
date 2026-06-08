@@ -113,7 +113,8 @@ model Team {
   inviteCode         String   @unique @default(cuid())
   onboardingComplete Boolean  @default(false)
 
-  members TeamMembership[]
+  members     TeamMembership[]
+  sponsorLeads SponsorLead[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,4 +162,29 @@ model PlayerProfile {
 
   @@index([game])
   @@index([region])
+}
+
+// Team outreach tracking for a sponsor from Supabase (keyed by external sponsor ID).
+model SponsorLead {
+  id          String    @id @default(cuid())
+  teamId      String
+  sponsorId   String
+  sponsorName String
+  industry    String?
+  difficulty  String?
+  sponsorLink String?
+  status      String    @default("saved")
+  fitScore    Int?
+  fitReason   String?
+  notes       String?
+  appliedAt   DateTime?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([teamId, sponsorId])
+  @@index([teamId])
+  @@index([status])
 }

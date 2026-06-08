@@ -11,7 +11,9 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "db:migrate": "prisma migrate dev",
-    "db:onboarding": "tsx scripts/setup-onboarding-tables.ts"
+    "db:onboarding": "tsx scripts/setup-onboarding-tables.ts",
+    "db:sponsor-leads": "tsx scripts/setup-sponsor-leads-table.ts",
+    "db:reset-onboarding": "tsx scripts/reset-onboarding-local.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
