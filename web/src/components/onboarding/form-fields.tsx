@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { fieldClassName, selectClassName, selectChevronStyle } from "@/lib/form-styles";
 
 export function FormField({
   label,
@@ -20,24 +21,23 @@ export function FormField({
   );
 }
 
-const inputClass =
-  "w-full rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-400/40 focus:outline-none";
-
 export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={inputClass} {...props} />;
+  return <input className={fieldClassName} {...props} />;
 }
 
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className={cn(inputClass, "min-h-[96px] resize-y")}
+      className={cn(fieldClassName, "min-h-[96px] resize-y")}
       {...props}
     />
   );
 }
 
 export function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={inputClass} {...props} />;
+  return (
+    <select className={selectClassName} style={selectChevronStyle} {...props} />
+  );
 }
 
 export function FormError({ message }: { message?: string }) {

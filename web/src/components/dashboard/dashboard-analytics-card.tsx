@@ -1,24 +1,25 @@
 import { BarChart3, TrendingUp } from "lucide-react";
+import type { PlayerAnalyticsSnapshot } from "@/lib/player-analytics";
+import { PlayerAnalyticsCard } from "@/components/dashboard/player-analytics-card";
+import { AbstractAreaChart } from "@/components/dashboard/abstract-charts";
 
-/** Placeholder weekly values — replace with real metrics from your analytics pipeline. */
-const PLACEHOLDER_WEEKS = [
-  { label: "W1", value: 42 },
-  { label: "W2", value: 58 },
-  { label: "W3", value: 51 },
-  { label: "W4", value: 73 },
-  { label: "W5", value: 68 },
-  { label: "W6", value: 84 },
-];
+/** Placeholder weekly values for manager org activity. */
+const PLACEHOLDER_WEEKS = [42, 58, 51, 73, 68, 84];
 
 const CHART_HEIGHT = 96;
 
 export function DashboardAnalyticsCard({
   accountType,
+  playerAnalytics,
 }: {
   accountType: string | null;
+  playerAnalytics?: PlayerAnalyticsSnapshot | null;
 }) {
   const isManager = accountType === "team_manager";
-  const max = Math.max(...PLACEHOLDER_WEEKS.map((w) => w.value));
+
+  if (!isManager && playerAnalytics) {
+    return <PlayerAnalyticsCard data={playerAnalytics} />;
+  }
 
   return (
     <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
@@ -46,22 +47,17 @@ export function DashboardAnalyticsCard({
       </div>
 
       <div
-        className="mt-6 flex items-end justify-between gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-4 pb-3 pt-5"
+        className="mt-6 h-28 overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent px-2 pt-2"
         role="img"
-        aria-label="Placeholder activity chart"
+        aria-label="Org activity chart"
       >
-        {PLACEHOLDER_WEEKS.map((week) => {
-          const height = Math.round((week.value / max) * CHART_HEIGHT);
-          return (
-            <div key={week.label} className="flex flex-1 flex-col items-center gap-2">
-              <div
-                className="w-full max-w-[2.25rem] rounded-t-md bg-gradient-to-t from-cyan-500/40 to-cyan-400/70"
-                style={{ height }}
-              />
-              <span className="text-[10px] font-medium text-zinc-600">{week.label}</span>
-            </div>
-          );
-        })}
+        <AbstractAreaChart
+          values={PLACEHOLDER_WEEKS}
+          gradientId="org-gradient"
+          stroke="#34d399"
+          fill="#34d399"
+          height={CHART_HEIGHT}
+        />
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-3">

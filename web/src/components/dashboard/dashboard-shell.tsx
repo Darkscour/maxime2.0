@@ -7,6 +7,7 @@ import { LogOut, Menu, X, Zap } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
+import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
 import { getDashboardNavItems } from "@/lib/dashboard-nav";
 
 export function DashboardShell({
@@ -87,8 +88,11 @@ export function DashboardShell({
             <Menu className="h-5 w-5" />
           </button>
           <p className="text-sm text-zinc-500 lg:hidden">Maxime</p>
-          <div className="ml-auto flex items-center gap-2 lg:hidden">
-            <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
+          <div className="ml-auto flex items-center gap-1">
+            <DashboardNotifications />
+            <div className="lg:hidden">
+              <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
+            </div>
           </div>
         </header>
         <div className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">{children}</div>
@@ -125,10 +129,13 @@ function SidebarHeader({
 
 function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
   return (
-    <div className="mt-2 space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
-      <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-3 py-2.5 ring-1 ring-inset ring-white/5">
-        <ClerkUserButton avatarClassName="h-9 w-9 ring-1 ring-cyan-400/30" />
-        <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
+      <div className="mt-2 space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
+      <div className="flex items-center justify-between gap-2 rounded-xl bg-white/[0.02] px-3 py-2.5 ring-1 ring-inset ring-white/5">
+        <div className="flex min-w-0 items-center gap-3">
+          <ClerkUserButton avatarClassName="h-9 w-9 ring-1 ring-cyan-400/30" />
+          <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
+        </div>
+        <DashboardNotifications />
       </div>
       <SignOutButton redirectUrl="/sign-in">
         <button

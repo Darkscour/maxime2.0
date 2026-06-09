@@ -23,6 +23,11 @@ const isProtectedRoute = createRouteMatcher([
   "/api/player/profile",
   "/api/team/profile",
   "/api/sponsorship/leads",
+  "/api/watchlist(.*)",
+  "/api/notifications(.*)",
+  "/api/invites(.*)",
+  "/api/player/leave-team",
+  "/api/account/profile",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

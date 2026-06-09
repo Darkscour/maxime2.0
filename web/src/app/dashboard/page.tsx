@@ -12,8 +12,12 @@ import {
 import { PlayTimeReport } from "@/components/dashboard/play-time-report";
 import { TeamOverviewCard } from "@/components/dashboard/team-overview-card";
 import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analytics-card";
+import { getPlayerAnalytics } from "@/lib/player-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
-import { Building2, Handshake, Settings, UserRound, Users } from "lucide-react";
+import { Bookmark, Building2, Handshake, Search, Settings, UserRound, Users } from "lucide-react";
+import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
+import { PendingInvitesCard } from "@/components/dashboard/pending-invites-card";
+import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +27,18 @@ export default async function DashboardPage() {
   const isManager = ctx.accountType === "team_manager";
   const hasProfile = !!ctx.playerProfile;
   const showDevPreview = isDeveloperEmail(ctx.email);
+  const playerAnalytics =
+    !isManager && ctx.playerProfile
+      ? await getPlayerAnalytics(
+          ctx.playerProfile.id,
+          ctx.playerProfile.hoursPerWeek,
+        )
+      : null;
+
+  const pendingInvites =
+    !isManager && ctx.playerProfile
+      ? await fetchPendingInvitesForPlayer(ctx.playerProfile.id)
+      : [];
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
@@ -113,7 +129,25 @@ export default async function DashboardPage() {
       )}
 
       <section className="space-y-6">
-        <DashboardAnalyticsCard accountType={ctx.accountType} />
+        {pendingInvites.length > 0 && (
+          <PendingInvitesCard
+            invites={pendingInvites}
+            onTeam={!!ctx.team}
+            currentTeamName={ctx.team?.name}
+          />
+        )}
+
+        {ctx.team && ctx.membershipRole === "player" && (
+          <LeaveTeamCard
+            teamName={ctx.team.name}
+            membershipRole={ctx.membershipRole}
+          />
+        )}
+
+        <DashboardAnalyticsCard
+          accountType={ctx.accountType}
+          playerAnalytics={playerAnalytics}
+        />
 
         {ctx.team && (
           <TeamOverviewCard
@@ -203,24 +237,31 @@ export default async function DashboardPage() {
             <>
               <FeatureTile
                 href="/dashboard/sponsorships"
-                title="Sponsorship discovery"
-                description="Browse live Supabase sponsors, filter by fit, and manage your team pipeline."
+                title="Sponsor directory"
+                description="Browse our curated selection of sponsors and jump to application pages."
                 icon={Handshake}
                 tone="cyan"
               />
               <FeatureTile
-                href="/recruitment"
-                title="Player recruitment"
-                description="Scout talent, compare profiles, and manage roster fit for your titles."
-                icon={Users}
+                href="/dashboard/scout"
+                title="Scout players"
+                description="Browse registered players, save candidates to your watchlist, and send invites."
+                icon={Search}
                 tone="violet"
               />
               <FeatureTile
-                href="/dashboard/settings"
-                title="Profile settings"
+                href="/dashboard/watchlist"
+                title="Watchlist"
+                description="Compare shortlisted players and send recruitment invites when you're ready."
+                icon={Bookmark}
+                tone="cyan"
+              />
+              <FeatureTile
+                href="/dashboard/settings/team"
+                title="Team profile"
                 description="Refine your org details, titles, and sponsorship signals."
                 icon={Settings}
-                tone="cyan"
+                tone="violet"
               />
             </>
           ) : (

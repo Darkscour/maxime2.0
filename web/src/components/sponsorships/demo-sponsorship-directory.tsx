@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import { Handshake } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { DEMO_SPONSOR_LISTINGS } from "@/lib/sponsor-listing";
+import { curatedIndustriesFromData } from "@/lib/sponsor-filters";
 import {
   LiveSponsorFiltersPanel,
   DEFAULT_LIVE_SPONSOR_FILTERS,
   type LiveSponsorFilters,
 } from "@/components/sponsorships/live-sponsor-filters";
-import { SponsorMinimalCard } from "@/components/sponsorships/sponsor-minimal-card";
+import { SponsorDirectoryCard } from "@/components/sponsorships/sponsor-directory-card";
 import {
   capForPublicPreview,
   GatedBlurCard,
@@ -18,7 +19,7 @@ import {
 
 type DemoSortKey = "alpha" | "difficulty";
 
-/** Homepage / marketing preview — same shell as dashboard sponsorship directory. */
+/** Homepage / marketing preview — sticky filters, cards scroll beside them. */
 export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolean }) {
   const { isSignedIn, isLoaded } = useAuth();
   const gateLast = isLoaded && !isSignedIn;
@@ -32,7 +33,10 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
   const [sort, setSort] = useState<DemoSortKey>("alpha");
 
   const industries = useMemo(
-    () => [...new Set(catalog.map((s) => s.industry))].sort(),
+    () =>
+      curatedIndustriesFromData(
+        [...new Set(catalog.map((s) => s.industry))].sort(),
+      ),
     [catalog],
   );
   const difficulties = useMemo(
@@ -63,8 +67,8 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
     <div
       className={
         compact
-          ? "grid gap-6"
-          : "grid gap-6 lg:grid-cols-[280px_1fr]"
+          ? "grid items-start gap-6 lg:grid-cols-[minmax(0,11rem)_minmax(0,1fr)]"
+          : "grid items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]"
       }
     >
       <LiveSponsorFiltersPanel
@@ -74,17 +78,18 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
         difficulties={difficulties}
         resultsCount={filtered.length}
         resultsLabel="sample sponsors"
-        sticky={!compact}
+        sticky
+        stickyContext="marketing"
       />
 
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-[var(--surface)] px-4 py-3">
-          <div className="text-sm text-zinc-400">
-            Showing <span className="font-semibold text-white">{filtered.length}</span>{" "}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-400">
+          <span>
+            Showing <span className="font-medium text-white">{filtered.length}</span>{" "}
             sample sponsors
-          </div>
+          </span>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-zinc-500">Sort by</span>
+            <span className="text-zinc-500">Sort</span>
             {(
               [
                 ["alpha", "A–Z"],
@@ -97,8 +102,8 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
                 onClick={() => setSort(key)}
                 className={
                   sort === key
-                    ? "rounded-full bg-violet-400/10 px-3 py-1 text-violet-300 ring-1 ring-inset ring-violet-400/40"
-                    : "rounded-full px-3 py-1 text-zinc-400 hover:text-white"
+                    ? "rounded-lg bg-white/[0.06] px-2.5 py-1 text-zinc-200"
+                    : "rounded-lg px-2.5 py-1 text-zinc-500 hover:text-zinc-300"
                 }
               >
                 {label}
@@ -116,18 +121,18 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_LIVE_SPONSOR_FILTERS)}
-              className="mt-4 rounded-full bg-violet-400 px-4 py-1.5 text-xs font-medium text-zinc-950 hover:bg-violet-300"
+              className="mt-4 rounded-lg bg-cyan-400/10 px-4 py-2 text-xs font-medium text-cyan-300 ring-1 ring-inset ring-cyan-400/25"
             >
-              Reset filters
+              Clear filters
             </button>
           </div>
         ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
             {filtered.map((sponsor, i) => {
               const isLastGated =
                 gateLast && filtered.length > 1 && i === filtered.length - 1;
               const card = (
-                <SponsorMinimalCard sponsor={sponsor} tag="Sample" showAi={false} />
+                <SponsorDirectoryCard sponsor={sponsor} tag="Sample" />
               );
 
               return (
@@ -135,7 +140,7 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
                   key={sponsor.id}
                   gated={isLastGated}
                   redirectUrl="/sign-up"
-                  message="Sign in for the live sponsor directory on your dashboard"
+                  message="Sign in for the full curated directory on your dashboard"
                 >
                   {card}
                 </GatedBlurCard>

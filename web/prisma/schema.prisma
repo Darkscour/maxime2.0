@@ -95,8 +95,9 @@ model UserAccount {
   managerOrgEmail    String?
   managerVerificationStatus String? // "verified" | "pending"
 
-  membership    TeamMembership?
-  playerProfile PlayerProfile?
+  membership       TeamMembership?
+  playerProfile    PlayerProfile?
+  profileViewsMade PlayerProfileView[] @relation("ProfileViewer")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -116,8 +117,9 @@ model Team {
   inviteCode         String   @unique @default(cuid())
   onboardingComplete Boolean  @default(false)
 
-  members     TeamMembership[]
-  sponsorLeads SponsorLead[]
+  members            TeamMembership[]
+  sponsorLeads       SponsorLead[]
+  playerProfileViews PlayerProfileView[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -158,13 +160,44 @@ model PlayerProfile {
   tags         String[] @default([])
   bio          String?
 
-  user UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         UserAccount         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileViews PlayerProfileView[]
+  playTimeLogs PlayerPlayTimeLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([game])
   @@index([region])
+}
+
+// When a team manager (or scout) opens a player's profile.
+model PlayerProfileView {
+  id              String   @id @default(cuid())
+  playerProfileId String
+  viewerUserId    String
+  viewerTeamId    String?
+  createdAt       DateTime @default(now())
+
+  playerProfile PlayerProfile @relation(fields: [playerProfileId], references: [id], onDelete: Cascade)
+  viewer        UserAccount   @relation("ProfileViewer", fields: [viewerUserId], references: [id], onDelete: Cascade)
+  viewerTeam    Team?         @relation(fields: [viewerTeamId], references: [id], onDelete: SetNull)
+
+  @@index([playerProfileId, createdAt])
+  @@index([viewerUserId])
+  @@index([viewerTeamId])
+}
+
+// Snapshot each time a player logs or updates play time.
+model PlayerPlayTimeLog {
+  id              String   @id @default(cuid())
+  playerProfileId String
+  hoursPerWeek    Int
+  createdAt       DateTime @default(now())
+
+  playerProfile PlayerProfile @relation(fields: [playerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([playerProfileId, createdAt])
 }
 
 // Team outreach tracking for a sponsor from Supabase (keyed by external sponsor ID).

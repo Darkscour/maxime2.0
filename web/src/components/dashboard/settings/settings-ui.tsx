@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, Building2, Settings, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fieldClassName, selectClassName, selectChevronStyle } from "@/lib/form-styles";
 
-const inputClass =
-  "w-full rounded-xl border border-white/[0.08] bg-[#0a0c10]/80 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 transition-colors focus:border-cyan-400/35 focus:bg-[#0a0c10] focus:outline-none focus:ring-2 focus:ring-cyan-400/15";
+const inputClass = fieldClassName;
 
 export function SettingsInput({
   className,
@@ -29,7 +29,13 @@ export function SettingsTextarea(
 export function SettingsSelect(
   props: React.SelectHTMLAttributes<HTMLSelectElement>,
 ) {
-  return <select className={cn(inputClass, "cursor-pointer")} {...props} />;
+  return (
+    <select
+      className={selectClassName}
+      style={selectChevronStyle}
+      {...props}
+    />
+  );
 }
 
 export function SettingsField({

@@ -1,7 +1,8 @@
 "use client";
 
-import { Search, Sliders } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fieldClassName } from "@/lib/form-styles";
 
 export type LiveSponsorFilters = {
   search: string;
@@ -15,14 +16,22 @@ export const DEFAULT_LIVE_SPONSOR_FILTERS: LiveSponsorFilters = {
   difficulty: "",
 };
 
+const stickyTopClass = {
+  /** Dashboard main pane scrolls below the h-14 header — pin near top of that pane. */
+  dashboard: "lg:sticky lg:top-4 lg:z-10 lg:self-start",
+  /** Marketing pages scroll on the document — clear the sticky site navbar. */
+  marketing: "lg:sticky lg:top-24 lg:z-10 lg:self-start",
+} as const;
+
 export function LiveSponsorFiltersPanel({
   filters,
   setFilters,
   industries,
   difficulties,
   resultsCount,
-  resultsLabel = "sponsors from Supabase",
+  resultsLabel = "sponsors",
   sticky = true,
+  stickyContext = "dashboard",
 }: {
   filters: LiveSponsorFilters;
   setFilters: (f: LiveSponsorFilters) => void;
@@ -30,66 +39,74 @@ export function LiveSponsorFiltersPanel({
   difficulties: string[];
   resultsCount: number;
   resultsLabel?: string;
-  /** Sticky sidebar — off for homepage embeds so filters don't float over other sections. */
+  /** Pin filters while the sponsor grid scrolls. */
   sticky?: boolean;
+  stickyContext?: keyof typeof stickyTopClass;
 }) {
   return (
-    <aside
-      className={cn(sticky && "lg:sticky lg:top-20 lg:self-start")}
-    >
+    <aside className={cn(sticky && stickyTopClass[stickyContext])}>
       <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-medium text-white">
-            <Sliders className="h-4 w-4 text-violet-400" />
-            Filters
-          </div>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium text-zinc-200">Filter sponsors</p>
           <button
             type="button"
             onClick={() => setFilters(DEFAULT_LIVE_SPONSOR_FILTERS)}
-            className="text-xs text-zinc-500 hover:text-white"
+            className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
           >
-            Reset
+            Clear
           </button>
         </div>
 
         <div className="relative mt-4">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             placeholder="Search brand…"
-            className="w-full rounded-lg border border-white/10 bg-[var(--background)] py-2 pl-9 pr-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-violet-400/50 focus:outline-none"
+            className={cn(fieldClassName, "pl-9")}
           />
         </div>
 
         {industries.length > 0 && (
-          <Section title="Industry">
-            <select
-              value={filters.industry}
-              onChange={(e) => setFilters({ ...filters, industry: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2 text-sm text-zinc-100 focus:border-violet-400/50 focus:outline-none"
-            >
-              <option value="">All industries</option>
+          <div className="mt-5">
+            <p className="text-xs font-medium text-zinc-500">Industry</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <FilterChip
+                active={!filters.industry}
+                onClick={() => setFilters({ ...filters, industry: "" })}
+              >
+                All
+              </FilterChip>
               {industries.map((i) => (
-                <option key={i} value={i}>
+                <FilterChip
+                  key={i}
+                  active={filters.industry === i}
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      industry: filters.industry === i ? "" : i,
+                    })
+                  }
+                >
                   {i}
-                </option>
+                </FilterChip>
               ))}
-            </select>
-          </Section>
+            </div>
+          </div>
         )}
 
         {difficulties.length > 0 && (
-          <Section title="Sponsorship difficulty">
-            <div className="flex flex-wrap gap-1.5">
-              <Chip
+          <div className="mt-5">
+            <p className="text-xs font-medium text-zinc-500">Difficulty</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <FilterChip
                 active={!filters.difficulty}
                 onClick={() => setFilters({ ...filters, difficulty: "" })}
               >
                 All
-              </Chip>
+              </FilterChip>
               {difficulties.map((d) => (
-                <Chip
+                <FilterChip
                   key={d}
                   active={filters.difficulty === d}
                   onClick={() =>
@@ -100,33 +117,22 @@ export function LiveSponsorFiltersPanel({
                   }
                 >
                   {d}
-                </Chip>
+                </FilterChip>
               ))}
             </div>
-          </Section>
+          </div>
         )}
 
-        <div className="mt-6 rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs text-zinc-400">
-          <span className="font-semibold text-violet-300">{resultsCount}</span>{" "}
+        <p className="mt-5 text-xs text-zinc-500">
+          <span className="font-medium text-zinc-300">{resultsCount}</span>{" "}
           {resultsLabel}
-        </div>
+        </p>
       </div>
     </aside>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mt-5">
-      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-        {title}
-      </h4>
-      <div className="mt-2">{children}</div>
-    </div>
-  );
-}
-
-function Chip({
+function FilterChip({
   active,
   onClick,
   children,
@@ -140,10 +146,10 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full px-2.5 py-1 text-xs transition-colors",
+        "rounded-lg px-2.5 py-1.5 text-xs transition-colors",
         active
-          ? "bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/40"
-          : "bg-white/[0.03] text-zinc-300 ring-1 ring-inset ring-white/5 hover:bg-white/[0.06]",
+          ? "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400/30"
+          : "bg-white/[0.03] text-zinc-400 ring-1 ring-inset ring-white/5 hover:text-zinc-200",
       )}
     >
       {children}

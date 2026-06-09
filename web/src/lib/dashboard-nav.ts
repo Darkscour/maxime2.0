@@ -1,10 +1,11 @@
 import {
+  Bookmark,
   Building2,
   Handshake,
   LayoutDashboard,
+  Search,
   Settings,
   UserRound,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,6 +44,22 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
           pathname === "/dashboard/sponsorships" ||
           pathname.startsWith("/dashboard/sponsorships/"),
       },
+      {
+        href: "/dashboard/scout",
+        label: "Scout players",
+        icon: Search,
+        isActive: (pathname) =>
+          pathname === "/dashboard/scout" ||
+          pathname.startsWith("/dashboard/scout/"),
+      },
+      {
+        href: "/dashboard/watchlist",
+        label: "Watchlist",
+        icon: Bookmark,
+        isActive: (pathname) =>
+          pathname === "/dashboard/watchlist" ||
+          pathname.startsWith("/dashboard/watchlist/"),
+      },
       account,
       {
         href: "/dashboard/settings/team",
@@ -51,13 +68,6 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
         isActive: (pathname) =>
           pathname === "/dashboard/settings/team" ||
           pathname.startsWith("/dashboard/settings/team/"),
-      },
-      {
-        href: "/recruitment",
-        label: "Recruitment",
-        icon: Users,
-        isActive: (pathname) =>
-          pathname === "/recruitment" || pathname.startsWith("/recruitment/"),
       },
     ];
   }

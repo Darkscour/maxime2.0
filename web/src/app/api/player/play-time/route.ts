@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { logPlayerPlayTime } from "@/lib/player-analytics";
 import {
   permissionErrorResponse,
   requirePlayerProfile,
@@ -30,14 +31,21 @@ export async function PATCH(req: Request) {
       );
     }
 
+    const rounded = Math.round(hours);
     const profile = await db.playerProfile.update({
       where: { userId: account.id },
-      data: { hoursPerWeek: Math.round(hours) },
+      data: { hoursPerWeek: rounded },
       select: {
+        id: true,
         hoursPerWeek: true,
         game: true,
         updatedAt: true,
       },
+    });
+
+    await logPlayerPlayTime({
+      playerProfileId: profile.id,
+      hoursPerWeek: rounded,
     });
 
     return NextResponse.json({

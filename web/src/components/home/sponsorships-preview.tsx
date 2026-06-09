@@ -1,4 +1,4 @@
-import { ArrowRight, Filter, Handshake, ListChecks } from "lucide-react";
+import { ArrowRight, Filter, Handshake, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { DemoSponsorshipDirectory } from "@/components/sponsorships/demo-sponsorship-directory";
@@ -14,13 +14,13 @@ const bullets = [
     icon: Handshake,
     title: "Curated sponsor directory",
     description:
-      "Four sample sponsors in preview — sign in for the live directory on your dashboard.",
+      "Hand-picked brands with real application links — sign in for the full directory.",
   },
   {
-    icon: ListChecks,
-    title: "AI apply advice",
+    icon: Sparkles,
+    title: "Fit-first browsing",
     description:
-      "Ask whether a deal fits your team before you spend hours on an application.",
+      "Filter by industry and difficulty to find sponsors that match your org.",
   },
 ];
 
@@ -40,8 +40,8 @@ export function SponsorshipsPreview() {
               Land sponsors that actually fund collegiate teams
             </h2>
             <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
-              Preview four sample sponsors — the last card is blurred until you
-              sign in for the live directory and pipeline tools on your dashboard.
+              Preview a curated selection of sponsors — sign in for the full
+              directory on your team dashboard.
             </p>
 
             <ul className="mt-8 space-y-5">
