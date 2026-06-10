@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   addToWatchlist,
   fetchTeamWatchlist,
+  isPlayerOnTeam,
   removeFromWatchlist,
 } from "@/lib/player-watchlist-db";
 import {
@@ -34,6 +35,13 @@ export async function POST(req: Request) {
     const body = (await req.json()) as { playerProfileId?: string };
     if (!body.playerProfileId) {
       return NextResponse.json({ error: "Player is required." }, { status: 400 });
+    }
+
+    if (await isPlayerOnTeam(teamId, body.playerProfileId)) {
+      return NextResponse.json(
+        { error: "This player is already on your roster." },
+        { status: 409 },
+      );
     }
 
     await addToWatchlist({

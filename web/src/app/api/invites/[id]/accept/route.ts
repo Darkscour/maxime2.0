@@ -50,7 +50,7 @@ export async function POST(
         type: "recruitment",
         title: "Invite accepted",
         body: `${account.playerProfile.handle} joined ${invite.teamName}.`,
-        href: "/dashboard/watchlist",
+        href: "/dashboard/roster",
       });
     } catch {
       // ignore

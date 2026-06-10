@@ -5,7 +5,9 @@ import {
   LayoutDashboard,
   Search,
   Settings,
+  Sparkles,
   UserRound,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -14,6 +16,15 @@ export type NavItem = {
   label: string;
   icon: LucideIcon;
   isActive?: (pathname: string) => boolean;
+};
+
+/** revise=1 lets completed users re-enter onboarding (layout otherwise redirects to dashboard). */
+const onboarding: NavItem = {
+  href: "/onboarding?revise=1",
+  label: "Onboarding",
+  icon: Sparkles,
+  isActive: (pathname) =>
+    pathname === "/onboarding" || pathname.startsWith("/onboarding/"),
 };
 
 export function getDashboardNavItems(accountType: string | null): NavItem[] {
@@ -53,6 +64,14 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
           pathname.startsWith("/dashboard/scout/"),
       },
       {
+        href: "/dashboard/roster",
+        label: "Roster hub",
+        icon: Users,
+        isActive: (pathname) =>
+          pathname === "/dashboard/roster" ||
+          pathname.startsWith("/dashboard/roster/"),
+      },
+      {
         href: "/dashboard/watchlist",
         label: "Watchlist",
         icon: Bookmark,
@@ -60,6 +79,7 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
           pathname === "/dashboard/watchlist" ||
           pathname.startsWith("/dashboard/watchlist/"),
       },
+      onboarding,
       account,
       {
         href: "/dashboard/settings/team",
@@ -82,6 +102,7 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
         pathname === "/dashboard/teams" ||
         pathname.startsWith("/dashboard/teams/"),
     },
+    onboarding,
     account,
     {
       href: "/dashboard/settings/profile",
@@ -93,3 +114,10 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
     },
   ];
 }
+
+function formatMembershipRole(role: string | null | undefined): string {
+  if (!role) return "Member";
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
+export { formatMembershipRole };

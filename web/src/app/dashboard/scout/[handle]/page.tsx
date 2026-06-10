@@ -6,7 +6,7 @@ import {
   getScoutPlayerProfile,
   recordPlayerProfileView,
 } from "@/lib/player-analytics";
-import { isOnWatchlist } from "@/lib/player-watchlist-db";
+import { isOnWatchlist, isPlayerOnTeam } from "@/lib/player-watchlist-db";
 import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-button";
 import { Badge } from "@/components/ui/badge";
 import { canEditTeam } from "@/lib/permissions";
@@ -36,8 +36,10 @@ export default async function ScoutPlayerProfilePage({
     playerOwnerUserId: profile.userId,
   });
 
+  const onRoster =
+    ctx.team != null ? await isPlayerOnTeam(ctx.team.id, profile.id) : false;
   const onWatchlist =
-    ctx.team != null
+    ctx.team != null && !onRoster
       ? await isOnWatchlist(ctx.team.id, profile.id)
       : false;
   const canManage = !!ctx.team && canEditTeam(ctx.membershipRole);
@@ -93,11 +95,15 @@ export default async function ScoutPlayerProfilePage({
         )}
 
         <div className="mt-8 border-t border-white/5 pt-6">
-          <ScoutWatchlistButton
-            playerProfileId={profile.id}
-            initialOnWatchlist={onWatchlist}
-            canManage={canManage}
-          />
+          {onRoster ? (
+            <p className="text-sm text-emerald-400">Already on your roster</p>
+          ) : (
+            <ScoutWatchlistButton
+              playerProfileId={profile.id}
+              initialOnWatchlist={onWatchlist}
+              canManage={canManage}
+            />
+          )}
         </div>
       </article>
     </div>

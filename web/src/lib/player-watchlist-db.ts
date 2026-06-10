@@ -42,6 +42,8 @@ export type WatchlistRow = {
 };
 
 export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]> {
+  await pruneWatchlistForRosterMembers(teamId);
+
   return db.$queryRaw<WatchlistRow[]>`
     SELECT
       w."id",
@@ -62,6 +64,12 @@ export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]
     LEFT JOIN "PlayerRecruitmentInvite" i
       ON i."teamId" = w."teamId" AND i."playerProfileId" = w."playerProfileId"
     WHERE w."teamId" = ${teamId}
+      AND NOT EXISTS (
+        SELECT 1 FROM "TeamMembership" tm
+        WHERE tm."userId" = p."userId"
+          AND tm."teamId" = w."teamId"
+          AND tm."status" = 'active'
+      )
     ORDER BY w."createdAt" DESC
   `;
 }
@@ -99,6 +107,37 @@ export async function removeFromWatchlist(teamId: string, playerProfileId: strin
     DELETE FROM "PlayerWatchlist"
     WHERE "teamId" = ${teamId} AND "playerProfileId" = ${playerProfileId}
   `;
+}
+
+/** Drop watchlist rows for anyone already on the team roster. */
+export async function pruneWatchlistForRosterMembers(teamId: string) {
+  await db.$executeRaw`
+    DELETE FROM "PlayerWatchlist" w
+    WHERE w."teamId" = ${teamId}
+    AND EXISTS (
+      SELECT 1 FROM "PlayerProfile" p
+      JOIN "TeamMembership" tm ON tm."userId" = p."userId"
+      WHERE p."id" = w."playerProfileId"
+        AND tm."teamId" = w."teamId"
+        AND tm."status" = 'active'
+    )
+  `;
+}
+
+export async function isPlayerOnTeam(
+  teamId: string,
+  playerProfileId: string,
+): Promise<boolean> {
+  const rows = await db.$queryRaw<{ id: string }[]>`
+    SELECT tm."id"
+    FROM "PlayerProfile" p
+    JOIN "TeamMembership" tm ON tm."userId" = p."userId"
+    WHERE p."id" = ${playerProfileId}
+      AND tm."teamId" = ${teamId}
+      AND tm."status" = 'active'
+    LIMIT 1
+  `;
+  return rows.length > 0;
 }
 
 export async function sendRecruitmentInvite(input: {

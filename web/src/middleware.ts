@@ -27,6 +27,7 @@ const isProtectedRoute = createRouteMatcher([
   "/api/notifications(.*)",
   "/api/invites(.*)",
   "/api/player/leave-team",
+  "/api/team/roster/remove",
   "/api/account/profile",
 ]);
 

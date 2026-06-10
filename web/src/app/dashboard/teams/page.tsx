@@ -47,7 +47,11 @@ export default async function DashboardTeamsPage() {
           Found a team you like? Get their code and join your roster.
         </p>
         <div className="mt-5">
-          <DashboardJoinTeamPanel hasTeam={!!ctx.team} />
+          <DashboardJoinTeamPanel
+            hasTeam={!!ctx.team}
+            teamName={ctx.team?.name}
+            membershipRole={ctx.membershipRole}
+          />
         </div>
       </section>
 

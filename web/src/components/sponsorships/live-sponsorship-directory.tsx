@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Handshake, Sparkles } from "lucide-react";
 import type { SponsorListing } from "@/lib/sponsor-listing";
 import type { SponsorFetchResult } from "@/lib/fetch-sponsors";
+import type { SponsorLeadRecord } from "@/lib/sponsor-pipeline";
 import { curatedIndustriesFromData } from "@/lib/sponsor-filters";
 import {
   LiveSponsorFiltersPanel,
@@ -19,11 +20,15 @@ export function LiveSponsorshipDirectory({
   dataSource,
   fetchError,
   embedded = false,
+  leadsBySponsorId,
+  showPipeline = false,
 }: {
   liveSponsors: SponsorListing[];
   dataSource: SponsorFetchResult["source"];
   fetchError?: string;
   embedded?: boolean;
+  leadsBySponsorId?: Record<string, SponsorLeadRecord>;
+  showPipeline?: boolean;
 }) {
   const [liveFilters, setLiveFilters] = useState(DEFAULT_LIVE_SPONSOR_FILTERS);
   const [liveSort, setLiveSort] = useState<LiveSortKey>("alpha");
@@ -71,7 +76,7 @@ export function LiveSponsorshipDirectory({
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
             A curated selection of brands that sponsor collegiate and grassroots
-            esports orgs — filter by fit and jump straight to application pages.
+            esports orgs — save leads to your pipeline and track outreach status.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/10 px-2.5 py-1 text-xs font-medium text-violet-300 ring-1 ring-inset ring-violet-400/20">
@@ -128,7 +133,12 @@ export function LiveSponsorshipDirectory({
           ) : (
             <div className="mt-4 grid gap-6 sm:grid-cols-2">
               {liveFiltered.map((sponsor) => (
-                <SponsorDirectoryCard key={sponsor.id} sponsor={sponsor} />
+                <SponsorDirectoryCard
+                  key={sponsor.id}
+                  sponsor={sponsor}
+                  lead={leadsBySponsorId?.[sponsor.id]}
+                  showPipeline={showPipeline}
+                />
               ))}
             </div>
           )}

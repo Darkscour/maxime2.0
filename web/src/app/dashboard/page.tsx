@@ -9,17 +9,70 @@ import {
   DashboardStatCard,
   FeatureTile,
 } from "@/components/dashboard/dashboard-cards";
-import { PlayTimeReport } from "@/components/dashboard/play-time-report";
-import { TeamOverviewCard } from "@/components/dashboard/team-overview-card";
 import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analytics-card";
 import { getPlayerAnalytics } from "@/lib/player-analytics";
+import { getManagerOrgAnalytics } from "@/lib/manager-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
 import { Bookmark, Building2, Handshake, Search, Settings, UserRound, Users } from "lucide-react";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
-import { PendingInvitesCard } from "@/components/dashboard/pending-invites-card";
 import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
+import { RosterHubPreview } from "@/components/dashboard/roster-hub-preview";
+import { fetchTeamRoster } from "@/lib/team-roster";
+import { canEditTeam } from "@/lib/permissions";
+import { formatMembershipRole } from "@/lib/dashboard-nav";
+import { isVerifiedManager } from "@/lib/manager-verification";
+import { InviteCodeStatCard } from "@/components/dashboard/invite-code-stat-card";
+import { PlayTimeWidget } from "@/components/dashboard/play-time-widget";
+import { TeamInvitesWidget } from "@/components/dashboard/team-invites-widget";
 
 export const dynamic = "force-dynamic";
+
+function formatOnMaximeSince(date: Date) {
+  return date.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+type TeamMeta = NonNullable<Awaited<ReturnType<typeof getDashboardContext>>["team"]>;
+
+function managerTeamStatHint(team: TeamMeta) {
+  const parts = [
+    team.school,
+    team.region,
+    `On Maxime since ${formatOnMaximeSince(team.createdAt)}`,
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function playerTeamStatHint(team: TeamMeta) {
+  const parts = [
+    team.school,
+    `On Maxime since ${formatOnMaximeSince(team.createdAt)}`,
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function managerAccountHint(
+  managerVerificationStatus: string | null | undefined,
+  hasTeam: boolean,
+) {
+  if (!hasTeam) return "Complete team setup";
+  return isVerifiedManager(managerVerificationStatus)
+    ? "Verified manager"
+    : "Verification pending";
+}
+
+function rosterStatValue(team: TeamMeta) {
+  return String(team.memberCount);
+}
+
+function rosterStatHint(pendingInvites: number) {
+  if (pendingInvites === 1) return "1 invite pending";
+  if (pendingInvites > 1) return `${pendingInvites} invites pending`;
+  return "View roster hub";
+}
 
 export default async function DashboardPage() {
   const ctx = await getDashboardContext();
@@ -27,18 +80,35 @@ export default async function DashboardPage() {
   const isManager = ctx.accountType === "team_manager";
   const hasProfile = !!ctx.playerProfile;
   const showDevPreview = isDeveloperEmail(ctx.email);
-  const playerAnalytics =
-    !isManager && ctx.playerProfile
-      ? await getPlayerAnalytics(
-          ctx.playerProfile.id,
-          ctx.playerProfile.hoursPerWeek,
-        )
-      : null;
 
-  const pendingInvites =
-    !isManager && ctx.playerProfile
-      ? await fetchPendingInvitesForPlayer(ctx.playerProfile.id)
-      : [];
+  const [playerAnalytics, managerAnalytics, pendingInvites, rosterMembers] =
+    await Promise.all([
+      !isManager && ctx.playerProfile
+        ? getPlayerAnalytics(
+            ctx.playerProfile.id,
+            ctx.playerProfile.hoursPerWeek,
+          )
+        : Promise.resolve(null),
+      isManager && ctx.team
+        ? getManagerOrgAnalytics(ctx.team.id)
+        : Promise.resolve(null),
+      !isManager && ctx.playerProfile
+        ? fetchPendingInvitesForPlayer(ctx.playerProfile.id)
+        : Promise.resolve([]),
+      isManager && ctx.team
+        ? fetchTeamRoster(ctx.team.id)
+        : Promise.resolve([]),
+    ]);
+
+  const accountValue = isManager
+    ? formatMembershipRole(ctx.membershipRole)
+    : "Player";
+
+  const accountHint = isManager
+    ? managerAccountHint(ctx.managerVerificationStatus, !!ctx.team)
+    : ctx.membershipRole && ctx.team
+      ? `${formatMembershipRole(ctx.membershipRole)} · ${ctx.team.name}`
+      : "Individual account";
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
@@ -70,73 +140,69 @@ export default async function DashboardPage() {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardStatCard
           label="Account"
-          value={isManager ? "Team manager" : "Player"}
-          hint={ctx.membershipRole ? `Role: ${ctx.membershipRole}` : "Individual account"}
+          value={accountValue}
+          hint={accountHint}
           icon={isManager ? Building2 : UserRound}
         />
         <DashboardStatCard
           label="Team"
           value={ctx.team?.name ?? "No team yet"}
-          hint={ctx.team?.school ?? "Join with an invite code anytime"}
+          hint={
+            ctx.team
+              ? isManager
+                ? managerTeamStatHint(ctx.team)
+                : playerTeamStatHint(ctx.team)
+              : "Join with an invite code anytime"
+          }
           icon={Building2}
         />
+        {isManager && ctx.team ? (
+          <InviteCodeStatCard inviteCode={ctx.team.inviteCode} />
+        ) : (
+          <DashboardStatCard
+            label={hasProfile ? "Your game" : "Profile"}
+            value={hasProfile ? ctx.playerProfile!.game : "—"}
+            hint={
+              hasProfile
+                ? `${ctx.playerProfile!.role} · ${ctx.playerProfile!.rank}`
+                : "Set up your player profile"
+            }
+            icon={UserRound}
+          />
+        )}
         <DashboardStatCard
-          label={hasProfile ? "Your game" : "Titles"}
+          label={isManager ? "Roster" : hasProfile ? "Status" : "Region"}
           value={
-            hasProfile
-              ? ctx.playerProfile!.game
-              : ctx.team?.games.length
-                ? String(ctx.team.games.length)
-                : "—"
+            isManager && ctx.team
+              ? rosterStatValue(ctx.team)
+              : isManager
+                ? "0"
+                : ctx.playerProfile?.status ?? ctx.team?.region ?? "Active"
           }
           hint={
-            hasProfile
-              ? `${ctx.playerProfile!.role} · ${ctx.playerProfile!.rank}`
-              : ctx.team?.games.length
-                ? ctx.team.games.length <= 2
-                  ? ctx.team.games.join(", ")
-                  : `${ctx.team.games.length} active titles`
-                : isManager
-                  ? "Add titles in team settings"
-                  : "Browse teams to find a roster"
+            isManager
+              ? rosterStatHint(managerAnalytics?.pendingInvites ?? 0)
+              : ctx.team?.region ?? "Availability"
           }
-          icon={UserRound}
-        />
-        <DashboardStatCard
-          label={hasProfile ? "Play time" : "Status"}
-          value={
-            ctx.playerProfile?.hoursPerWeek != null
-              ? `${ctx.playerProfile.hoursPerWeek} hrs/wk`
-              : ctx.playerProfile?.status ?? "Active"
-          }
-          hint={
-            hasProfile
-              ? ctx.playerProfile!.hoursPerWeek != null
-                ? `Self-reported · ${ctx.playerProfile!.game}`
-                : "Report your hours below"
-              : (ctx.team?.region ?? "Region not set")
-          }
-          icon={hasProfile ? Clock : Users}
+          icon={isManager ? Users : hasProfile ? Clock : Users}
         />
       </section>
 
-      {ctx.playerProfile && (
-        <PlayTimeReport
-          game={ctx.playerProfile.game}
-          hoursPerWeek={ctx.playerProfile.hoursPerWeek}
-          updatedAt={ctx.playerProfile.updatedAt.toISOString()}
-        />
-      )}
-
-      <section className="space-y-6">
-        {pendingInvites.length > 0 && (
-          <PendingInvitesCard
+      {!isManager && ctx.playerProfile && (
+        <section className="grid gap-4 sm:grid-cols-2">
+          <PlayTimeWidget
+            game={ctx.playerProfile.game}
+            hoursPerWeek={ctx.playerProfile.hoursPerWeek}
+          />
+          <TeamInvitesWidget
             invites={pendingInvites}
             onTeam={!!ctx.team}
             currentTeamName={ctx.team?.name}
           />
-        )}
+        </section>
+      )}
 
+      <section className="space-y-6">
         {ctx.team && ctx.membershipRole === "player" && (
           <LeaveTeamCard
             teamName={ctx.team.name}
@@ -147,13 +213,14 @@ export default async function DashboardPage() {
         <DashboardAnalyticsCard
           accountType={ctx.accountType}
           playerAnalytics={playerAnalytics}
+          managerAnalytics={managerAnalytics}
         />
 
-        {ctx.team && (
-          <TeamOverviewCard
-            team={ctx.team}
-            membershipRole={ctx.membershipRole}
-            managerVerificationStatus={ctx.managerVerificationStatus}
+        {isManager && ctx.team && (
+          <RosterHubPreview
+            members={rosterMembers}
+            teamName={ctx.team.name}
+            canManage={canEditTeam(ctx.membershipRole)}
           />
         )}
 
@@ -248,6 +315,13 @@ export default async function DashboardPage() {
                 description="Browse registered players, save candidates to your watchlist, and send invites."
                 icon={Search}
                 tone="violet"
+              />
+              <FeatureTile
+                href="/dashboard/roster"
+                title="Roster hub"
+                description="View and manage everyone on your roster — accepted invites appear automatically."
+                icon={Users}
+                tone="cyan"
               />
               <FeatureTile
                 href="/dashboard/watchlist"

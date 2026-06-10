@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { removeFromWatchlist } from "@/lib/player-watchlist-db";
 
 /** Remove a player from their current team (keeps player profile). */
 export async function leaveCurrentTeam(userId: string) {
@@ -57,6 +58,14 @@ export async function joinTeamAsPlayer(userId: string, teamId: string) {
       data: { accountType: "player", onboardingComplete: true },
     }),
   ]);
+
+  const profile = await db.playerProfile.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+  if (profile) {
+    await removeFromWatchlist(teamId, profile.id);
+  }
 
   return { ok: true as const, alreadyMember: false as const };
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createNotification } from "@/lib/notifications-db";
-import { sendRecruitmentInvite } from "@/lib/player-watchlist-db";
+import { sendRecruitmentInvite, isPlayerOnTeam, removeFromWatchlist } from "@/lib/player-watchlist-db";
 import {
   canEditTeam,
   permissionErrorResponse,
@@ -38,6 +38,14 @@ export async function POST(req: Request) {
 
     if (!profile) {
       return NextResponse.json({ error: "Player not found." }, { status: 404 });
+    }
+
+    if (await isPlayerOnTeam(teamId, body.playerProfileId)) {
+      await removeFromWatchlist(teamId, body.playerProfileId);
+      return NextResponse.json(
+        { error: "This player is already on your roster." },
+        { status: 409 },
+      );
     }
 
     const defaultMessage = team

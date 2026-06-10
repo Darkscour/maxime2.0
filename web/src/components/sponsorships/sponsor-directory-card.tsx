@@ -1,5 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import type { SponsorListing } from "@/lib/sponsor-listing";
+import type { SponsorLeadRecord } from "@/lib/sponsor-pipeline";
+import { SponsorLeadActions } from "@/components/sponsorships/sponsor-lead-actions";
 import { Badge } from "@/components/ui/badge";
 
 function difficultyTone(difficulty: string) {
@@ -13,9 +15,13 @@ function difficultyTone(difficulty: string) {
 export function SponsorDirectoryCard({
   sponsor,
   tag,
+  lead,
+  showPipeline = false,
 }: {
   sponsor: SponsorListing;
   tag?: string;
+  lead?: SponsorLeadRecord | null;
+  showPipeline?: boolean;
 }) {
   return (
     <article className="group flex min-h-[11.5rem] flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-7 transition-colors hover:border-cyan-400/20 sm:min-h-[12.5rem] sm:p-8">
@@ -29,22 +35,27 @@ export function SponsorDirectoryCard({
       </h3>
       <p className="mt-2 text-base leading-relaxed text-zinc-400">{sponsor.industry}</p>
 
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-6">
-        <Badge tone={difficultyTone(sponsor.difficulty)} className="text-xs">
-          {sponsor.difficulty}
-        </Badge>
-        {sponsor.sponsorLink !== "#" ? (
-          <a
-            href={sponsor.sponsorLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-400 transition-colors hover:text-cyan-300"
-          >
-            View application
-            <ExternalLink className="h-4 w-4" />
-          </a>
-        ) : (
-          <span className="text-sm text-zinc-600">No link</span>
+      <div className="mt-auto pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Badge tone={difficultyTone(sponsor.difficulty)} className="text-xs">
+            {sponsor.difficulty}
+          </Badge>
+          {sponsor.sponsorLink !== "#" ? (
+            <a
+              href={sponsor.sponsorLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-400 transition-colors hover:text-cyan-300"
+            >
+              View application
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          ) : (
+            <span className="text-sm text-zinc-600">No link</span>
+          )}
+        </div>
+        {showPipeline && (
+          <SponsorLeadActions sponsor={sponsor} lead={lead} compact />
         )}
       </div>
     </article>

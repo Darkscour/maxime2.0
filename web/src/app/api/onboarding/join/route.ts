@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getOrCreateUserAccount } from "@/lib/auth-user";
+import { removeFromWatchlist } from "@/lib/player-watchlist-db";
 
 export async function POST(req: Request) {
   try {
@@ -58,6 +59,8 @@ export async function POST(req: Request) {
         data: { onboardingComplete: true, accountType: "player" },
       }),
     ]);
+
+    await removeFromWatchlist(team.id, account.playerProfile.id);
 
     return NextResponse.json({
       ok: true,

@@ -32,13 +32,6 @@ function formatPlatformDate(date: Date) {
   });
 }
 
-function rosterDisplay(rosterSize: number | null) {
-  if (rosterSize != null && rosterSize > 0) {
-    return String(rosterSize);
-  }
-  return "Not set";
-}
-
 export function TeamOverviewCard({
   team,
   membershipRole,
@@ -79,8 +72,12 @@ export function TeamOverviewCard({
         />
         <MetricItem
           icon={Users}
-          label="Roster size"
-          value={rosterDisplay(team.rosterSize)}
+          label="Active roster"
+          value={
+            team.rosterSize != null && team.rosterSize > 0
+              ? `${team.memberCount} / ${team.rosterSize}`
+              : String(team.memberCount)
+          }
         />
         {team.region && (
           <MetricItem icon={MapPin} label="Region" value={team.region} />
@@ -133,6 +130,11 @@ export function TeamOverviewCard({
         {canManage && (
           <Button href="/dashboard/settings/team" size="sm" variant="ghost">
             Edit team profile
+          </Button>
+        )}
+        {canManage && (
+          <Button href="/dashboard/roster" size="sm" variant="outline">
+            Roster hub
           </Button>
         )}
         {!canManage && (
