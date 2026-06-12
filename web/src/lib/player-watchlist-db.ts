@@ -240,6 +240,42 @@ export async function updateInviteStatus(inviteId: string, status: string) {
   `;
 }
 
+export type TeamScoutCardContext = {
+  watchlistPlayerIds: string[];
+  pendingInvitePlayerIds: string[];
+  rosterPlayerProfileIds: string[];
+};
+
+/** Batch state for scout grid cards (watchlist, invites, roster). */
+export async function fetchTeamScoutCardContext(
+  teamId: string,
+): Promise<TeamScoutCardContext> {
+  const [watchlistRows, inviteRows, rosterRows] = await Promise.all([
+    db.$queryRaw<{ playerProfileId: string }[]>`
+      SELECT "playerProfileId" FROM "PlayerWatchlist" WHERE "teamId" = ${teamId}
+    `,
+    withInviteMessageSchema(() =>
+      db.$queryRaw<{ playerProfileId: string }[]>`
+        SELECT "playerProfileId"
+        FROM "PlayerRecruitmentInvite"
+        WHERE "teamId" = ${teamId} AND "status" = 'pending'
+      `,
+    ),
+    db.$queryRaw<{ id: string }[]>`
+      SELECT p."id"
+      FROM "PlayerProfile" p
+      JOIN "TeamMembership" tm ON tm."userId" = p."userId"
+      WHERE tm."teamId" = ${teamId} AND tm."status" = 'active'
+    `,
+  ]);
+
+  return {
+    watchlistPlayerIds: watchlistRows.map((row) => row.playerProfileId),
+    pendingInvitePlayerIds: inviteRows.map((row) => row.playerProfileId),
+    rosterPlayerProfileIds: rosterRows.map((row) => row.id),
+  };
+}
+
 export async function watchlistCount(teamId: string): Promise<number> {
   const rows = await db.$queryRaw<{ count: bigint }[]>`
     SELECT COUNT(*)::bigint AS count FROM "PlayerWatchlist" WHERE "teamId" = ${teamId}

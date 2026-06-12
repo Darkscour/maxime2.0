@@ -81,7 +81,7 @@ export const ONBOARDING_REGIONS: Region[] = [
 /** Player onboarding — limited region list for now. */
 export const PLAYER_ONBOARDING_REGIONS: Region[] = ["NA East", "NA West"];
 
-export const PLAYER_BIO_MAX_LENGTH = 100;
+export const PLAYER_BIO_MAX_LENGTH = 150;
 
 export const PLAYER_STATUSES = [
   "Available",

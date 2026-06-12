@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, Search } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { listScoutablePlayers } from "@/lib/player-analytics";
-import { PlayerScoutCardLink } from "@/components/dashboard/player-scout-card";
+import { fetchTeamScoutCardContext } from "@/lib/player-watchlist-db";
+import { ScoutPlayerGridCard } from "@/components/dashboard/scout-player-grid-card";
+import { canEditTeam } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,14 @@ export default async function DashboardScoutPage() {
   }
 
   const players = await listScoutablePlayers();
+  const canManage = !!ctx.team && canEditTeam(ctx.membershipRole);
+  const scoutContext = ctx.team
+    ? await fetchTeamScoutCardContext(ctx.team.id)
+    : null;
+
+  const watchlistIds = new Set(scoutContext?.watchlistPlayerIds ?? []);
+  const pendingInviteIds = new Set(scoutContext?.pendingInvitePlayerIds ?? []);
+  const rosterIds = new Set(scoutContext?.rosterPlayerProfileIds ?? []);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -33,8 +43,8 @@ export default async function DashboardScoutPage() {
           Player profiles
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
-          Browse registered players on Maxime. Opening a profile counts as a view on
-          their analytics dashboard.
+          Browse registered players on Maxime. Save candidates to your watchlist or
+          send an invite directly — opening a profile still counts as a scout view.
         </p>
       </header>
 
@@ -49,15 +59,14 @@ export default async function DashboardScoutPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {players.map((player) => (
-            <PlayerScoutCardLink
+            <ScoutPlayerGridCard
               key={player.id}
-              href={`/dashboard/scout/${player.handle}`}
-              handle={player.handle}
-              game={player.game}
-              role={player.role}
-              rank={player.rank}
-              school={player.school}
-              imageUrl={player.imageUrl}
+              player={player}
+              teamName={ctx.team?.name ?? "your team"}
+              canManage={canManage}
+              onWatchlist={watchlistIds.has(player.id)}
+              invitePending={pendingInviteIds.has(player.id)}
+              onRoster={rosterIds.has(player.id)}
             />
           ))}
         </div>
