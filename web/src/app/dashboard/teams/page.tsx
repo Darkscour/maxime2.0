@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
+import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
+import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
@@ -16,6 +18,12 @@ export default async function DashboardTeamsPage() {
   }
 
   const teams = await listPublicTeams();
+  const pendingRequestTeamIds = ctx.playerProfile
+    ? await fetchPendingJoinRequestTeamIds(ctx.playerProfile.id)
+    : [];
+  const pendingInviteTeamIds = ctx.playerProfile
+    ? (await fetchPendingInvitesForPlayer(ctx.playerProfile.id)).map((invite) => invite.teamId)
+    : [];
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -59,7 +67,12 @@ export default async function DashboardTeamsPage() {
         <h2 className="font-heading mb-4 text-lg font-semibold text-white">
           {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
         </h2>
-        <TeamsDirectory teams={teams} />
+        <TeamsDirectory
+          teams={teams}
+          playerOnTeam={!!ctx.team}
+          pendingRequestTeamIds={pendingRequestTeamIds}
+          pendingInviteTeamIds={pendingInviteTeamIds}
+        />
       </section>
     </div>
   );

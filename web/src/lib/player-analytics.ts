@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import {
   countProfileViews,
@@ -202,7 +203,29 @@ export type ScoutPlayerListing = {
   status: string;
   tags: string[];
   hoursPerWeek: number | null;
+  imageUrl: string | null;
 };
+
+async function clerkImageUrlMap(clerkIds: string[]): Promise<Map<string, string>> {
+  const uniqueIds = [...new Set(clerkIds)];
+  if (uniqueIds.length === 0) return new Map();
+
+  try {
+    const client = await clerkClient();
+    const { data } = await client.users.getUserList({
+      userId: uniqueIds,
+      limit: uniqueIds.length,
+    });
+    return new Map(
+      data
+        .filter((user) => user.imageUrl)
+        .map((user) => [user.id, user.imageUrl as string]),
+    );
+  } catch (e) {
+    console.error("[listScoutablePlayers] clerk avatars", e);
+    return new Map();
+  }
+}
 
 /** Players visible to team managers scouting talent. */
 export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
@@ -219,9 +242,18 @@ export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
       status: true,
       tags: true,
       hoursPerWeek: true,
+      user: { select: { clerkId: true } },
     },
   });
-  return profiles;
+
+  const imageByClerkId = await clerkImageUrlMap(
+    profiles.map((profile) => profile.user.clerkId),
+  );
+
+  return profiles.map(({ user, ...profile }) => ({
+    ...profile,
+    imageUrl: imageByClerkId.get(user.clerkId) ?? null,
+  }));
 }
 
 export async function getScoutPlayerProfile(handle: string) {

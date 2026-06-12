@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { Clock, Gamepad2, Sparkles, UserRound } from "lucide-react";
+import { BioCharacterCount } from "@/components/onboarding/bio-character-count";
+import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import {
   ONBOARDING_GAMES,
   ONBOARDING_REGIONS,
-  ONBOARDING_RANKS,
+  getRanksForGame,
+  PLAYER_BIO_MAX_LENGTH,
   PLAYER_STATUSES,
 } from "@/lib/onboarding-options";
 import {
-  ProfilePreview,
   SettingsAlert,
   SettingsChip,
   SettingsField,
@@ -42,6 +45,7 @@ export function PlayerProfileEditForm({
   initial: PlayerProfileFormData;
 }) {
   const router = useRouter();
+  const { user } = useUser();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [handle, setHandle] = useState(initial.handle);
@@ -110,11 +114,13 @@ export function PlayerProfileEditForm({
         title="Your player card"
         description="Shape how captains and scouts see you — competitive details, availability, and the story behind your playstyle."
         preview={
-          <ProfilePreview
+          <PlayerScoutCard
             handle={handle}
             game={game}
+            role={role}
             rank={rank}
-            region={region}
+            school={school || null}
+            imageUrl={user?.imageUrl}
           />
         }
       />
@@ -169,7 +175,10 @@ export function PlayerProfileEditForm({
                 <SettingsChip
                   key={g}
                   active={game === g}
-                  onClick={() => setGame(g)}
+                  onClick={() => {
+                    if (game !== g) setRank("");
+                    setGame(g);
+                  }}
                 >
                   {g}
                 </SettingsChip>
@@ -191,8 +200,10 @@ export function PlayerProfileEditForm({
                 onChange={(e) => setRank(e.target.value)}
                 required
               >
-                <option value="">Select rank</option>
-                {ONBOARDING_RANKS.map((r) => (
+                <option value="">
+                  {game ? "Select rank" : "Select a game first"}
+                </option>
+                {getRanksForGame(game).map((r) => (
                   <option key={r} value={r}>
                     {r}
                   </option>
@@ -270,13 +281,17 @@ export function PlayerProfileEditForm({
               placeholder="Aggressive entry, IGL backup, Vocal"
             />
           </SettingsField>
-          <SettingsField label="Bio" hint="1–2 sentences · optional">
+          <SettingsField
+            label="Bio"
+            hint={`1–2 sentences · optional · max ${PLAYER_BIO_MAX_LENGTH} characters`}
+          >
             <SettingsTextarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Collegiate VALORANT player looking for a structured practice schedule…"
-              maxLength={400}
+              maxLength={PLAYER_BIO_MAX_LENGTH}
             />
+            <BioCharacterCount length={bio.length} max={PLAYER_BIO_MAX_LENGTH} />
           </SettingsField>
         </SettingsSection>
       </div>

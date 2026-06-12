@@ -76,7 +76,7 @@ export function TeamInvitesWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.04] p-5">
+    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wider text-zinc-500">Team invites</p>
@@ -88,8 +88,8 @@ export function TeamInvitesWidget({
             {invites.length > 0 ? "Accept or decline below" : "No invites right now"}
           </p>
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-inset ring-violet-400/20">
-          <Mail className="h-4 w-4 text-violet-300" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+          <Mail className="h-4 w-4 text-cyan-400" />
         </span>
       </div>
 

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, Search } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { listScoutablePlayers } from "@/lib/player-analytics";
-import { Badge } from "@/components/ui/badge";
+import { PlayerScoutCardLink } from "@/components/dashboard/player-scout-card";
 
 export const dynamic = "force-dynamic";
 
@@ -49,30 +49,16 @@ export default async function DashboardScoutPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {players.map((player) => (
-            <Link
+            <PlayerScoutCardLink
               key={player.id}
               href={`/dashboard/scout/${player.handle}`}
-              className="group rounded-2xl border border-white/5 bg-[var(--surface)] p-5 transition-colors hover:border-violet-400/25"
-            >
-              <h2 className="font-heading text-lg font-semibold text-white group-hover:text-violet-200">
-                {player.handle}
-              </h2>
-              <p className="mt-1 text-sm text-zinc-400">
-                {player.game} · {player.role} · {player.rank}
-              </p>
-              {player.school && (
-                <p className="mt-2 text-xs text-zinc-500">{player.school}</p>
-              )}
-              {player.tags.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {player.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} tone="violet">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </Link>
+              handle={player.handle}
+              game={player.game}
+              role={player.role}
+              rank={player.rank}
+              school={player.school}
+              imageUrl={player.imageUrl}
+            />
           ))}
         </div>
       )}

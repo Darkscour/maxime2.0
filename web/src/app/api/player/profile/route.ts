@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { PLAYER_BIO_MAX_LENGTH } from "@/lib/onboarding-options";
 import {
   permissionErrorResponse,
   requirePlayerProfile,
@@ -53,6 +54,14 @@ export async function PATCH(req: Request) {
       }
     }
 
+    const bio = body.bio?.trim();
+    if (bio && bio.length > PLAYER_BIO_MAX_LENGTH) {
+      return NextResponse.json(
+        { error: `Bio must be ${PLAYER_BIO_MAX_LENGTH} characters or fewer.` },
+        { status: 400 },
+      );
+    }
+
     if (handle !== account.playerProfile.handle) {
       const handleTaken = await db.playerProfile.findUnique({
         where: { handle },
@@ -78,7 +87,7 @@ export async function PATCH(req: Request) {
         hoursPerWeek: body.hoursPerWeek ?? null,
         status: body.status || "Available",
         tags: body.tags ?? [],
-        bio: body.bio?.trim() || null,
+        bio: bio || null,
       },
     });
 

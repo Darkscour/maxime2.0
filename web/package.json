@@ -18,6 +18,7 @@
     "db:manager-columns": "tsx scripts/add-manager-verification-columns.ts",
     "db:player-analytics": "tsx scripts/setup-player-analytics-tables.ts",
     "db:watchlist": "tsx scripts/setup-watchlist-tables.ts",
+    "db:join-requests": "tsx scripts/setup-join-request-tables.ts",
     "db:notifications": "tsx scripts/setup-notifications-tables.ts",
     "db:delete-team": "tsx scripts/delete-team-by-manager-email.ts"
   },

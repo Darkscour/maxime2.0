@@ -1,8 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Users } from "lucide-react";
 import type { PublicTeamListing } from "@/lib/teams-directory";
+import { TeamJoinRequestButton } from "@/components/dashboard/team-join-request-button";
 
-export function TeamsDirectory({ teams }: { teams: PublicTeamListing[] }) {
+export function TeamsDirectory({
+  teams,
+  playerOnTeam,
+  pendingRequestTeamIds = [],
+  pendingInviteTeamIds = [],
+}: {
+  teams: PublicTeamListing[];
+  playerOnTeam: boolean;
+  pendingRequestTeamIds?: string[];
+  pendingInviteTeamIds?: string[];
+}) {
   if (teams.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
@@ -13,23 +24,53 @@ export function TeamsDirectory({ teams }: { teams: PublicTeamListing[] }) {
     );
   }
 
+  const pendingRequests = new Set(pendingRequestTeamIds);
+  const pendingInvites = new Set(pendingInviteTeamIds);
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {teams.map((team) => (
-        <TeamCard key={team.id} team={team} />
+        <TeamCard
+          key={team.id}
+          team={team}
+          playerOnTeam={playerOnTeam}
+          requestPending={pendingRequests.has(team.id)}
+          invitePending={pendingInvites.has(team.id)}
+        />
       ))}
     </div>
   );
 }
 
-function TeamCard({ team }: { team: PublicTeamListing }) {
+function TeamCard({
+  team,
+  playerOnTeam,
+  requestPending,
+  invitePending,
+}: {
+  team: PublicTeamListing;
+  playerOnTeam: boolean;
+  requestPending: boolean;
+  invitePending: boolean;
+}) {
   const rosterHint =
     team.rosterSize != null && team.rosterSize > 0
       ? `${team.memberCount} / ${team.rosterSize} roster`
       : `${team.memberCount} member${team.memberCount === 1 ? "" : "s"}`;
 
+  let joinDisabled = false;
+  let joinDisabledReason: string | undefined;
+
+  if (playerOnTeam) {
+    joinDisabled = true;
+    joinDisabledReason = "Leave your current team before requesting to join another.";
+  } else if (invitePending) {
+    joinDisabled = true;
+    joinDisabledReason = "This team already invited you — check Team invites on your dashboard.";
+  }
+
   return (
-    <article className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5 transition-colors hover:border-cyan-400/20">
+    <article className="flex h-full flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5 transition-colors hover:border-cyan-400/20">
       <h2 className="font-heading text-lg font-semibold text-white">{team.name}</h2>
       {team.school && (
         <p className="mt-1 text-sm text-zinc-400">{team.school}</p>
@@ -58,9 +99,15 @@ function TeamCard({ team }: { team: PublicTeamListing }) {
         </div>
       )}
 
-      <p className="mt-4 text-xs leading-5 text-zinc-500">
-        Request to join by asking the org for their invite code, then paste it above.
-      </p>
+      <div className="mt-auto pt-4">
+        <TeamJoinRequestButton
+          teamId={team.id}
+          teamName={team.name}
+          disabled={joinDisabled}
+          disabledReason={joinDisabledReason}
+          initialPending={requestPending}
+        />
+      </div>
     </article>
   );
 }

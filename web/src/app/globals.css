@@ -55,6 +55,16 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Native select menus — keep dropdown list on the dark theme */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: var(--surface);
+  color: var(--foreground);
+}
+
 ::selection {
   background: var(--accent-glow);
   color: #fff;

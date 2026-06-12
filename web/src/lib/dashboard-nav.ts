@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Search,
   Settings,
-  Sparkles,
   UserRound,
   Users,
   type LucideIcon,
@@ -16,15 +15,6 @@ export type NavItem = {
   label: string;
   icon: LucideIcon;
   isActive?: (pathname: string) => boolean;
-};
-
-/** revise=1 lets completed users re-enter onboarding (layout otherwise redirects to dashboard). */
-const onboarding: NavItem = {
-  href: "/onboarding?revise=1",
-  label: "Onboarding",
-  icon: Sparkles,
-  isActive: (pathname) =>
-    pathname === "/onboarding" || pathname.startsWith("/onboarding/"),
 };
 
 export function getDashboardNavItems(accountType: string | null): NavItem[] {
@@ -79,7 +69,6 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
           pathname === "/dashboard/watchlist" ||
           pathname.startsWith("/dashboard/watchlist/"),
       },
-      onboarding,
       account,
       {
         href: "/dashboard/settings/team",
@@ -102,7 +91,6 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
         pathname === "/dashboard/teams" ||
         pathname.startsWith("/dashboard/teams/"),
     },
-    onboarding,
     account,
     {
       href: "/dashboard/settings/profile",

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { fieldClassName, selectClassName, selectChevronStyle } from "@/lib/form-styles";
+import { fieldClassName } from "@/lib/form-styles";
 
 export function FormField({
   label,
@@ -35,9 +35,7 @@ export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
 }
 
 export function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select className={selectClassName} style={selectChevronStyle} {...props} />
-  );
+  return <select className={fieldClassName} {...props} />;
 }
 
 export function FormError({ message }: { message?: string }) {

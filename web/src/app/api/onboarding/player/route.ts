@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getOrCreateUserAccount } from "@/lib/auth-user";
+import {
+  getRanksForGame,
+  isPrimaryGame,
+  PLAYER_BIO_MAX_LENGTH,
+  PLAYER_ONBOARDING_REGIONS,
+} from "@/lib/onboarding-options";
 
 type PlayerBody = {
   handle: string;
@@ -9,10 +15,8 @@ type PlayerBody = {
   rank: string;
   region: string;
   school?: string;
-  age?: number;
+  age: number;
   hoursPerWeek?: number;
-  status?: string;
-  tags?: string[];
   bio?: string;
   inviteCode?: string;
 };
@@ -51,12 +55,53 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!isPrimaryGame(body.game)) {
+      return NextResponse.json(
+        { error: "Select a supported primary game." },
+        { status: 400 },
+      );
+    }
+
+    if (!getRanksForGame(body.game).includes(body.rank)) {
+      return NextResponse.json(
+        { error: "Select a rank that matches your primary game." },
+        { status: 400 },
+      );
+    }
+
+    if (
+      !PLAYER_ONBOARDING_REGIONS.includes(
+        body.region as (typeof PLAYER_ONBOARDING_REGIONS)[number],
+      )
+    ) {
+      return NextResponse.json(
+        { error: "Select NA East or NA West as your region." },
+        { status: 400 },
+      );
+    }
+
+    const age = body.age;
+    if (age == null || Number.isNaN(age) || age < 13 || age > 99) {
+      return NextResponse.json(
+        { error: "Age is required (13–99)." },
+        { status: 400 },
+      );
+    }
+
     const handleTaken = await db.playerProfile.findUnique({
       where: { handle },
     });
     if (handleTaken) {
       return NextResponse.json(
         { error: "That handle is already taken." },
+        { status: 400 },
+      );
+    }
+
+    const bio = body.bio?.trim();
+    if (bio && bio.length > PLAYER_BIO_MAX_LENGTH) {
+      return NextResponse.json(
+        { error: `Bio must be ${PLAYER_BIO_MAX_LENGTH} characters or fewer.` },
         { status: 400 },
       );
     }
@@ -74,11 +119,11 @@ export async function POST(req: Request) {
           rank: body.rank,
           region: body.region,
           school: body.school?.trim() || null,
-          age: body.age ?? null,
+          age,
           hoursPerWeek: body.hoursPerWeek ?? null,
-          status: body.status || "Available",
-          tags: body.tags ?? [],
-          bio: body.bio?.trim() || null,
+          status: "Available",
+          tags: [],
+          bio: bio || null,
         },
       });
 

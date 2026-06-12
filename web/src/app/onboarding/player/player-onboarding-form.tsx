@@ -14,11 +14,12 @@ import {
 } from "@/components/onboarding/form-fields";
 import { OnboardingBackNav } from "@/components/onboarding/onboarding-back-nav";
 import { OnboardingHomeLink } from "@/components/onboarding/onboarding-home-link";
+import { BioCharacterCount } from "@/components/onboarding/bio-character-count";
 import {
   ONBOARDING_GAMES,
-  ONBOARDING_REGIONS,
-  ONBOARDING_RANKS,
-  PLAYER_STATUSES,
+  PLAYER_BIO_MAX_LENGTH,
+  PLAYER_ONBOARDING_REGIONS,
+  getRanksForGame,
 } from "@/lib/onboarding-options";
 import {
   buildOnboardingHref,
@@ -39,8 +40,6 @@ type PlayerDraft = {
   school: string;
   age: string;
   hoursPerWeek: string;
-  status: string;
-  tags: string;
   bio: string;
   inviteCode: string;
 };
@@ -54,8 +53,6 @@ const INITIAL_PLAYER_DRAFT: PlayerDraft = {
   school: "",
   age: "",
   hoursPerWeek: "",
-  status: "Available",
-  tags: "",
   bio: "",
   inviteCode: "",
 };
@@ -72,6 +69,8 @@ export function PlayerOnboardingForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const ranksForGame = getRanksForGame(draft.game);
+
   function patchDraft<K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
@@ -80,11 +79,18 @@ export function PlayerOnboardingForm() {
     setError("");
     setLoading(true);
 
-    const tagList = draft.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .slice(0, 6);
+    const age = Number(draft.age);
+    if (!draft.age || Number.isNaN(age) || age < 13 || age > 99) {
+      setError("Enter a valid age between 13 and 99.");
+      setLoading(false);
+      return;
+    }
+
+    if (draft.rank && !ranksForGame.includes(draft.rank)) {
+      setError("Select a rank that matches your primary game.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/onboarding/player", {
@@ -97,10 +103,8 @@ export function PlayerOnboardingForm() {
           rank: draft.rank,
           region: draft.region,
           school: draft.school || undefined,
-          age: draft.age ? Number(draft.age) : undefined,
+          age,
           hoursPerWeek: draft.hoursPerWeek ? Number(draft.hoursPerWeek) : undefined,
-          status: draft.status,
-          tags: tagList,
           bio: draft.bio || undefined,
           inviteCode:
             includeInvite && draft.inviteCode.trim()
@@ -135,7 +139,10 @@ export function PlayerOnboardingForm() {
     draft.game &&
     draft.role &&
     draft.rank &&
-    draft.region;
+    draft.region &&
+    draft.age &&
+    Number(draft.age) >= 13 &&
+    Number(draft.age) <= 99;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -162,7 +169,10 @@ export function PlayerOnboardingForm() {
         <FormField label="Primary game">
           <SelectInput
             value={draft.game}
-            onChange={(e) => patchDraft("game", e.target.value)}
+            onChange={(e) => {
+              patchDraft("game", e.target.value);
+              patchDraft("rank", "");
+            }}
             required
           >
             <option value="">Select game</option>
@@ -185,14 +195,17 @@ export function PlayerOnboardingForm() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <FormField label="Rank">
+        <FormField label="Rank" hint={draft.game ? `Tiers for ${draft.game}` : undefined}>
           <SelectInput
             value={draft.rank}
             onChange={(e) => patchDraft("rank", e.target.value)}
             required
+            disabled={!draft.game}
           >
-            <option value="">Select rank</option>
-            {ONBOARDING_RANKS.map((r) => (
+            <option value="">
+              {draft.game ? "Select rank" : "Select a game first"}
+            </option>
+            {ranksForGame.map((r) => (
               <option key={r} value={r}>
                 {r}
               </option>
@@ -207,7 +220,7 @@ export function PlayerOnboardingForm() {
             required
           >
             <option value="">Select region</option>
-            {ONBOARDING_REGIONS.map((r) => (
+            {PLAYER_ONBOARDING_REGIONS.map((r) => (
               <option key={r} value={r}>
                 {r}
               </option>
@@ -225,7 +238,7 @@ export function PlayerOnboardingForm() {
           />
         </FormField>
 
-        <FormField label="Age" hint="Optional">
+        <FormField label="Age">
           <TextInput
             type="number"
             min={13}
@@ -233,58 +246,39 @@ export function PlayerOnboardingForm() {
             value={draft.age}
             onChange={(e) => patchDraft("age", e.target.value)}
             placeholder="20"
+            required
           />
-        </FormField>
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        <FormField
-          label="Hours played per week"
-          hint="Self-reported estimate for your primary game"
-        >
-          <TextInput
-            type="number"
-            min={0}
-            max={168}
-            value={draft.hoursPerWeek}
-            onChange={(e) => patchDraft("hoursPerWeek", e.target.value)}
-            placeholder="20"
-          />
-        </FormField>
-
-        <FormField label="Availability">
-          <SelectInput
-            value={draft.status}
-            onChange={(e) => patchDraft("status", e.target.value)}
-          >
-            {PLAYER_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </SelectInput>
         </FormField>
       </div>
 
       <FormField
-        label="Playstyle tags"
-        hint="Comma-separated — e.g. Jett main, Shotcaller, Vocal"
+        label="Hours played per week"
+        hint="Self-reported estimate for your primary game"
       >
         <TextInput
-          value={draft.tags}
-          onChange={(e) => patchDraft("tags", e.target.value)}
-          placeholder="Aggressive entry, IGL backup"
+          type="number"
+          min={0}
+          max={168}
+          value={draft.hoursPerWeek}
+          onChange={(e) => patchDraft("hoursPerWeek", e.target.value)}
+          placeholder="20"
         />
       </FormField>
 
-      <FormField label="Short bio" hint="Optional — 1–2 sentences">
+      <FormField
+        label="Short bio"
+        hint={`Optional — 1–2 sentences · max ${PLAYER_BIO_MAX_LENGTH} characters`}
+      >
         <TextArea
           value={draft.bio}
           onChange={(e) => patchDraft("bio", e.target.value)}
           placeholder="Collegiate VALORANT player looking for a structured practice schedule…"
-          maxLength={400}
+          maxLength={PLAYER_BIO_MAX_LENGTH}
         />
       </FormField>
+      <div className="-mt-6">
+        <BioCharacterCount length={draft.bio.length} max={PLAYER_BIO_MAX_LENGTH} />
+      </div>
 
       <div className="rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5 space-y-4">
         <div>

@@ -46,7 +46,7 @@ export default async function OnboardingDonePage({
         <CheckCircle2 className="h-7 w-7 text-emerald-400" />
       </div>
       <h1 className="font-heading mt-5 text-3xl font-semibold text-white sm:text-4xl">
-        You&apos;re set up on Maxime
+        You&apos;re set up on Maxime!
       </h1>
       <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-400">
         {status.accountType === "team_manager"
