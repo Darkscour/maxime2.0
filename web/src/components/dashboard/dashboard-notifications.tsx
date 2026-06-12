@@ -33,7 +33,14 @@ function typeTone(type: string) {
   return "text-zinc-300";
 }
 
-export function DashboardNotifications() {
+type DashboardNotificationsProps = {
+  /** Sidebar footer: open upward; header: open downward. */
+  placement?: "header" | "sidebar";
+};
+
+export function DashboardNotifications({
+  placement = "header",
+}: DashboardNotificationsProps) {
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -129,8 +136,15 @@ export function DashboardNotifications() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f14] shadow-2xl shadow-black/50">
-          <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+        <div
+          className={cn(
+            "absolute right-0 z-[200] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-2xl border border-white/15 bg-[var(--surface-2)] shadow-[0_20px_50px_rgba(0,0,0,0.65)] ring-1 ring-black/40",
+            placement === "sidebar"
+              ? "bottom-full mb-2"
+              : "top-full mt-2",
+          )}
+        >
+          <div className="flex items-center justify-between border-b border-white/10 bg-[var(--surface)] px-4 py-3">
             <p className="text-sm font-medium text-white">Notifications</p>
             {unread > 0 && (
               <button
@@ -144,7 +158,7 @@ export function DashboardNotifications() {
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto bg-[var(--surface-2)]">
             {loading ? (
               <div className="flex items-center justify-center py-10 text-zinc-500">
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -163,7 +177,7 @@ export function DashboardNotifications() {
                       onClick={() => openItem(item)}
                       className={cn(
                         "w-full px-4 py-3 text-left transition-colors hover:bg-white/[0.03]",
-                        !item.read && "bg-cyan-400/[0.04]",
+                        !item.read && "bg-cyan-400/10",
                       )}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -192,7 +206,7 @@ export function DashboardNotifications() {
             )}
           </div>
 
-          <div className="border-t border-white/5 px-4 py-2">
+          <div className="border-t border-white/10 bg-[var(--surface)] px-4 py-2">
             <Link
               href="/dashboard"
               onClick={() => setOpen(false)}
