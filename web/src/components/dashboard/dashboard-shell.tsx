@@ -23,7 +23,7 @@ export function DashboardShell({
 
   return (
     <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
-      <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10] lg:flex lg:flex-col">
+      <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
         <SidebarHeader accountType={accountType} />
         <nav className="space-y-1 px-3 py-4">
           {navItems.map((item) => (
@@ -78,7 +78,7 @@ export function DashboardShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="relative z-30 flex h-14 items-center gap-3 border-b border-white/5 bg-[var(--background)] px-4 lg:px-8">
+        <header className="flex h-14 items-center gap-3 border-b border-white/5 bg-[var(--background)]/80 px-4 backdrop-blur-xl lg:px-8">
           <button
             type="button"
             aria-label="Open menu"
@@ -129,7 +129,7 @@ function SidebarHeader({
 
 function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
   return (
-      <div className="mt-auto space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
+      <div className="mt-2 space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
       <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-3 py-2.5 ring-1 ring-inset ring-white/5">
         <ClerkUserButton avatarClassName="h-9 w-9 shrink-0 ring-1 ring-cyan-400/30" />
         <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
