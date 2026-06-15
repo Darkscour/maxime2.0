@@ -2,25 +2,24 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
-import { fetchTeamRosterWithAvatars } from "@/lib/team-roster";
-import { RosterHubPanel } from "@/components/dashboard/roster-hub-panel";
+import { fetchPendingJoinRequestsWithAvatars } from "@/lib/team-join-request-db";
+import { JoinRequestsPanel } from "@/components/dashboard/join-requests-panel";
 import { canEditTeam } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
-export default async function RosterHubPage() {
+export default async function JoinRequestsPage() {
   const ctx = await getDashboardContext();
 
   if (ctx.accountType !== "team_manager") {
     redirect("/dashboard");
   }
 
-  if (!ctx.team) {
+  if (!ctx.team || !canEditTeam(ctx.membershipRole)) {
     redirect("/dashboard/settings/team");
   }
 
-  const members = await fetchTeamRosterWithAvatars(ctx.team.id);
-  const canManage = canEditTeam(ctx.membershipRole);
+  const items = await fetchPendingJoinRequestsWithAvatars(ctx.team.id);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -33,23 +32,18 @@ export default async function RosterHubPage() {
           Dashboard
         </Link>
         <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-          Roster hub
+          Recruitment
         </p>
-        <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <h1 className="font-heading text-3xl font-semibold text-white">
-            {ctx.team.name}
-          </h1>
-          <span className="text-sm text-zinc-500">
-            {members.length} on team
-          </span>
-        </div>
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+          Join requests
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+          Players who requested to join {ctx.team.name}. Review their profiles and
+          send a recruitment invite when you want them on the roster.
+        </p>
       </header>
 
-      <RosterHubPanel
-        members={members}
-        teamName={ctx.team.name}
-        canManage={canManage}
-      />
+      <JoinRequestsPanel items={items} teamName={ctx.team.name} />
     </div>
   );
 }

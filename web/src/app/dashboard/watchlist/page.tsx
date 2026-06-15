@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
-import { fetchTeamWatchlist } from "@/lib/player-watchlist-db";
+import { fetchTeamWatchlistWithAvatars } from "@/lib/player-watchlist-db";
 import { WatchlistPanel } from "@/components/dashboard/watchlist-panel";
 import { canEditTeam } from "@/lib/permissions";
 
@@ -19,7 +19,7 @@ export default async function WatchlistPage() {
     redirect("/dashboard/settings/team");
   }
 
-  const items = await fetchTeamWatchlist(ctx.team.id);
+  const items = await fetchTeamWatchlistWithAvatars(ctx.team.id);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">

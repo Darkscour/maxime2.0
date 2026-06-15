@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
+import { clerkImageUrlMap } from "@/lib/clerk-avatars";
 
 function isMissingInviteMessageColumn(e: unknown): boolean {
   const msg =
@@ -39,7 +40,10 @@ export type WatchlistRow = {
   hoursPerWeek: number | null;
   addedAt: Date;
   inviteStatus: string | null;
+  clerkId: string;
 };
+
+export type WatchlistListing = WatchlistRow & { imageUrl: string | null };
 
 export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]> {
   await pruneWatchlistForRosterMembers(teamId);
@@ -58,11 +62,14 @@ export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]
       p."tags",
       p."hoursPerWeek",
       w."createdAt" AS "addedAt",
-      i."status" AS "inviteStatus"
+      i."status" AS "inviteStatus",
+      u."clerkId"
     FROM "PlayerWatchlist" w
     JOIN "PlayerProfile" p ON p."id" = w."playerProfileId"
+    JOIN "UserAccount" u ON u."id" = p."userId"
     LEFT JOIN "PlayerRecruitmentInvite" i
       ON i."teamId" = w."teamId" AND i."playerProfileId" = w."playerProfileId"
+      AND i."status" = 'pending'
     WHERE w."teamId" = ${teamId}
       AND NOT EXISTS (
         SELECT 1 FROM "TeamMembership" tm
@@ -72,6 +79,17 @@ export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]
       )
     ORDER BY w."createdAt" DESC
   `;
+}
+
+export async function fetchTeamWatchlistWithAvatars(
+  teamId: string,
+): Promise<WatchlistListing[]> {
+  const items = await fetchTeamWatchlist(teamId);
+  const imageByClerkId = await clerkImageUrlMap(items.map((item) => item.clerkId));
+  return items.map((item) => ({
+    ...item,
+    imageUrl: imageByClerkId.get(item.clerkId) ?? null,
+  }));
 }
 
 export async function isOnWatchlist(
@@ -138,6 +156,23 @@ export async function isPlayerOnTeam(
     LIMIT 1
   `;
   return rows.length > 0;
+}
+
+export async function hasPendingRecruitmentInvite(
+  teamId: string,
+  playerProfileId: string,
+): Promise<boolean> {
+  return withInviteMessageSchema(async () => {
+    const rows = await db.$queryRaw<{ id: string }[]>`
+      SELECT "id"
+      FROM "PlayerRecruitmentInvite"
+      WHERE "teamId" = ${teamId}
+        AND "playerProfileId" = ${playerProfileId}
+        AND "status" = 'pending'
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  });
 }
 
 export async function sendRecruitmentInvite(input: {

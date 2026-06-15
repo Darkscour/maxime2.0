@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Search,
   Settings,
+  UserPlus,
   UserRound,
   Users,
   type LucideIcon,
@@ -52,6 +53,14 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
         isActive: (pathname) =>
           pathname === "/dashboard/scout" ||
           pathname.startsWith("/dashboard/scout/"),
+      },
+      {
+        href: "/dashboard/join-requests",
+        label: "Join requests",
+        icon: UserPlus,
+        isActive: (pathname) =>
+          pathname === "/dashboard/join-requests" ||
+          pathname.startsWith("/dashboard/join-requests/"),
       },
       {
         href: "/dashboard/roster",

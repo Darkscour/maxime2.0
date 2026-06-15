@@ -1,20 +1,50 @@
 import { db } from "@/lib/db";
-import { findLeadsByTeamId } from "@/lib/sponsor-lead-store";
 import { watchlistCount } from "@/lib/player-watchlist-db";
-import { ANALYTICS_WEEK_COUNT } from "@/lib/player-analytics";
+import { countPendingJoinRequestsForTeam } from "@/lib/team-join-request-db";
+
+export const MANAGER_ANALYTICS_RECENT_WEEKS = 8;
+
+export type ManagerAnalyticsPoint = {
+  /** Week starting (ISO date) */
+  date: string;
+  /** Short axis label */
+  label: string;
+  value: number;
+};
+
+export type ManagerAnalyticsSeries = {
+  weekly: ManagerAnalyticsPoint[];
+  allTime: ManagerAnalyticsPoint[];
+};
+
+export type ManagerAnalyticsSummary = {
+  newJoins: number;
+};
+
+export type ManagerScoutSummary = {
+  profileViews: number;
+  joinRequests: number;
+  invitesSent: number;
+  invitesAccepted: number;
+};
 
 export type ManagerOrgAnalytics = {
+  teamJoinedAt: string;
   rosterCount: number;
   playerCount: number;
+  pendingJoinRequests: number;
   pendingInvites: number;
   watchlistCount: number;
-  sponsorLeads: number;
-  invitesAccepted: number;
-  scoutProfileViews: number;
-  recentJoins: number;
-  weeklyRosterJoins: number[];
-  weekLabels: string[];
-  rosterTrend: number | null;
+  rosterSize: ManagerAnalyticsSeries;
+  scoutViews: ManagerAnalyticsSeries;
+  rosterSummary: {
+    weekly: ManagerAnalyticsSummary;
+    allTime: ManagerAnalyticsSummary;
+  };
+  scoutSummary: {
+    weekly: ManagerScoutSummary;
+    allTime: ManagerScoutSummary;
+  };
 };
 
 function startOfWeek(date: Date): Date {
@@ -27,97 +57,294 @@ function startOfWeek(date: Date): Date {
 }
 
 function weekKey(date: Date): string {
-  return startOfWeek(date).toISOString().slice(0, 10);
+  const d = startOfWeek(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
-function buildWeekBuckets(count: number) {
-  const now = new Date();
-  const current = startOfWeek(now);
-  const buckets: { key: string; label: string; start: Date }[] = [];
+function formatAxisLabel(
+  weekStart: Date,
+  options: {
+    isCurrentWeek: boolean;
+    isOriginWeek: boolean;
+    originDate?: Date;
+  },
+): string {
+  if (options.isCurrentWeek) return "Now";
+  if (options.isOriginWeek && options.originDate) {
+    return options.originDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  }
+  return weekStart.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
-  for (let i = count - 1; i >= 0; i--) {
-    const start = new Date(current);
-    start.setDate(start.getDate() - i * 7);
-    const label =
-      i === 0
-        ? "Now"
-        : start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    buckets.push({ key: weekKey(start), label, start });
+function formatTooltipDateFrom(origin: Date, weekEnd: Date): string {
+  const startStr = origin.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const endStr = weekEnd.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return `${startStr} – ${endStr}`;
+}
+
+function endOfWeek(weekStart: Date): Date {
+  const end = new Date(weekStart);
+  end.setDate(end.getDate() + 7);
+  end.setMilliseconds(-1);
+  return end;
+}
+
+
+function formatTooltipDate(weekStart: Date): string {
+  const end = endOfWeek(weekStart);
+  const startStr = weekStart.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const endStr = end.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return `${startStr} – ${endStr}`;
+}
+
+type WeekBucket = {
+  key: string;
+  label: string;
+  start: Date;
+  end: Date;
+  tooltipDate: string;
+};
+
+function buildWeekBucketsFrom(teamJoinedAt: Date, through: Date): WeekBucket[] {
+  const originWeekStart = startOfWeek(teamJoinedAt);
+  const last = startOfWeek(through);
+  const buckets: WeekBucket[] = [];
+  const cursor = new Date(originWeekStart);
+  const currentWeekKey = weekKey(through);
+
+  while (cursor <= last) {
+    const key = weekKey(cursor);
+    const isOriginWeek = cursor.getTime() === originWeekStart.getTime();
+    const weekEnd = endOfWeek(cursor);
+    buckets.push({
+      key,
+      label: formatAxisLabel(cursor, {
+        isCurrentWeek: key === currentWeekKey,
+        isOriginWeek,
+        originDate: teamJoinedAt,
+      }),
+      start: new Date(cursor),
+      end: weekEnd,
+      tooltipDate: isOriginWeek
+        ? formatTooltipDateFrom(teamJoinedAt, weekEnd)
+        : formatTooltipDate(cursor),
+    });
+    cursor.setDate(cursor.getDate() + 7);
   }
 
   return buckets;
 }
 
-function trendPercent(current: number, previous: number): number | null {
-  if (previous === 0) return current > 0 ? 100 : null;
-  return Math.round(((current - previous) / previous) * 100);
+/** Recent window anchored to team creation — never shows weeks before the team existed. */
+function buildRecentWeekBuckets(
+  teamJoinedAt: Date,
+  through: Date,
+  maxWeeks: number,
+): WeekBucket[] {
+  const all = buildWeekBucketsFrom(teamJoinedAt, through);
+  if (all.length <= maxWeeks) return all;
+  return all.slice(-maxWeeks);
+}
+
+function rosterSizeAt(
+  members: { createdAt: Date }[],
+  asOf: Date,
+  teamJoinedAt: Date,
+): number {
+  if (asOf < teamJoinedAt) return 0;
+  return members.filter((m) => m.createdAt <= asOf).length;
+}
+
+function countInWeek(
+  dates: Date[],
+  bucket: WeekBucket,
+  notBefore?: Date,
+): number {
+  const start =
+    notBefore && bucket.start < notBefore ? notBefore : bucket.start;
+  return dates.filter((d) => d >= start && d <= bucket.end).length;
+}
+
+function countSince(dates: Date[], since: Date): number {
+  return dates.filter((d) => d >= since).length;
+}
+
+function sumSeries(points: ManagerAnalyticsPoint[]): number {
+  return points.reduce((total, point) => total + point.value, 0);
+}
+
+function toSeries(
+  buckets: WeekBucket[],
+  values: number[],
+): ManagerAnalyticsPoint[] {
+  return buckets.map((bucket, i) => ({
+    date: bucket.tooltipDate,
+    label: bucket.label,
+    value: values[i] ?? 0,
+  }));
+}
+
+function scoutSummaryForRange(
+  viewDates: Date[],
+  joinRequestDates: Date[],
+  inviteDates: Date[],
+  invitesAccepted: number,
+  since: Date,
+  profileViewPoints: ManagerAnalyticsPoint[],
+): ManagerScoutSummary {
+  return {
+    profileViews: sumSeries(profileViewPoints),
+    joinRequests: countSince(joinRequestDates, since),
+    invitesSent: countSince(inviteDates, since),
+    invitesAccepted,
+  };
 }
 
 export async function getManagerOrgAnalytics(
   teamId: string,
 ): Promise<ManagerOrgAnalytics> {
-  const buckets = buildWeekBuckets(ANALYTICS_WEEK_COUNT);
-  const rangeStart = buckets[0]?.start ?? new Date();
+  const now = new Date();
 
-  const [
-    members,
-    pendingInvites,
-    acceptedInvites,
-    watchlistTotal,
-    sponsorLeads,
-    scoutViews,
-  ] = await Promise.all([
-    db.teamMembership.findMany({
-      where: { teamId, status: "active" },
-      select: { role: true, createdAt: true },
-    }),
-    db.$queryRaw<{ count: bigint }[]>`
-      SELECT COUNT(*)::bigint AS count
-      FROM "PlayerRecruitmentInvite"
-      WHERE "teamId" = ${teamId} AND "status" = 'pending'
-    `.catch(() => [{ count: BigInt(0) }]),
-    db.$queryRaw<{ count: bigint }[]>`
-      SELECT COUNT(*)::bigint AS count
-      FROM "PlayerRecruitmentInvite"
-      WHERE "teamId" = ${teamId} AND "status" = 'accepted'
-    `.catch(() => [{ count: BigInt(0) }]),
-    watchlistCount(teamId),
-    findLeadsByTeamId(teamId),
-    db.$queryRaw<{ count: bigint }[]>`
-      SELECT COUNT(*)::bigint AS count
-      FROM "PlayerProfileView"
-      WHERE "viewerTeamId" = ${teamId} AND "createdAt" >= ${rangeStart}
-    `.catch(() => [{ count: BigInt(0) }]),
-  ]);
+  const [team, members, pendingInvites, acceptedInvites, pendingJoinRequests, watchlistTotal, scoutViewDates, inviteDates, joinRequestDates] =
+    await Promise.all([
+      db.team.findUnique({
+        where: { id: teamId },
+        select: { createdAt: true },
+      }),
+      db.teamMembership.findMany({
+        where: { teamId, status: "active" },
+        select: { role: true, createdAt: true },
+      }),
+      db.$queryRaw<{ count: bigint }[]>`
+        SELECT COUNT(*)::bigint AS count
+        FROM "PlayerRecruitmentInvite"
+        WHERE "teamId" = ${teamId} AND "status" = 'pending'
+      `.catch(() => [{ count: BigInt(0) }]),
+      db.$queryRaw<{ count: bigint }[]>`
+        SELECT COUNT(*)::bigint AS count
+        FROM "PlayerRecruitmentInvite"
+        WHERE "teamId" = ${teamId} AND "status" = 'accepted'
+      `.catch(() => [{ count: BigInt(0) }]),
+      countPendingJoinRequestsForTeam(teamId).catch(() => 0),
+      watchlistCount(teamId).catch(() => 0),
+      db.$queryRaw<{ createdAt: Date }[]>`
+        SELECT "createdAt"
+        FROM "PlayerProfileView"
+        WHERE "viewerTeamId" = ${teamId}
+      `.catch(() => []),
+      db.$queryRaw<{ createdAt: Date }[]>`
+        SELECT "createdAt"
+        FROM "PlayerRecruitmentInvite"
+        WHERE "teamId" = ${teamId}
+      `.catch(() => []),
+      db.$queryRaw<{ createdAt: Date }[]>`
+        SELECT "createdAt"
+        FROM "TeamJoinRequest"
+        WHERE "teamId" = ${teamId}
+      `.catch(() => []),
+    ]);
 
-  const joinsByWeek = new Map(buckets.map((b) => [b.key, 0]));
-  for (const member of members) {
-    const key = weekKey(member.createdAt);
-    if (joinsByWeek.has(key)) {
-      joinsByWeek.set(key, (joinsByWeek.get(key) ?? 0) + 1);
-    }
-  }
-
-  const weeklyRosterJoins = buckets.map((b) => joinsByWeek.get(b.key) ?? 0);
-  const recentJoins = members.filter((m) => m.createdAt >= rangeStart).length;
-  const playerCount = members.filter((m) => m.role === "player").length;
-
-  const rosterTrend = trendPercent(
-    weeklyRosterJoins[weeklyRosterJoins.length - 1] ?? 0,
-    weeklyRosterJoins[weeklyRosterJoins.length - 2] ?? 0,
+  const teamJoinedAt = team?.createdAt ?? now;
+  const allBuckets = buildWeekBucketsFrom(teamJoinedAt, now);
+  const recentBuckets = buildRecentWeekBuckets(
+    teamJoinedAt,
+    now,
+    MANAGER_ANALYTICS_RECENT_WEEKS,
   );
 
+  const viewDates = scoutViewDates.map((r) => r.createdAt);
+  const invites = inviteDates.map((r) => r.createdAt);
+  const joinRequests = joinRequestDates.map((r) => r.createdAt);
+  const memberJoinDates = members.map((m) => m.createdAt);
+  const invitesAccepted = Number(acceptedInvites[0]?.count ?? 0);
+
+  const rosterAllTime = allBuckets.map((b) =>
+    rosterSizeAt(members, b.end, teamJoinedAt),
+  );
+  const rosterWeekly = recentBuckets.map((b) =>
+    rosterSizeAt(members, b.end, teamJoinedAt),
+  );
+  const scoutAllTime = allBuckets.map((b) =>
+    countInWeek(viewDates, b, teamJoinedAt),
+  );
+  const scoutWeekly = recentBuckets.map((b) =>
+    countInWeek(viewDates, b, teamJoinedAt),
+  );
+
+  const rosterSizeWeekly = toSeries(recentBuckets, rosterWeekly);
+  const rosterSizeAllTime = toSeries(allBuckets, rosterAllTime);
+  const scoutViewsWeekly = toSeries(recentBuckets, scoutWeekly);
+  const scoutViewsAllTime = toSeries(allBuckets, scoutAllTime);
+
+  const weeklySince =
+    recentBuckets.length === allBuckets.length
+      ? teamJoinedAt
+      : (recentBuckets[0]?.start ?? teamJoinedAt);
+  const allTimeSince = teamJoinedAt;
+
+  const playerCount = members.filter((m) => m.role === "player").length;
+
   return {
+    teamJoinedAt: teamJoinedAt.toISOString(),
     rosterCount: members.length,
     playerCount,
+    pendingJoinRequests,
     pendingInvites: Number(pendingInvites[0]?.count ?? 0),
     watchlistCount: watchlistTotal,
-    sponsorLeads: sponsorLeads.length,
-    invitesAccepted: Number(acceptedInvites[0]?.count ?? 0),
-    scoutProfileViews: Number(scoutViews[0]?.count ?? 0),
-    recentJoins,
-    weeklyRosterJoins,
-    weekLabels: buckets.map((b) => b.label),
-    rosterTrend,
+    rosterSize: {
+      weekly: rosterSizeWeekly,
+      allTime: rosterSizeAllTime,
+    },
+    scoutViews: {
+      weekly: scoutViewsWeekly,
+      allTime: scoutViewsAllTime,
+    },
+    rosterSummary: {
+      weekly: { newJoins: countSince(memberJoinDates, weeklySince) },
+      allTime: { newJoins: countSince(memberJoinDates, allTimeSince) },
+    },
+    scoutSummary: {
+      weekly: scoutSummaryForRange(
+        viewDates,
+        joinRequests,
+        invites,
+        invitesAccepted,
+        weeklySince,
+        scoutViewsWeekly,
+      ),
+      allTime: scoutSummaryForRange(
+        viewDates,
+        joinRequests,
+        invites,
+        invitesAccepted,
+        allTimeSince,
+        scoutViewsAllTime,
+      ),
+    },
   };
 }

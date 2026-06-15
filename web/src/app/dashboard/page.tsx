@@ -13,11 +13,11 @@ import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analyti
 import { getPlayerAnalytics } from "@/lib/player-analytics";
 import { getManagerOrgAnalytics } from "@/lib/manager-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
-import { Bookmark, Building2, Handshake, Search, Settings, UserRound, Users } from "lucide-react";
+import { Bookmark, Building2, Handshake, Search, Settings, UserPlus, UserRound, Users } from "lucide-react";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
 import { RosterHubPreview } from "@/components/dashboard/roster-hub-preview";
-import { fetchTeamRoster } from "@/lib/team-roster";
+import { fetchTeamRosterWithAvatars } from "@/lib/team-roster";
 import { canEditTeam } from "@/lib/permissions";
 import { formatMembershipRole } from "@/lib/dashboard-nav";
 import { isVerifiedManager } from "@/lib/manager-verification";
@@ -76,8 +76,10 @@ function rosterStatHint(pendingInvites: number) {
 
 export default async function DashboardPage() {
   const ctx = await getDashboardContext();
-  const firstName = ctx.displayName?.split(" ")[0] ?? "there";
   const isManager = ctx.accountType === "team_manager";
+  const welcomeName = isManager
+    ? (ctx.displayName?.split(" ")[0] ?? "there")
+    : (ctx.playerProfile?.handle ?? "there");
   const hasProfile = !!ctx.playerProfile;
   const showDevPreview = isDeveloperEmail(ctx.email);
 
@@ -96,7 +98,7 @@ export default async function DashboardPage() {
         ? fetchPendingInvitesForPlayer(ctx.playerProfile.id)
         : Promise.resolve([]),
       isManager && ctx.team
-        ? fetchTeamRoster(ctx.team.id)
+        ? fetchTeamRosterWithAvatars(ctx.team.id)
         : Promise.resolve([]),
     ]);
 
@@ -123,7 +125,7 @@ export default async function DashboardPage() {
             Your workspace
           </p>
           <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Welcome back, {firstName}
+            Welcome back, {welcomeName}
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
             {isManager
@@ -321,6 +323,13 @@ export default async function DashboardPage() {
                 title="Roster hub"
                 description="View and manage everyone on your roster — accepted invites appear automatically."
                 icon={Users}
+                tone="cyan"
+              />
+              <FeatureTile
+                href="/dashboard/join-requests"
+                title="Join requests"
+                description="See players who requested to join your org and send them a recruitment invite."
+                icon={UserPlus}
                 tone="cyan"
               />
               <FeatureTile

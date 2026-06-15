@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Clock, MapPin } from "lucide-react";
-import { getDashboardContext, getOrCreateUserAccount } from "@/lib/auth-user";
+import { getDashboardContext } from "@/lib/auth-user";
 import {
   getScoutPlayerProfile,
   recordPlayerProfileView,
 } from "@/lib/player-analytics";
-import { isOnWatchlist, isPlayerOnTeam } from "@/lib/player-watchlist-db";
+import { hasPendingRecruitmentInvite, isOnWatchlist, isPlayerOnTeam } from "@/lib/player-watchlist-db";
+import { hasPendingJoinRequest } from "@/lib/team-join-request-db";
 import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-button";
+import { ScoutJoinRequestActions } from "@/components/dashboard/scout-join-request-actions";
 import { Badge } from "@/components/ui/badge";
 import { canEditTeam } from "@/lib/permissions";
 
@@ -19,30 +21,36 @@ export default async function ScoutPlayerProfilePage({
   params: Promise<{ handle: string }>;
 }) {
   const { handle } = await params;
-  const ctx = await getDashboardContext();
+  const [ctx, profile] = await Promise.all([
+    getDashboardContext(),
+    getScoutPlayerProfile(handle),
+  ]);
 
   if (ctx.accountType !== "team_manager") {
     redirect("/dashboard");
   }
 
-  const profile = await getScoutPlayerProfile(handle);
   if (!profile) notFound();
 
-  const account = await getOrCreateUserAccount();
+  const teamId = ctx.team?.id;
+  const [onRoster, onWatchlist, joinRequestPending, invitePending] = teamId
+    ? await Promise.all([
+        isPlayerOnTeam(teamId, profile.id),
+        isOnWatchlist(teamId, profile.id),
+        hasPendingJoinRequest(teamId, profile.id),
+        hasPendingRecruitmentInvite(teamId, profile.id),
+      ])
+    : [false, false, false, false];
+
   await recordPlayerProfileView({
     playerProfileId: profile.id,
-    viewerUserId: account.id,
-    viewerTeamId: ctx.team?.id ?? null,
+    viewerUserId: ctx.userId,
+    viewerTeamId: teamId ?? null,
     playerOwnerUserId: profile.userId,
   });
 
-  const onRoster =
-    ctx.team != null ? await isPlayerOnTeam(ctx.team.id, profile.id) : false;
-  const onWatchlist =
-    ctx.team != null && !onRoster
-      ? await isOnWatchlist(ctx.team.id, profile.id)
-      : false;
   const canManage = !!ctx.team && canEditTeam(ctx.membershipRole);
+  const showWatchlist = !onRoster && onWatchlist;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -97,10 +105,18 @@ export default async function ScoutPlayerProfilePage({
         <div className="mt-8 border-t border-white/5 pt-6">
           {onRoster ? (
             <p className="text-sm text-emerald-400">Already on your roster</p>
+          ) : canManage && (joinRequestPending || invitePending) ? (
+            <ScoutJoinRequestActions
+              playerProfileId={profile.id}
+              playerHandle={profile.handle}
+              teamName={ctx.team!.name}
+              joinRequestPending={joinRequestPending}
+              invitePending={invitePending}
+            />
           ) : (
             <ScoutWatchlistButton
               playerProfileId={profile.id}
-              initialOnWatchlist={onWatchlist}
+              initialOnWatchlist={showWatchlist}
               canManage={canManage}
             />
           )}

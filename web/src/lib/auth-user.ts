@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { deriveOnboardingComplete } from "@/lib/onboarding-complete";
@@ -40,10 +41,12 @@ export async function getExistingUserAccount() {
   });
 }
 
-/** Get or create the Maxime UserAccount row for the signed-in Clerk user. */
-export async function getOrCreateUserAccount() {
+/**
+ * Get or create the Maxime UserAccount row for the signed-in Clerk user.
+ * Deduplicated per request via React cache(). Existing users skip the Clerk API.
+ */
+export const getOrCreateUserAccount = cache(async function getOrCreateUserAccount() {
   const clerkId = await requireClerkId();
-  const { email, displayName } = await clerkIdentity();
 
   const existing = await db.userAccount.findUnique({
     where: { clerkId },
@@ -51,15 +54,10 @@ export async function getOrCreateUserAccount() {
   });
 
   if (existing) {
-    if (existing.email !== email || existing.displayName !== displayName) {
-      return db.userAccount.update({
-        where: { id: existing.id },
-        data: { email: email ?? null, displayName: displayName ?? null },
-        include: accountInclude,
-      });
-    }
     return existing;
   }
+
+  const { email, displayName } = await clerkIdentity();
 
   return db.userAccount.create({
     data: {
@@ -69,7 +67,7 @@ export async function getOrCreateUserAccount() {
     },
     include: accountInclude,
   });
-}
+});
 
 /** Used after Clerk auth to detect first-time platform users vs returning ones. */
 export async function resolveUserAccountOnAuth() {
@@ -162,8 +160,8 @@ export async function getAccountSettings() {
   };
 }
 
-/** Full account context for the signed-in app dashboard. */
-export async function getDashboardContext() {
+/** Full account context for the signed-in app dashboard (deduplicated per request). */
+export const getDashboardContext = cache(async function getDashboardContext() {
   const account = await syncOnboardingCompleteFlag(await getOrCreateUserAccount());
   const team = account.membership?.team ?? null;
 
@@ -187,6 +185,7 @@ export async function getDashboardContext() {
   }
 
   return {
+    userId: account.id,
     displayName: account.displayName,
     email: account.email,
     accountType: account.accountType,
@@ -198,4 +197,4 @@ export async function getDashboardContext() {
     membershipRole: account.membership?.role ?? null,
     playerProfile: account.playerProfile,
   };
-}
+});

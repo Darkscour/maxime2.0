@@ -3,41 +3,49 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bookmark, Mail, Trash2 } from "lucide-react";
-import type { WatchlistListing } from "@/lib/player-watchlist-db";
+import { Mail, UserPlus, X } from "lucide-react";
+import type { TeamJoinRequestListing } from "@/lib/team-join-request-db";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
-import { Button } from "@/components/ui/button";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-export function WatchlistPanel({
+function formatRequestedAt(date: Date | string) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+export function JoinRequestsPanel({
   items,
   teamName,
 }: {
-  items: WatchlistListing[];
+  items: TeamJoinRequestListing[];
   teamName: string;
 }) {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [inviteTarget, setInviteTarget] = useState<WatchlistListing | null>(null);
+  const [inviteTarget, setInviteTarget] = useState<TeamJoinRequestListing | null>(
+    null,
+  );
 
   const defaultInviteMessage = useMemo(() => {
     if (!inviteTarget) return "";
-    return `Hi ${inviteTarget.handle}, ${teamName} would like to invite you to join our roster. Accept the invite from your dashboard when you're ready.`;
+    return `Hi ${inviteTarget.handle}, thanks for requesting to join ${teamName}! We'd like to invite you to our roster — accept the invite from your dashboard when you're ready.`;
   }, [inviteTarget, teamName]);
 
-  async function remove(playerProfileId: string) {
+  async function dismiss(playerProfileId: string) {
     setError("");
     setLoadingId(playerProfileId);
     try {
-      const res = await fetch("/api/watchlist", {
+      const res = await fetch("/api/teams/join-requests", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId }),
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Could not remove player.");
+        setError(data.error || "Could not dismiss request.");
         return;
       }
       router.refresh();
@@ -74,13 +82,11 @@ export function WatchlistPanel({
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
-        <Bookmark className="mx-auto h-8 w-8 text-zinc-600" />
+        <UserPlus className="mx-auto h-8 w-8 text-zinc-600" />
         <p className="mt-4 text-sm text-zinc-400">
-          Your watchlist is empty. Browse{" "}
-          <Link href="/dashboard/scout" className="text-cyan-400 hover:text-cyan-300">
-            scout players
-          </Link>{" "}
-          and save candidates to compare before recruiting.
+          No pending join requests. When players tap{" "}
+          <strong className="font-medium text-zinc-300">Request to join</strong> on
+          your team from Browse teams, they&apos;ll show up here.
         </p>
       </div>
     );
@@ -93,15 +99,23 @@ export function WatchlistPanel({
           {error}
         </p>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      <div className="grid gap-4 sm:grid-cols-2">
         {items.map((player) => (
-          <div
+          <article
             key={player.id}
-            className="flex h-full flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors hover:border-violet-400/20"
+            className="flex flex-col rounded-2xl border border-cyan-400/20 bg-[var(--surface)] p-5"
           >
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Badge tone="cyan">Requested to join</Badge>
+              <span className="text-xs text-zinc-500">
+                {formatRequestedAt(player.requestedAt)}
+              </span>
+            </div>
+
             <Link
               href={`/dashboard/scout/${player.handle}`}
-              className="block p-5 transition-colors hover:bg-[var(--surface-2)]"
+              className="block transition-opacity hover:opacity-90"
             >
               <PlayerScoutCard
                 handle={player.handle}
@@ -110,49 +124,37 @@ export function WatchlistPanel({
                 rank={player.rank}
                 school={player.school}
                 imageUrl={player.imageUrl}
-                badge={
-                  player.inviteStatus === "pending" ? "Invite sent" : undefined
-                }
                 className="border-0 bg-transparent p-0"
               />
             </Link>
 
-            <div className="mt-auto border-t border-white/5 px-5 py-4">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="primary"
-                  disabled={
-                    loadingId === player.playerProfileId ||
-                    player.inviteStatus === "pending"
-                  }
-                  onClick={() => setInviteTarget(player)}
-                  className="gap-1.5"
-                >
-                  <Mail className="h-3.5 w-3.5" />
-                  {player.inviteStatus === "pending" ? "Invited" : "Send invite"}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  disabled={loadingId === player.playerProfileId}
-                  onClick={() => remove(player.playerProfileId)}
-                  className="gap-1.5 text-zinc-400"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Remove
-                </Button>
-              </div>
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/5 pt-4">
+              <Button
+                type="button"
+                size="sm"
+                variant="primary"
+                disabled={loadingId === player.playerProfileId}
+                onClick={() => setInviteTarget(player)}
+                className="gap-1.5"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                Send invite
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={loadingId === player.playerProfileId}
+                onClick={() => dismiss(player.playerProfileId)}
+                className="gap-1.5"
+              >
+                <X className="h-3.5 w-3.5" />
+                Dismiss
+              </Button>
             </div>
-          </div>
+          </article>
         ))}
       </div>
-      <p className="text-xs text-zinc-600">
-        Players receive your custom message on their dashboard and can accept or decline
-        directly — no invite code required.
-      </p>
 
       <InviteMessageModal
         open={!!inviteTarget}

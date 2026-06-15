@@ -7,6 +7,7 @@ import { Bookmark, BookmarkCheck, Mail } from "lucide-react";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type ScoutGridPlayer = {
   id: string;
@@ -24,6 +25,7 @@ export function ScoutPlayerGridCard({
   canManage,
   onWatchlist,
   invitePending,
+  joinRequestPending,
   onRoster,
 }: {
   player: ScoutGridPlayer;
@@ -31,6 +33,7 @@ export function ScoutPlayerGridCard({
   canManage: boolean;
   onWatchlist: boolean;
   invitePending: boolean;
+  joinRequestPending: boolean;
   onRoster: boolean;
 }) {
   const router = useRouter();
@@ -96,7 +99,14 @@ export function ScoutPlayerGridCard({
   }
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors hover:border-violet-400/20">
+    <div
+      className={cn(
+        "flex h-full flex-col rounded-2xl border bg-[var(--surface)] transition-colors",
+        joinRequestPending
+          ? "border-cyan-400/25 hover:border-cyan-400/35"
+          : "border-white/5 hover:border-violet-400/20",
+      )}
+    >
       <Link
         href={`/dashboard/scout/${player.handle}`}
         className="block p-5 transition-colors hover:bg-[var(--surface-2)]"
@@ -108,6 +118,7 @@ export function ScoutPlayerGridCard({
           rank={player.rank}
           school={player.school}
           imageUrl={player.imageUrl}
+          badge={joinRequestPending ? "Requested to join" : undefined}
           className="border-0 bg-transparent p-0"
         />
       </Link>
@@ -147,7 +158,11 @@ export function ScoutPlayerGridCard({
                 className="gap-1.5"
               >
                 <Mail className="h-3.5 w-3.5" />
-                {invited ? "Invited" : "Invite"}
+                {invited
+                  ? "Invited"
+                  : joinRequestPending
+                    ? "Send invite"
+                    : "Invite"}
               </Button>
             </div>
           )}

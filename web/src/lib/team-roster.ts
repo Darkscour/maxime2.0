@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { clerkImageUrlMap } from "@/lib/clerk-avatars";
 
 export type RosterMember = {
   membershipId: string;
@@ -11,8 +12,11 @@ export type RosterMember = {
   game: string | null;
   roleInGame: string | null;
   rank: string | null;
+  school: string | null;
   hoursPerWeek: number | null;
   playerProfileId: string | null;
+  clerkId: string;
+  imageUrl?: string | null;
 };
 
 export async function fetchTeamRoster(teamId: string): Promise<RosterMember[]> {
@@ -23,6 +27,7 @@ export async function fetchTeamRoster(teamId: string): Promise<RosterMember[]> {
         select: {
           email: true,
           displayName: true,
+          clerkId: true,
           playerProfile: {
             select: {
               id: true,
@@ -30,6 +35,7 @@ export async function fetchTeamRoster(teamId: string): Promise<RosterMember[]> {
               game: true,
               role: true,
               rank: true,
+              school: true,
               hoursPerWeek: true,
             },
           },
@@ -46,12 +52,25 @@ export async function fetchTeamRoster(teamId: string): Promise<RosterMember[]> {
     joinedAt: row.createdAt,
     email: row.user.email,
     displayName: row.user.displayName,
+    clerkId: row.user.clerkId,
     handle: row.user.playerProfile?.handle ?? null,
     game: row.user.playerProfile?.game ?? null,
     roleInGame: row.user.playerProfile?.role ?? null,
     rank: row.user.playerProfile?.rank ?? null,
+    school: row.user.playerProfile?.school ?? null,
     hoursPerWeek: row.user.playerProfile?.hoursPerWeek ?? null,
     playerProfileId: row.user.playerProfile?.id ?? null,
+  }));
+}
+
+export async function fetchTeamRosterWithAvatars(
+  teamId: string,
+): Promise<RosterMember[]> {
+  const members = await fetchTeamRoster(teamId);
+  const imageByClerkId = await clerkImageUrlMap(members.map((m) => m.clerkId));
+  return members.map((member) => ({
+    ...member,
+    imageUrl: imageByClerkId.get(member.clerkId) ?? null,
   }));
 }
 

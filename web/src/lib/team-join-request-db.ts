@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
+import { clerkImageUrlMap } from "@/lib/clerk-avatars";
 
 const CREATE_TABLE_SQL = `CREATE TABLE IF NOT EXISTS "TeamJoinRequest" (
   "id" TEXT NOT NULL,
@@ -49,6 +50,131 @@ export async function fetchPendingJoinRequestTeamIds(
         AND "status" = 'pending'
     `;
     return rows.map((row) => row.teamId);
+  });
+}
+
+export async function fetchPendingJoinRequestPlayerIdsForTeam(
+  teamId: string,
+): Promise<string[]> {
+  return withJoinRequestSchema(async () => {
+    const rows = await db.$queryRaw<{ playerProfileId: string }[]>`
+      SELECT "playerProfileId"
+      FROM "TeamJoinRequest"
+      WHERE "teamId" = ${teamId}
+        AND "status" = 'pending'
+    `;
+    return rows.map((row) => row.playerProfileId);
+  });
+}
+
+export type TeamJoinRequestRow = {
+  id: string;
+  playerProfileId: string;
+  handle: string;
+  game: string;
+  role: string;
+  rank: string;
+  region: string;
+  school: string | null;
+  status: string;
+  tags: string[];
+  requestedAt: Date;
+  clerkId: string;
+};
+
+export type TeamJoinRequestListing = TeamJoinRequestRow & {
+  imageUrl: string | null;
+};
+
+export async function fetchPendingJoinRequestsForTeam(
+  teamId: string,
+): Promise<TeamJoinRequestRow[]> {
+  return withJoinRequestSchema(() =>
+    db.$queryRaw<TeamJoinRequestRow[]>`
+      SELECT
+        j."id",
+        j."playerProfileId",
+        p."handle",
+        p."game",
+        p."role",
+        p."rank",
+        p."region",
+        p."school",
+        p."status",
+        p."tags",
+        j."createdAt" AS "requestedAt",
+        u."clerkId"
+      FROM "TeamJoinRequest" j
+      JOIN "PlayerProfile" p ON p."id" = j."playerProfileId"
+      JOIN "UserAccount" u ON u."id" = p."userId"
+      WHERE j."teamId" = ${teamId}
+        AND j."status" = 'pending'
+      ORDER BY j."createdAt" DESC
+    `,
+  );
+}
+
+export async function fetchPendingJoinRequestsWithAvatars(
+  teamId: string,
+): Promise<TeamJoinRequestListing[]> {
+  const requests = await fetchPendingJoinRequestsForTeam(teamId);
+  const imageByClerkId = await clerkImageUrlMap(requests.map((r) => r.clerkId));
+  return requests.map((request) => ({
+    ...request,
+    imageUrl: imageByClerkId.get(request.clerkId) ?? null,
+  }));
+}
+
+export async function countPendingJoinRequestsForTeam(teamId: string): Promise<number> {
+  return withJoinRequestSchema(async () => {
+    const rows = await db.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*)::bigint AS count
+      FROM "TeamJoinRequest"
+      WHERE "teamId" = ${teamId} AND "status" = 'pending'
+    `;
+    return Number(rows[0]?.count ?? 0);
+  });
+}
+
+export async function dismissJoinRequest(teamId: string, playerProfileId: string) {
+  return withJoinRequestSchema(async () => {
+    await db.$executeRaw`
+      UPDATE "TeamJoinRequest"
+      SET "status" = 'dismissed', "updatedAt" = NOW()
+      WHERE "teamId" = ${teamId}
+        AND "playerProfileId" = ${playerProfileId}
+        AND "status" = 'pending'
+    `;
+  });
+}
+
+/** Clear pending request after manager sends a recruitment invite. */
+export async function fulfillJoinRequest(teamId: string, playerProfileId: string) {
+  return withJoinRequestSchema(async () => {
+    await db.$executeRaw`
+      UPDATE "TeamJoinRequest"
+      SET "status" = 'fulfilled', "updatedAt" = NOW()
+      WHERE "teamId" = ${teamId}
+        AND "playerProfileId" = ${playerProfileId}
+        AND "status" = 'pending'
+    `;
+  });
+}
+
+export async function hasPendingJoinRequest(
+  teamId: string,
+  playerProfileId: string,
+): Promise<boolean> {
+  return withJoinRequestSchema(async () => {
+    const rows = await db.$queryRaw<{ id: string }[]>`
+      SELECT "id"
+      FROM "TeamJoinRequest"
+      WHERE "teamId" = ${teamId}
+        AND "playerProfileId" = ${playerProfileId}
+        AND "status" = 'pending'
+      LIMIT 1
+    `;
+    return rows.length > 0;
   });
 }
 

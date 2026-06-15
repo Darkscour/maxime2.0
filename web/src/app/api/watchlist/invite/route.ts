@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createNotification } from "@/lib/notifications-db";
 import { sendRecruitmentInvite, isPlayerOnTeam, removeFromWatchlist } from "@/lib/player-watchlist-db";
+import { fulfillJoinRequest } from "@/lib/team-join-request-db";
 import {
   canEditTeam,
   permissionErrorResponse,
@@ -59,16 +60,18 @@ export async function POST(req: Request) {
       message: body.message?.trim() || defaultMessage,
     });
 
+    await fulfillJoinRequest(teamId, body.playerProfileId).catch(() => undefined);
+
     try {
       await createNotification({
         userId: profile.userId,
         type: "recruitment",
-        title: `Invite from ${team?.name ?? "a team"}`,
+        title: `Team invite from ${team?.name ?? "a team"}`,
         body: body.message?.trim() || defaultMessage,
         href: "/dashboard",
       });
-    } catch {
-      // ignore
+    } catch (e) {
+      console.error("[watchlist/invite] notification", e);
     }
 
     return NextResponse.json({ ok: true });

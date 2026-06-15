@@ -1,5 +1,5 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { clerkImageUrlMap } from "@/lib/clerk-avatars";
 import {
   countProfileViews,
   fetchDistinctViewerTeams,
@@ -206,26 +206,6 @@ export type ScoutPlayerListing = {
   imageUrl: string | null;
 };
 
-async function clerkImageUrlMap(clerkIds: string[]): Promise<Map<string, string>> {
-  const uniqueIds = [...new Set(clerkIds)];
-  if (uniqueIds.length === 0) return new Map();
-
-  try {
-    const client = await clerkClient();
-    const { data } = await client.users.getUserList({
-      userId: uniqueIds,
-      limit: uniqueIds.length,
-    });
-    return new Map(
-      data
-        .filter((user) => user.imageUrl)
-        .map((user) => [user.id, user.imageUrl as string]),
-    );
-  } catch (e) {
-    console.error("[listScoutablePlayers] clerk avatars", e);
-    return new Map();
-  }
-}
 
 /** Players visible to team managers scouting talent. */
 export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
