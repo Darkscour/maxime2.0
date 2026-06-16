@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getOrCreateUserAccount } from "@/lib/auth-user";
 import { removeFromWatchlist } from "@/lib/player-watchlist-db";
+import { canPlayerJoinTeam } from "@/lib/audience-guards";
 
 export async function POST(req: Request) {
   try {
@@ -42,6 +43,12 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Invalid invite code." },
         { status: 404 },
+      );
+    }
+    if (!canPlayerJoinTeam(account.playerProfile, team)) {
+      return NextResponse.json(
+        { error: "You can only join teams in your account tier." },
+        { status: 403 },
       );
     }
 

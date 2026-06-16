@@ -8,23 +8,25 @@ import { SignOutButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
-import { getDashboardNavItems } from "@/lib/dashboard-nav";
+import { getDashboardNavItems, onboardingPreviewNavItem } from "@/lib/dashboard-nav";
 
 export function DashboardShell({
   children,
   accountType,
+  accountTier,
 }: {
   children: React.ReactNode;
   accountType: string | null;
+  accountTier: string | null;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navItems = getDashboardNavItems(accountType);
+  const navItems = getDashboardNavItems(accountType, accountTier);
 
   return (
     <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
       <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
-        <SidebarHeader accountType={accountType} />
+        <SidebarHeader accountType={accountType} accountTier={accountTier} />
         <nav className="space-y-1 px-3 py-4">
           {navItems.map((item) => (
             <SidebarLink
@@ -35,6 +37,21 @@ export function DashboardShell({
               active={item.isActive?.(pathname) ?? pathname === item.href}
             />
           ))}
+          <div className="my-3 border-t border-dashed border-amber-400/20 pt-3">
+            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-400/80">
+              Temporary
+            </p>
+            <SidebarLink
+              href={onboardingPreviewNavItem.href}
+              label={onboardingPreviewNavItem.label}
+              icon={onboardingPreviewNavItem.icon}
+              active={
+                onboardingPreviewNavItem.isActive?.(pathname) ??
+                pathname.startsWith("/onboarding")
+              }
+              preview
+            />
+          </div>
         </nav>
         <SidebarFooter />
       </aside>
@@ -52,7 +69,7 @@ export function DashboardShell({
         )}
       >
         <div className="flex items-center justify-between border-b border-white/5 px-4 py-4">
-          <SidebarHeader accountType={accountType} compact />
+          <SidebarHeader accountType={accountType} accountTier={accountTier} compact />
           <button
             type="button"
             aria-label="Close menu"
@@ -73,6 +90,22 @@ export function DashboardShell({
               onNavigate={() => setMobileOpen(false)}
             />
           ))}
+          <div className="my-3 border-t border-dashed border-amber-400/20 pt-3">
+            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-400/80">
+              Temporary
+            </p>
+            <SidebarLink
+              href={onboardingPreviewNavItem.href}
+              label={onboardingPreviewNavItem.label}
+              icon={onboardingPreviewNavItem.icon}
+              active={
+                onboardingPreviewNavItem.isActive?.(pathname) ??
+                pathname.startsWith("/onboarding")
+              }
+              preview
+              onNavigate={() => setMobileOpen(false)}
+            />
+          </div>
         </nav>
         <SidebarFooter onSignOut={() => setMobileOpen(false)} />
       </aside>
@@ -103,9 +136,11 @@ export function DashboardShell({
 
 function SidebarHeader({
   accountType,
+  accountTier,
   compact,
 }: {
   accountType: string | null;
+  accountTier: string | null;
   compact?: boolean;
 }) {
   return (
@@ -118,7 +153,13 @@ function SidebarHeader({
           <div>
             <p className="font-heading text-sm font-semibold text-white">Maxime</p>
             <p className="text-xs text-zinc-500">
-              {accountType === "team_manager" ? "Team workspace" : "Player workspace"}
+              {accountType === "team_manager"
+                ? accountTier === "grassroots"
+                  ? "Grassroots manager"
+                  : "Collegiate manager"
+                : accountTier === "grassroots"
+                  ? "Grassroots player"
+                  : "Collegiate player"}
             </p>
           </div>
         )}
@@ -153,12 +194,14 @@ function SidebarLink({
   label,
   icon: Icon,
   active,
+  preview,
   onNavigate,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
+  preview?: boolean;
   onNavigate?: () => void;
 }) {
   return (
@@ -167,12 +210,27 @@ function SidebarLink({
       onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-        active
-          ? "bg-cyan-400/10 text-white ring-1 ring-inset ring-cyan-400/25"
-          : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+        preview
+          ? active
+            ? "bg-amber-400/10 text-amber-100 ring-1 ring-inset ring-amber-400/30"
+            : "text-amber-200/70 hover:bg-amber-400/5 hover:text-amber-100"
+          : active
+            ? "bg-cyan-400/10 text-white ring-1 ring-inset ring-cyan-400/25"
+            : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
       )}
     >
-      <Icon className={cn("h-4 w-4", active ? "text-cyan-400" : "text-zinc-500")} />
+      <Icon
+        className={cn(
+          "h-4 w-4",
+          preview
+            ? active
+              ? "text-amber-300"
+              : "text-amber-400/70"
+            : active
+              ? "text-cyan-400"
+              : "text-zinc-500",
+        )}
+      />
       {label}
     </Link>
   );

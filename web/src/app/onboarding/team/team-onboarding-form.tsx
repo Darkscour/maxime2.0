@@ -17,6 +17,8 @@ import {
   ONBOARDING_REGIONS,
 } from "@/lib/onboarding-options";
 import { MANAGER_TITLES } from "@/lib/manager-verification";
+import type { AccountTier } from "@/lib/account-tier";
+import { TIER_LABELS } from "@/lib/account-tier";
 import {
   buildOnboardingHref,
   onboardingQueryFromSearchParams,
@@ -26,10 +28,12 @@ import {
   onboardingDraftKey,
   useOnboardingDraft,
 } from "@/lib/onboarding-draft";
+import type { InstitutionListItem } from "@/lib/institutions";
+import { SchoolCombobox } from "@/components/onboarding/school-combobox";
 
 type TeamDraft = {
   name: string;
-  school: string;
+  institution: InstitutionListItem | null;
   games: string[];
   region: string;
   rosterSize: string;
@@ -41,7 +45,7 @@ type TeamDraft = {
 
 const INITIAL_TEAM_DRAFT: TeamDraft = {
   name: "",
-  school: "",
+  institution: null,
   games: [],
   region: "",
   rosterSize: "",
@@ -51,14 +55,17 @@ const INITIAL_TEAM_DRAFT: TeamDraft = {
   authorized: false,
 };
 
-export function TeamOnboardingForm() {
+export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
+  const isCollegiate = tier === "collegiate";
   const router = useRouter();
   const searchParams = useSearchParams();
   const onboardingQuery = onboardingQueryFromSearchParams(searchParams);
-  const draftKey = onboardingDraftKey("team");
+  const draftKey = onboardingDraftKey("team", tier);
   const [draft, setDraft] = useOnboardingDraft(draftKey, INITIAL_TEAM_DRAFT);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const tierBackHref = buildOnboardingHref("/onboarding/team/tier", onboardingQuery);
 
   function patchDraft<K extends keyof TeamDraft>(key: K, value: TeamDraft[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
@@ -83,8 +90,9 @@ export function TeamOnboardingForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          accountTier: tier,
           name: draft.name,
-          school: draft.school || undefined,
+          institutionId: isCollegiate ? draft.institution?.id : undefined,
           games: draft.games,
           region: draft.region || undefined,
           rosterSize: draft.rosterSize ? Number(draft.rosterSize) : undefined,
@@ -105,6 +113,7 @@ export function TeamOnboardingForm() {
       router.push(
         buildOnboardingHref("/onboarding/done", {
           ...onboardingQuery,
+          tier,
           extra: { invite: data.team.inviteCode },
         }),
       );
@@ -115,20 +124,48 @@ export function TeamOnboardingForm() {
     }
   }
 
+  const profileReady =
+    draft.name &&
+    draft.games.length > 0 &&
+    draft.managerTitle &&
+    draft.managerOrgEmail &&
+    draft.authorized &&
+    (!isCollegiate || !!draft.institution) &&
+    (isCollegiate || !!draft.region);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <OnboardingBackNav href="/onboarding" label="Back to role selection" />
+      <OnboardingBackNav href={tierBackHref} label="Back to account type" />
       <StepHeader
         step="Team onboarding"
-        title="Set up your org profile"
-        subtitle="Team managers must verify their role before inviting players and using org tools."
+        title={
+          isCollegiate
+            ? "Set up your collegiate org profile"
+            : "Set up your grassroots org profile"
+        }
+        subtitle={
+          isCollegiate
+            ? `${TIER_LABELS.collegiate} teams recruit verified players on campus. School email verification unlocks org tools.`
+            : `${TIER_LABELS.grassroots} teams recruit openly by region. No school affiliation required.`
+        }
       />
 
       <FormError message={error} />
 
-      <div className="rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5 space-y-5">
-        <p className="text-sm font-medium text-violet-100">Manager verification</p>
-        <FormField label="Your role at the org" hint="Required for team managers">
+      <div
+        className={
+          isCollegiate
+            ? "space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5"
+            : "space-y-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5"
+        }
+      >
+        <p className="text-sm font-medium text-violet-100">
+          {isCollegiate ? "Collegiate manager verification" : "Org contact"}
+        </p>
+        <FormField
+          label="Your role at the org"
+          hint={isCollegiate ? "Required for collegiate team managers" : "Required"}
+        >
           <SelectInput
             value={draft.managerTitle}
             onChange={(e) => patchDraft("managerTitle", e.target.value)}
@@ -143,14 +180,20 @@ export function TeamOnboardingForm() {
           </SelectInput>
         </FormField>
         <FormField
-          label="Official org / school email"
-          hint="Use your .edu or team domain email — we use this to verify you represent the org"
+          label={isCollegiate ? "Official org / school email" : "Org contact email"}
+          hint={
+            isCollegiate
+              ? draft.institution?.primaryDomain
+                ? `Use your .edu or @${draft.institution.primaryDomain} address to verify you represent ${draft.institution.name}`
+                : "Use your .edu or team domain email — we use this to verify you represent the org"
+              : "Primary email for your organization"
+          }
         >
           <TextInput
             type="email"
             value={draft.managerOrgEmail}
             onChange={(e) => patchDraft("managerOrgEmail", e.target.value)}
-            placeholder="you@school.edu"
+            placeholder={isCollegiate ? "you@school.edu" : "contact@yourteam.gg"}
             required
           />
         </FormField>
@@ -173,19 +216,22 @@ export function TeamOnboardingForm() {
         <TextInput
           value={draft.name}
           onChange={(e) => patchDraft("name", e.target.value)}
-          placeholder="Penn State Valorant"
+          placeholder={
+            isCollegiate ? "Penn State Valorant" : "Night Shift Esports"
+          }
           required
           maxLength={80}
         />
       </FormField>
 
-      <FormField label="School / university" hint="Optional">
-        <TextInput
-          value={draft.school}
-          onChange={(e) => patchDraft("school", e.target.value)}
-          placeholder="Penn State University"
+      {isCollegiate && (
+        <SchoolCombobox
+          value={draft.institution}
+          onChange={(institution) => patchDraft("institution", institution)}
+          hint="Required — campus players at this school appear in your talent pool"
+          required
         />
-      </FormField>
+      )}
 
       <FormField label="Games" hint="Select all titles your org competes in">
         <div className="flex flex-wrap gap-2">
@@ -210,10 +256,14 @@ export function TeamOnboardingForm() {
       </FormField>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <FormField label="Primary region">
+        <FormField
+          label="Primary region"
+          hint={isCollegiate ? undefined : "Required — used for regional player discovery"}
+        >
           <SelectInput
             value={draft.region}
             onChange={(e) => patchDraft("region", e.target.value)}
+            required={!isCollegiate}
           >
             <option value="">Select region</option>
             {ONBOARDING_REGIONS.map((r) => (
@@ -224,16 +274,18 @@ export function TeamOnboardingForm() {
           </SelectInput>
         </FormField>
 
-        <FormField label="Roster size" hint="Approximate active players">
-          <TextInput
-            type="number"
-            min={1}
-            max={99}
-            value={draft.rosterSize}
-            onChange={(e) => patchDraft("rosterSize", e.target.value)}
-            placeholder="8"
-          />
-        </FormField>
+        {isCollegiate && (
+          <FormField label="Target roster size" hint="Approximate players you plan to field">
+            <TextInput
+              type="number"
+              min={1}
+              max={99}
+              value={draft.rosterSize}
+              onChange={(e) => patchDraft("rosterSize", e.target.value)}
+              placeholder="5"
+            />
+          </FormField>
+        )}
       </div>
 
       <FormField label="Discord invite URL" hint="Optional">
@@ -244,18 +296,7 @@ export function TeamOnboardingForm() {
         />
       </FormField>
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={
-          loading ||
-          !draft.name ||
-          draft.games.length === 0 ||
-          !draft.managerTitle ||
-          !draft.managerOrgEmail ||
-          !draft.authorized
-        }
-      >
+      <Button type="submit" size="lg" disabled={loading || !profileReady}>
         {loading ? "Creating team…" : "Create team & get invite code"}
       </Button>
 

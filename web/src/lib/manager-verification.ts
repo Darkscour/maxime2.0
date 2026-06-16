@@ -9,21 +9,38 @@ export const MANAGER_TITLES = [
 
 export type ManagerVerificationStatus = "verified" | "pending";
 
-function normalizeEmail(email: string) {
+export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
-function domainFromEmail(email: string) {
+export function domainFromEmail(email: string) {
   const at = email.lastIndexOf("@");
   return at === -1 ? "" : email.slice(at + 1);
 }
 
-function schoolTokens(school: string) {
+export function schoolTokens(school: string) {
   return school
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
     .filter((t) => t.length > 3);
+}
+
+/** Heuristic check for grassroots org managers — valid contact email only. */
+export function evaluateGrassrootsManagerVerification(input: {
+  orgEmail: string;
+}): { status: ManagerVerificationStatus; reason: string } {
+  const orgEmail = normalizeEmail(input.orgEmail);
+  const domain = domainFromEmail(orgEmail);
+
+  if (!orgEmail || !domain.includes(".")) {
+    return { status: "pending", reason: "Provide a valid contact email." };
+  }
+
+  return {
+    status: "verified",
+    reason: "Grassroots org contact email confirmed.",
+  };
 }
 
 /** Heuristic check: institutional email or domain aligned with school name. */

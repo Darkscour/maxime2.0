@@ -41,8 +41,10 @@ export type PlayerProfileFormData = {
 
 export function PlayerProfileEditForm({
   initial,
+  showSchoolField = true,
 }: {
   initial: PlayerProfileFormData;
+  showSchoolField?: boolean;
 }) {
   const router = useRouter();
   const { user } = useUser();
@@ -144,13 +146,15 @@ export function PlayerProfileEditForm({
             />
           </SettingsField>
           <div className="grid gap-6 sm:grid-cols-2">
-            <SettingsField label="School" hint="Optional">
-              <SettingsInput
-                value={school}
-                onChange={(e) => setSchool(e.target.value)}
-                placeholder="UCLA"
-              />
-            </SettingsField>
+            {showSchoolField && (
+              <SettingsField label="School" hint="Optional">
+                <SettingsInput
+                  value={school}
+                  onChange={(e) => setSchool(e.target.value)}
+                  placeholder="UCLA"
+                />
+              </SettingsField>
+            )}
             <SettingsField label="Age" hint="Optional">
               <SettingsInput
                 type="number"

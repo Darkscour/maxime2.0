@@ -2,6 +2,7 @@ export type AccountType = "team_manager" | "player" | null;
 
 export type OnboardingAccountSlice = {
   accountType: string | null;
+  accountTier?: string | null;
   onboardingComplete: boolean;
   membership: { role: string; teamId: string } | null;
   playerProfile: { id: string } | null;
@@ -27,15 +28,15 @@ export type OnboardingProgress = {
 
 export function getOnboardingProgress(account: OnboardingAccountSlice): OnboardingProgress {
   if (deriveOnboardingComplete(account)) {
-    return { step: 2 };
+    return { step: 3 };
   }
 
   if (account.accountType === "team_manager") {
-    return { step: account.membership ? 2 : 1 };
+    return { step: account.membership ? 3 : account.accountTier ? 2 : 1 };
   }
 
   if (account.accountType === "player") {
-    return { step: account.playerProfile ? 2 : 1 };
+    return { step: account.playerProfile ? 3 : account.accountTier ? 2 : 1 };
   }
 
   return { step: 0 };
@@ -58,14 +59,30 @@ export function getOnboardingRouteGuard(
   if (path === "/onboarding") {
     if (complete) return "/dashboard";
     if (account.accountType === "team_manager" && !account.membership) {
-      return "/onboarding/team";
+      return account.accountTier ? "/onboarding/team" : "/onboarding/team/tier";
     }
     if (account.accountType === "player" && !account.playerProfile) {
-      return "/onboarding/player";
+      return account.accountTier ? "/onboarding/player" : "/onboarding/player/tier";
     }
     if (account.playerProfile || account.membership) {
       return "/onboarding/done";
     }
+    return null;
+  }
+
+  if (path === "/onboarding/team/tier") {
+    if (account.accountType === "player") {
+      return account.playerProfile ? "/dashboard" : "/onboarding/player/tier";
+    }
+    if (account.membership) return "/dashboard";
+    return null;
+  }
+
+  if (path === "/onboarding/player/tier") {
+    if (account.accountType === "team_manager") {
+      return account.membership ? "/dashboard" : "/onboarding/team/tier";
+    }
+    if (account.playerProfile && complete) return "/dashboard";
     return null;
   }
 

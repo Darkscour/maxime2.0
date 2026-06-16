@@ -26,6 +26,8 @@ export default async function DashboardLayout({
   }
 
   return (
-    <DashboardShell accountType={ctx.accountType}>{children}</DashboardShell>
+    <DashboardShell accountType={ctx.accountType} accountTier={ctx.accountTier}>
+      {children}
+    </DashboardShell>
   );
 }

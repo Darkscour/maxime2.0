@@ -7,16 +7,19 @@ import {
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_ONBOARDING_REGIONS,
 } from "@/lib/onboarding-options";
+import { isAccountTier } from "@/lib/account-tier";
+import { evaluateInstitutionEmailVerification } from "@/lib/institution-verification";
+import { requireInstitutionRecord } from "@/lib/institutions";
 
 type PlayerBody = {
+  accountTier?: string;
   handle: string;
   game: string;
   role: string;
   rank: string;
   region: string;
-  school?: string;
-  age: number;
-  hoursPerWeek?: number;
+  institutionId?: string;
+  schoolEmail?: string;
   bio?: string;
   inviteCode?: string;
 };
@@ -40,6 +43,17 @@ export async function POST(req: Request) {
     }
 
     const body = (await req.json()) as PlayerBody;
+
+    if (!isAccountTier(body.accountTier)) {
+      return NextResponse.json(
+        { error: "Select collegiate or grassroots account type." },
+        { status: 400 },
+      );
+    }
+
+    const accountTier = body.accountTier;
+    const isCollegiate = accountTier === "collegiate";
+
     const handle = body.handle?.trim();
     if (!handle || handle.length < 2) {
       return NextResponse.json(
@@ -80,12 +94,50 @@ export async function POST(req: Request) {
       );
     }
 
-    const age = body.age;
-    if (age == null || Number.isNaN(age) || age < 13 || age > 99) {
-      return NextResponse.json(
-        { error: "Age is required (13–99)." },
-        { status: 400 },
-      );
+    let institutionId: string | null = null;
+    let school: string | null = null;
+    let playerSchoolEmail: string | null = null;
+    let playerVerificationStatus: string | null = null;
+
+    if (isCollegiate) {
+      const institutionIdRaw = body.institutionId?.trim();
+      if (!institutionIdRaw) {
+        return NextResponse.json(
+          { error: "Select your school / university from the list." },
+          { status: 400 },
+        );
+      }
+
+      const institution = await requireInstitutionRecord(institutionIdRaw);
+      if (!institution) {
+        return NextResponse.json(
+          { error: "Selected school is not in our U.S. university list." },
+          { status: 400 },
+        );
+      }
+
+      const schoolEmail = body.schoolEmail?.trim();
+      if (!schoolEmail) {
+        return NextResponse.json(
+          { error: "School email is required to verify collegiate affiliation." },
+          { status: 400 },
+        );
+      }
+
+      const verification = evaluateInstitutionEmailVerification({
+        email: schoolEmail,
+        institution,
+        signInEmail: account.email,
+      });
+
+      if (verification.status !== "verified") {
+        return NextResponse.json({ error: verification.reason }, { status: 400 });
+      }
+
+      institutionId = institution.id;
+      school = institution.name;
+      playerSchoolEmail = schoolEmail.toLowerCase();
+      playerVerificationStatus = verification.status;
     }
 
     const handleTaken = await db.playerProfile.findUnique({
@@ -118,9 +170,11 @@ export async function POST(req: Request) {
           role: body.role,
           rank: body.rank,
           region: body.region,
-          school: body.school?.trim() || null,
-          age,
-          hoursPerWeek: body.hoursPerWeek ?? null,
+          school,
+          institutionId,
+          accountTier,
+          age: null,
+          hoursPerWeek: null,
           status: "Available",
           tags: [],
           bio: bio || null,
@@ -151,7 +205,10 @@ export async function POST(req: Request) {
         where: { id: account.id },
         data: {
           accountType: "player",
+          accountTier,
           onboardingComplete: true,
+          playerSchoolEmail,
+          playerVerificationStatus,
         },
       });
 

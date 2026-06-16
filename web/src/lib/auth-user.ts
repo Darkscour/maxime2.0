@@ -123,6 +123,7 @@ export async function getOnboardingStatus() {
   const account = await syncOnboardingCompleteFlag(await getOrCreateUserAccount());
   return {
     accountType: account.accountType,
+    accountTier: account.accountTier,
     onboardingComplete: account.onboardingComplete,
     hasTeam: !!account.membership,
     hasPlayerProfile: !!account.playerProfile,
@@ -174,6 +175,8 @@ export const getDashboardContext = cache(async function getDashboardContext() {
       id: team.id,
       name: team.name,
       school: team.school,
+      institutionId: team.institutionId,
+      accountTier: team.accountTier,
       games: team.games,
       region: team.region,
       rosterSize: team.rosterSize,
@@ -189,6 +192,7 @@ export const getDashboardContext = cache(async function getDashboardContext() {
     displayName: account.displayName,
     email: account.email,
     accountType: account.accountType,
+    accountTier: account.accountTier,
     onboardingComplete: account.onboardingComplete,
     managerTitle: account.managerTitle,
     managerOrgEmail: account.managerOrgEmail,

@@ -37,5 +37,10 @@ export default async function ProfileSettingsPage() {
     redirect("/dashboard");
   }
 
-  return <PlayerProfileEditForm initial={toFormData(ctx.playerProfile)} />;
+  return (
+    <PlayerProfileEditForm
+      initial={toFormData(ctx.playerProfile)}
+      showSchoolField={ctx.playerProfile.accountTier === "collegiate"}
+    />
+  );
 }

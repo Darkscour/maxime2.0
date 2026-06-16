@@ -12,6 +12,7 @@ import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-but
 import { ScoutJoinRequestActions } from "@/components/dashboard/scout-join-request-actions";
 import { Badge } from "@/components/ui/badge";
 import { canEditTeam } from "@/lib/permissions";
+import { canManagerRecruitPlayer, parseTier } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +30,26 @@ export default async function ScoutPlayerProfilePage({
   if (ctx.accountType !== "team_manager") {
     redirect("/dashboard");
   }
+  const managerTier = parseTier(ctx.team?.accountTier ?? ctx.accountTier);
+  if (!managerTier || !ctx.team) {
+    redirect("/dashboard/settings/team");
+  }
 
   if (!profile) notFound();
+  if (
+    !canManagerRecruitPlayer(
+      {
+        accountTier: managerTier,
+        institutionId: ctx.team.institutionId ?? null,
+      },
+      {
+        accountTier: profile.accountTier,
+        institutionId: profile.institutionId,
+      },
+    )
+  ) {
+    redirect("/dashboard/scout");
+  }
 
   const teamId = ctx.team?.id;
   const [onRoster, onWatchlist, joinRequestPending, invitePending] = teamId

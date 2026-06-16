@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { clerkImageUrlMap } from "@/lib/clerk-avatars";
+import { canManagerRecruitPlayer } from "@/lib/audience-guards";
 import {
   countProfileViews,
   fetchDistinctViewerTeams,
@@ -208,7 +209,10 @@ export type ScoutPlayerListing = {
 
 
 /** Players visible to team managers scouting talent. */
-export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
+export async function listScoutablePlayers(input?: {
+  managerTeamTier?: string | null;
+  managerInstitutionId?: string | null;
+}): Promise<ScoutPlayerListing[]> {
   const profiles = await db.playerProfile.findMany({
     orderBy: { handle: "asc" },
     select: {
@@ -219,6 +223,8 @@ export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
       rank: true,
       region: true,
       school: true,
+      accountTier: true,
+      institutionId: true,
       status: true,
       tags: true,
       hoursPerWeek: true,
@@ -230,10 +236,25 @@ export async function listScoutablePlayers(): Promise<ScoutPlayerListing[]> {
     profiles.map((profile) => profile.user.clerkId),
   );
 
-  return profiles.map(({ user, ...profile }) => ({
-    ...profile,
-    imageUrl: imageByClerkId.get(user.clerkId) ?? null,
-  }));
+  return profiles
+    .filter((profile) =>
+      input
+        ? canManagerRecruitPlayer(
+            {
+              accountTier: input.managerTeamTier ?? null,
+              institutionId: input.managerInstitutionId ?? null,
+            },
+            {
+              accountTier: profile.accountTier,
+              institutionId: profile.institutionId,
+            },
+          )
+        : true,
+    )
+    .map(({ user, ...profile }) => ({
+      ...profile,
+      imageUrl: imageByClerkId.get(user.clerkId) ?? null,
+    }));
 }
 
 export async function getScoutPlayerProfile(handle: string) {

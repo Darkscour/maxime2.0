@@ -21,8 +21,8 @@ export default async function OnboardingPage({
     testMode,
   });
 
-  const teamHref = buildOnboardingHref("/onboarding/team", { test: testMode });
-  const playerHref = buildOnboardingHref("/onboarding/player", { test: testMode });
+  const teamHref = buildOnboardingHref("/onboarding/team/tier", { test: testMode });
+  const playerHref = buildOnboardingHref("/onboarding/player/tier", { test: testMode });
 
   return (
     <div>

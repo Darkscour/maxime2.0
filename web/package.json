@@ -20,6 +20,9 @@
     "db:watchlist": "tsx scripts/setup-watchlist-tables.ts",
     "db:join-requests": "tsx scripts/setup-join-request-tables.ts",
     "db:notifications": "tsx scripts/setup-notifications-tables.ts",
+    "db:institutions-setup": "tsx scripts/setup-institutions-tables.ts",
+    "db:institutions": "tsx scripts/bootstrap-institutions.ts",
+    "db:institutions-enrich": "tsx scripts/enrich-institution-domains.ts",
     "db:delete-team": "tsx scripts/delete-team-by-manager-email.ts"
   },
   "prisma": {

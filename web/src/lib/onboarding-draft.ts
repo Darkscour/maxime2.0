@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 const PREFIX = "maxime:onboarding:draft:";
 
-export function onboardingDraftKey(step: "team" | "player") {
-  return `${PREFIX}${step}`;
+export function onboardingDraftKey(step: "team" | "player", tier?: string) {
+  return tier ? `${PREFIX}${step}:${tier}` : `${PREFIX}${step}`;
 }
 
 export function loadOnboardingDraft<T extends object>(key: string): Partial<T> | null {

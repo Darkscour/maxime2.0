@@ -16,7 +16,7 @@ import type {
   ManagerAnalyticsSummary,
   ManagerScoutSummary,
 } from "@/lib/manager-analytics";
-import { ManagerAnalyticsLineChart } from "@/components/dashboard/manager-analytics-line-chart";
+import { InteractiveAreaChart } from "@/components/dashboard/interactive-area-chart";
 import { cn } from "@/lib/utils";
 
 type RangeMode = "weekly" | "allTime";
@@ -88,6 +88,7 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
           series={data.rosterSize}
           chartId="roster"
           stroke="#34d399"
+          fill="#34d399"
           valueLabel={(n) =>
             n === 1 ? "1 on roster" : `${n} on roster`
           }
@@ -108,6 +109,7 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
           series={data.scoutViews}
           chartId="scout"
           stroke="#22d3ee"
+          fill="#22d3ee"
           valueLabel={(n) =>
             n === 1 ? "1 profile view" : `${n} profile views`
           }
@@ -128,6 +130,7 @@ function AnalyticsChartPanel({
   series,
   chartId,
   stroke,
+  fill,
   valueLabel,
   emptyHint,
   renderMetrics,
@@ -138,12 +141,18 @@ function AnalyticsChartPanel({
   series: ManagerAnalyticsSeries;
   chartId: string;
   stroke: string;
+  fill: string;
   valueLabel: (value: number) => string;
   emptyHint: string;
   renderMetrics: (mode: RangeMode) => React.ReactNode;
 }) {
   const [mode, setMode] = useState<RangeMode>("weekly");
   const points = mode === "weekly" ? series.weekly : series.allTime;
+  const chartPoints = points.map((p) => ({
+    label: p.label,
+    date: p.date,
+    value: p.value,
+  }));
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent px-4 pb-4 pt-4">
@@ -159,11 +168,12 @@ function AnalyticsChartPanel({
         <RangeToggle mode={mode} onChange={setMode} />
       </div>
       <div className="mt-3">
-        <ManagerAnalyticsLineChart
+        <InteractiveAreaChart
           key={`${chartId}-${mode}`}
-          points={points}
+          points={chartPoints}
+          gradientId={`${chartId}-${mode}`}
           stroke={stroke}
-          chartId={`${chartId}-${mode}`}
+          fill={fill}
           valueLabel={valueLabel}
           emptyHint={emptyHint}
         />

@@ -5,6 +5,8 @@ import {
   isOnboardingTestMode,
 } from "@/lib/onboarding-guards";
 import { buildOnboardingHref } from "@/lib/onboarding-path";
+import { isAccountTier } from "@/lib/account-tier";
+import type { AccountTier } from "@/lib/account-tier";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InviteCodeCopy } from "./invite-code-copy";
@@ -16,7 +18,7 @@ export const dynamic = "force-dynamic";
 export default async function OnboardingDonePage({
   searchParams,
 }: {
-  searchParams: Promise<{ invite?: string; test?: string }>;
+  searchParams: Promise<{ invite?: string; test?: string; tier?: string }>;
 }) {
   const params = await searchParams;
   const testMode = isOnboardingTestMode(params);
@@ -24,12 +26,25 @@ export default async function OnboardingDonePage({
     testMode,
   });
 
+  const tierRaw =
+    (isAccountTier(params.tier) ? params.tier : null) ??
+    (isAccountTier(status.accountTier ?? undefined) ? status.accountTier : null) ??
+    (isAccountTier(status.team?.accountTier ?? undefined)
+      ? status.team!.accountTier
+      : null) ??
+    (isAccountTier(status.playerProfile?.accountTier ?? undefined)
+      ? status.playerProfile!.accountTier
+      : null);
+  const tier: AccountTier | undefined = isAccountTier(tierRaw ?? undefined)
+    ? (tierRaw as AccountTier)
+    : undefined;
+
   const isCaptain = status.membershipRole === "captain";
   const inviteCode = params.invite || status.team?.inviteCode;
   const profileBackHref =
     status.accountType === "team_manager"
-      ? "/onboarding/team"
-      : "/onboarding/player";
+      ? buildOnboardingHref("/onboarding/team", { test: testMode, tier })
+      : buildOnboardingHref("/onboarding/player", { test: testMode, tier });
 
   return (
     <div className="text-center">

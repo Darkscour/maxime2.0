@@ -8,6 +8,7 @@ import { fetchTeamScoutCardContext } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestPlayerIdsForTeam } from "@/lib/team-join-request-db";
 import { ScoutPlayerGridCard } from "@/components/dashboard/scout-player-grid-card";
 import { canEditTeam } from "@/lib/permissions";
+import { parseTier } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,19 @@ export default async function DashboardScoutPage() {
   if (ctx.accountType !== "team_manager") {
     redirect("/dashboard");
   }
+  const teamTier = parseTier(ctx.team?.accountTier ?? ctx.accountTier);
+  if (!teamTier || !ctx.team) {
+    redirect("/dashboard/settings/team");
+  }
 
   const canManage = !!ctx.team && canEditTeam(ctx.membershipRole);
   const teamId = ctx.team?.id;
 
   const [players, scoutContext, joinRequestPlayerIds] = await Promise.all([
-    listScoutablePlayers(),
+    listScoutablePlayers({
+      managerTeamTier: teamTier,
+      managerInstitutionId: ctx.team?.institutionId ?? null,
+    }),
     teamId ? fetchTeamScoutCardContext(teamId) : Promise.resolve(null),
     teamId
       ? fetchPendingJoinRequestPlayerIdsForTeam(teamId)

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 const STEPS = [
   { id: "role", label: "Role" },
+  { id: "tier", label: "Account type" },
   { id: "profile", label: "Profile" },
   { id: "done", label: "Done" },
 ] as const;
@@ -11,22 +12,21 @@ const STEPS = [
 const CIRCLE_SIZE = 32; // h-8
 
 function getActiveStepIndex(pathname: string): number {
-  if (
-    pathname === "/onboarding/done" ||
-    pathname.startsWith("/onboarding/done/")
-  ) {
-    return 2;
+  if (pathname === "/onboarding/done" || pathname.startsWith("/onboarding/done/")) {
+    return 3;
+  }
+
+  if (pathname === "/onboarding/team/tier" || pathname === "/onboarding/player/tier") {
+    return 1;
   }
 
   if (
     pathname === "/onboarding/team" ||
     pathname === "/onboarding/player" ||
     pathname === "/onboarding/join" ||
-    pathname.startsWith("/onboarding/team/") ||
-    pathname.startsWith("/onboarding/player/") ||
     pathname.startsWith("/onboarding/join/")
   ) {
-    return 1;
+    return 2;
   }
 
   return 0;

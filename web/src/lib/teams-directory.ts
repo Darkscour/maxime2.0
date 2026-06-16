@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { parseTier } from "@/lib/audience-guards";
 
 export type PublicTeamListing = {
   id: string;
@@ -12,9 +13,11 @@ export type PublicTeamListing = {
 };
 
 /** Teams visible to players browsing orgs on the platform. */
-export async function listPublicTeams(): Promise<PublicTeamListing[]> {
+export async function listPublicTeams(playerTier?: string | null): Promise<PublicTeamListing[]> {
+  const tier = parseTier(playerTier);
+  if (!tier) return [];
   const teams = await db.team.findMany({
-    where: { onboardingComplete: true },
+    where: { onboardingComplete: true, accountTier: tier },
     orderBy: { name: "asc" },
     select: {
       id: true,

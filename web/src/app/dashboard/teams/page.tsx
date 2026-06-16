@@ -7,6 +7,7 @@ import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
+import { parseTier } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +17,12 @@ export default async function DashboardTeamsPage() {
   if (ctx.accountType === "team_manager") {
     redirect("/dashboard");
   }
+  const playerTier = parseTier(ctx.playerProfile?.accountTier ?? ctx.accountTier);
+  if (!playerTier) {
+    redirect("/dashboard/settings/profile");
+  }
 
-  const teams = await listPublicTeams();
+  const teams = await listPublicTeams(playerTier);
   const pendingRequestTeamIds = ctx.playerProfile
     ? await fetchPendingJoinRequestTeamIds(ctx.playerProfile.id)
     : [];

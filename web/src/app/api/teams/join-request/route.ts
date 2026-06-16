@@ -10,6 +10,7 @@ import {
   permissionErrorResponse,
   requirePlayerProfile,
 } from "@/lib/permissions";
+import { canPlayerJoinTeam } from "@/lib/audience-guards";
 
 export async function POST(req: Request) {
   try {
@@ -31,11 +32,17 @@ export async function POST(req: Request) {
 
     const team = await db.team.findUnique({
       where: { id: teamId },
-      select: { id: true, name: true, onboardingComplete: true },
+      select: { id: true, name: true, onboardingComplete: true, accountTier: true },
     });
 
     if (!team?.onboardingComplete) {
       return NextResponse.json({ error: "Team not found." }, { status: 404 });
+    }
+    if (!canPlayerJoinTeam(profile, team)) {
+      return NextResponse.json(
+        { error: "You can only request teams in your account tier." },
+        { status: 403 },
+      );
     }
 
     const pendingInvites = await fetchPendingInvitesForPlayer(profile.id);

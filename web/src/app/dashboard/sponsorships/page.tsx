@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function DashboardSponsorshipsPage() {
   const ctx = await getDashboardContext();
 
-  if (ctx.accountType !== "team_manager") {
+  if (ctx.accountType !== "team_manager" || ctx.accountTier !== "collegiate") {
     redirect("/dashboard");
   }
 

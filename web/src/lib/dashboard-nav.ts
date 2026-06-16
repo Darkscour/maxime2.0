@@ -1,10 +1,12 @@
 import {
   Bookmark,
   Building2,
+  Swords,
   Handshake,
   LayoutDashboard,
   Search,
   Settings,
+  Sparkles,
   UserPlus,
   UserRound,
   Users,
@@ -16,9 +18,23 @@ export type NavItem = {
   label: string;
   icon: LucideIcon;
   isActive?: (pathname: string) => boolean;
+  /** Temporary / dev-only styling */
+  preview?: boolean;
 };
 
-export function getDashboardNavItems(accountType: string | null): NavItem[] {
+/** Bypasses onboarding redirects — use ?test=1 to preview the full flow while signed in. */
+export const onboardingPreviewNavItem: NavItem = {
+  href: "/onboarding?test=1",
+  label: "Onboarding preview",
+  icon: Sparkles,
+  preview: true,
+  isActive: (pathname) => pathname.startsWith("/onboarding"),
+};
+
+export function getDashboardNavItems(
+  accountType: string | null,
+  accountTier: string | null,
+): NavItem[] {
   const overview: NavItem = {
     href: "/dashboard",
     label: "Overview",
@@ -34,18 +50,34 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
       pathname === "/dashboard/settings/account" ||
       pathname.startsWith("/dashboard/settings/account/"),
   };
-
   if (accountType === "team_manager") {
+    const grassrootsExtras: NavItem[] =
+      accountTier === "grassroots"
+        ? [
+            {
+              href: "/dashboard/duels",
+              label: "Duels",
+              icon: Swords,
+              isActive: (pathname) =>
+                pathname === "/dashboard/duels" ||
+                pathname.startsWith("/dashboard/duels/"),
+            },
+          ]
+        : [];
     return [
       overview,
-      {
-        href: "/dashboard/sponsorships",
-        label: "Sponsorships",
-        icon: Handshake,
-        isActive: (pathname) =>
-          pathname === "/dashboard/sponsorships" ||
-          pathname.startsWith("/dashboard/sponsorships/"),
-      },
+      ...(accountTier === "collegiate"
+        ? [
+            {
+              href: "/dashboard/sponsorships",
+              label: "Sponsorships",
+              icon: Handshake,
+              isActive: (pathname: string) =>
+                pathname === "/dashboard/sponsorships" ||
+                pathname.startsWith("/dashboard/sponsorships/"),
+            },
+          ]
+        : []),
       {
         href: "/dashboard/scout",
         label: "Scout players",
@@ -78,6 +110,7 @@ export function getDashboardNavItems(accountType: string | null): NavItem[] {
           pathname === "/dashboard/watchlist" ||
           pathname.startsWith("/dashboard/watchlist/"),
       },
+      ...grassrootsExtras,
       account,
       {
         href: "/dashboard/settings/team",

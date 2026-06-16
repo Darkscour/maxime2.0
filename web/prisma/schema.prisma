@@ -90,17 +90,43 @@ model UserAccount {
   email              String?
   displayName        String?
   accountType        String?  // "team_manager" | "player"
+  accountTier        String?  // "collegiate" | "grassroots"
   onboardingComplete Boolean  @default(false)
   managerTitle       String?
   managerOrgEmail    String?
   managerVerificationStatus String? // "verified" | "pending"
+  playerSchoolEmail  String?
+  playerVerificationStatus String? // "verified" | "pending"
 
   membership       TeamMembership?
   playerProfile    PlayerProfile?
   profileViewsMade PlayerProfileView[] @relation("ProfileViewer")
+  duelsCreated     DuelChallenge[]     @relation("DuelCreator")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ── U.S. collegiate institutions (College Scorecard + domain enrichment) ───
+
+model Institution {
+  id            String   @id @default(cuid())
+  scorecardId   Int      @unique
+  name          String
+  nameLower     String
+  state         String?
+  city          String?
+  primaryDomain String?
+  domains       String[] @default([])
+  aliases       String[] @default([])
+
+  teams          Team[]
+  playerProfiles PlayerProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nameLower])
 }
 
 // Org profile created by a captain / manager during team onboarding.
@@ -109,6 +135,8 @@ model Team {
   name               String
   slug               String   @unique
   school             String?
+  institutionId      String?
+  accountTier        String?  // "collegiate" | "grassroots"
   games              String[] @default([])
   region             String?
   rosterSize         Int?
@@ -120,11 +148,15 @@ model Team {
   members            TeamMembership[]
   sponsorLeads       SponsorLead[]
   playerProfileViews PlayerProfileView[]
+  duelsSent          DuelChallenge[] @relation("DuelChallengerTeam")
+  duelsReceived      DuelChallenge[] @relation("DuelTargetTeam")
+  institution        Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([inviteCode])
+  @@index([institutionId])
 }
 
 // Connects a UserAccount to a Team (captain, manager, or player).
@@ -154,6 +186,8 @@ model PlayerProfile {
   rank         String
   region       String
   school       String?
+  institutionId String?
+  accountTier  String?  // "collegiate" | "grassroots"
   age          Int?
   hoursPerWeek Int?
   status       String   @default("Available")
@@ -161,6 +195,7 @@ model PlayerProfile {
   bio          String?
 
   user         UserAccount         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution  Institution?        @relation(fields: [institutionId], references: [id], onDelete: SetNull)
   profileViews PlayerProfileView[]
   playTimeLogs PlayerPlayTimeLog[]
 
@@ -169,6 +204,7 @@ model PlayerProfile {
 
   @@index([game])
   @@index([region])
+  @@index([institutionId])
 }
 
 // When a team manager (or scout) opens a player's profile.
@@ -223,4 +259,25 @@ model SponsorLead {
   @@unique([teamId, sponsorId])
   @@index([teamId])
   @@index([status])
+}
+
+model DuelChallenge {
+  id              String   @id @default(cuid())
+  challengerTeamId String
+  targetTeamId    String
+  createdByUserId String
+  game            String
+  message         String?
+  scheduledAt     DateTime?
+  status          String   @default("pending") // pending | accepted | declined | cancelled | completed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  challengerTeam Team        @relation("DuelChallengerTeam", fields: [challengerTeamId], references: [id], onDelete: Cascade)
+  targetTeam     Team        @relation("DuelTargetTeam", fields: [targetTeamId], references: [id], onDelete: Cascade)
+  createdByUser  UserAccount @relation("DuelCreator", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@index([challengerTeamId, status])
+  @@index([targetTeamId, status])
+  @@index([createdByUserId])
 }

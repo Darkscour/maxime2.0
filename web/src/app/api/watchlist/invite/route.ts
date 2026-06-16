@@ -8,6 +8,7 @@ import {
   permissionErrorResponse,
   requireTeamMembership,
 } from "@/lib/permissions";
+import { canManagerRecruitPlayer } from "@/lib/audience-guards";
 
 export async function POST(req: Request) {
   try {
@@ -29,12 +30,12 @@ export async function POST(req: Request) {
 
     const team = await db.team.findUnique({
       where: { id: teamId },
-      select: { name: true },
+      select: { name: true, accountTier: true, institutionId: true },
     });
 
     const profile = await db.playerProfile.findUnique({
       where: { id: body.playerProfileId },
-      select: { userId: true, handle: true },
+      select: { userId: true, handle: true, accountTier: true, institutionId: true },
     });
 
     if (!profile) {
@@ -46,6 +47,12 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "This player is already on your roster." },
         { status: 409 },
+      );
+    }
+    if (!team || !canManagerRecruitPlayer(team, profile)) {
+      return NextResponse.json(
+        { error: "This player is outside your recruitment pool." },
+        { status: 403 },
       );
     }
 

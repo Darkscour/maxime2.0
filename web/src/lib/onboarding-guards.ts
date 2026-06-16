@@ -10,6 +10,7 @@ export async function enforceOnboardingRoute(
   const status = await getOnboardingStatus();
   const account = {
     accountType: status.accountType,
+    accountTier: status.accountTier,
     onboardingComplete: status.onboardingComplete,
     membership: status.hasTeam
       ? { role: status.membershipRole ?? "player", teamId: status.team!.id }

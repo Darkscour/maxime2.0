@@ -13,7 +13,7 @@ import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analyti
 import { getPlayerAnalytics } from "@/lib/player-analytics";
 import { getManagerOrgAnalytics } from "@/lib/manager-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
-import { Bookmark, Building2, Handshake, Search, Settings, UserPlus, UserRound, Users } from "lucide-react";
+import { Bookmark, Building2, Handshake, Search, Settings, Swords, UserPlus, UserRound, Users } from "lucide-react";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
 import { RosterHubPreview } from "@/components/dashboard/roster-hub-preview";
@@ -77,6 +77,7 @@ function rosterStatHint(pendingInvites: number) {
 export default async function DashboardPage() {
   const ctx = await getDashboardContext();
   const isManager = ctx.accountType === "team_manager";
+  const isGrassroots = ctx.accountTier === "grassroots";
   const welcomeName = isManager
     ? (ctx.displayName?.split(" ")[0] ?? "there")
     : (ctx.playerProfile?.handle ?? "there");
@@ -129,7 +130,9 @@ export default async function DashboardPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
             {isManager
-              ? "Manage sponsorship outreach, scout players, and keep your org profile in one place."
+              ? isGrassroots
+                ? "Run grassroots recruiting, challenge teams in Duels, and manage your roster."
+                : "Manage sponsorship outreach, scout players, and keep your org profile in one place."
               : "Your player profile is live. Browse registered teams, join a roster, and keep your scout card up to date."}
           </p>
           {ctx.email && (
@@ -214,6 +217,7 @@ export default async function DashboardPage() {
 
         <DashboardAnalyticsCard
           accountType={ctx.accountType}
+          accountTier={ctx.accountTier}
           playerAnalytics={playerAnalytics}
           managerAnalytics={managerAnalytics}
         />
@@ -297,20 +301,24 @@ export default async function DashboardPage() {
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
             {isManager
-              ? "Jump into the tools you set up during onboarding."
+              ? isGrassroots
+                ? "Jump into grassroots recruiting and duels."
+                : "Jump into the tools you set up during onboarding."
               : "Find a team and manage your player profile."}
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {isManager ? (
             <>
-              <FeatureTile
-                href="/dashboard/sponsorships"
-                title="Sponsor directory"
-                description="Browse our curated selection of sponsors and jump to application pages."
-                icon={Handshake}
-                tone="cyan"
-              />
+              {!isGrassroots && (
+                <FeatureTile
+                  href="/dashboard/sponsorships"
+                  title="Sponsor directory"
+                  description="Browse our curated selection of sponsors and jump to application pages."
+                  icon={Handshake}
+                  tone="cyan"
+                />
+              )}
               <FeatureTile
                 href="/dashboard/scout"
                 title="Scout players"
@@ -339,6 +347,15 @@ export default async function DashboardPage() {
                 icon={Bookmark}
                 tone="cyan"
               />
+              {isGrassroots && (
+                <FeatureTile
+                  href="/dashboard/duels"
+                  title="Duels"
+                  description="Challenge other grassroots teams and track pending, accepted, and completed duels."
+                  icon={Swords}
+                  tone="violet"
+                />
+              )}
               <FeatureTile
                 href="/dashboard/settings/team"
                 title="Team profile"

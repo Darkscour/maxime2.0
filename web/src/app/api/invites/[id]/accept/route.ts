@@ -33,6 +33,15 @@ export async function POST(
 
     const join = await joinTeamAsPlayer(account.id, invite.teamId);
     if (!join.ok) {
+      if (join.reason === "POOL_MISMATCH") {
+        return NextResponse.json(
+          {
+            error: "This invite is for a team outside your account tier.",
+            code: "POOL_MISMATCH",
+          },
+          { status: 403 },
+        );
+      }
       return NextResponse.json(
         {
           error: "You're already on a team. Leave your current team before accepting.",

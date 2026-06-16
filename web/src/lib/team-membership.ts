@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { removeFromWatchlist } from "@/lib/player-watchlist-db";
+import { canPlayerJoinTeam } from "@/lib/audience-guards";
 
 /** Remove a player from their current team (keeps player profile). */
 export async function leaveCurrentTeam(userId: string) {
@@ -44,6 +45,20 @@ export async function joinTeamAsPlayer(userId: string, teamId: string) {
     return { ok: false as const, reason: "ALREADY_ON_TEAM" as const };
   }
 
+  const [profile, team] = await Promise.all([
+    db.playerProfile.findUnique({
+      where: { userId },
+      select: { id: true, accountTier: true, institutionId: true },
+    }),
+    db.team.findUnique({
+      where: { id: teamId },
+      select: { id: true, accountTier: true, institutionId: true },
+    }),
+  ]);
+  if (!profile || !team || !canPlayerJoinTeam(profile, team)) {
+    return { ok: false as const, reason: "POOL_MISMATCH" as const };
+  }
+
   await db.$transaction([
     db.teamMembership.create({
       data: {
@@ -59,10 +74,6 @@ export async function joinTeamAsPlayer(userId: string, teamId: string) {
     }),
   ]);
 
-  const profile = await db.playerProfile.findUnique({
-    where: { userId },
-    select: { id: true },
-  });
   if (profile) {
     await removeFromWatchlist(teamId, profile.id);
   }
