@@ -9,6 +9,7 @@ import { parseAccountTier } from "@/lib/account-tier";
 import { isAccountTier } from "@/lib/account-tier";
 import type { AccountTier } from "@/lib/account-tier";
 import { buildOnboardingHref } from "@/lib/onboarding-path";
+import { syncOnboardingCheckpoint } from "@/lib/persist-onboarding-progress";
 import { TeamOnboardingForm } from "./team-onboarding-form";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function TeamOnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ test?: string; revise?: string; tier?: string }>;
+  searchParams: Promise<{ test?: string; revise?: string; tier?: string; notice?: string }>;
 }) {
   const params = await searchParams;
   const testMode = isOnboardingTestMode(params);
@@ -40,13 +41,16 @@ export default async function TeamOnboardingPage({
       buildOnboardingHref("/onboarding/team/tier", {
         test: testMode,
         revise: reviseMode,
+        extra: params.notice ? { notice: params.notice } : undefined,
       }),
     );
   }
 
+  await syncOnboardingCheckpoint("/onboarding/team", `?tier=${tier}`);
+
   return (
     <Suspense fallback={null}>
-      <TeamOnboardingForm tier={tier} />
+      <TeamOnboardingForm tier={tier} signInEmail={status.email} />
     </Suspense>
   );
 }

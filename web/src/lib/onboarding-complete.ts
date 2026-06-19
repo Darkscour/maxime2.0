@@ -58,12 +58,6 @@ export function getOnboardingRouteGuard(
 
   if (path === "/onboarding") {
     if (complete) return "/dashboard";
-    if (account.accountType === "team_manager" && !account.membership) {
-      return account.accountTier ? "/onboarding/team" : "/onboarding/team/tier";
-    }
-    if (account.accountType === "player" && !account.playerProfile) {
-      return account.accountTier ? "/onboarding/player" : "/onboarding/player/tier";
-    }
     if (account.playerProfile || account.membership) {
       return "/onboarding/done";
     }
@@ -71,32 +65,26 @@ export function getOnboardingRouteGuard(
   }
 
   if (path === "/onboarding/team/tier") {
-    if (account.accountType === "player") {
-      return account.playerProfile ? "/dashboard" : "/onboarding/player/tier";
-    }
     if (account.membership) return "/dashboard";
     return null;
   }
 
   if (path === "/onboarding/player/tier") {
-    if (account.accountType === "team_manager") {
-      return account.membership ? "/dashboard" : "/onboarding/team/tier";
-    }
     if (account.playerProfile && complete) return "/dashboard";
     return null;
   }
 
   if (path === "/onboarding/team") {
-    if (account.accountType === "player") {
-      return account.playerProfile ? "/dashboard" : "/onboarding/player";
+    if (account.accountType === "player" && !account.playerProfile) {
+      return "/onboarding/player";
     }
     if (account.membership) return "/dashboard";
     return null;
   }
 
   if (path === "/onboarding/player") {
-    if (account.accountType === "team_manager") {
-      return account.membership ? "/dashboard" : "/onboarding/team";
+    if (account.accountType === "team_manager" && !account.membership) {
+      return "/onboarding/team";
     }
     if (account.playerProfile && complete) return "/dashboard";
     return null;

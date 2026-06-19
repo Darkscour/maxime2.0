@@ -7,8 +7,9 @@ import { filterPlayersForScout } from "@/lib/player-scout-visibility";
 import { fetchTeamScoutCardContext } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestPlayerIdsForTeam } from "@/lib/team-join-request-db";
 import { ScoutPlayerGridCard } from "@/components/dashboard/scout-player-grid-card";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { canEditTeam } from "@/lib/permissions";
-import { parseTier } from "@/lib/audience-guards";
+import { parseTier, managerPoolContext } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,11 @@ export default async function DashboardScoutPage() {
   const canManage = !!ctx.team && canEditTeam(ctx.membershipRole);
   const teamId = ctx.team?.id;
 
+  const managerPool = managerPoolContext({
+    accountTier: teamTier,
+    institutionId: ctx.team.institutionId ?? null,
+  });
+
   const [players, scoutContext, joinRequestPlayerIds] = await Promise.all([
     listScoutablePlayers({
       managerTeamTier: teamTier,
@@ -33,7 +39,7 @@ export default async function DashboardScoutPage() {
     }),
     teamId ? fetchTeamScoutCardContext(teamId) : Promise.resolve(null),
     teamId
-      ? fetchPendingJoinRequestPlayerIdsForTeam(teamId)
+      ? fetchPendingJoinRequestPlayerIdsForTeam(teamId, managerPool)
       : Promise.resolve([]),
   ]);
 
@@ -54,16 +60,16 @@ export default async function DashboardScoutPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-          Scout
-        </p>
+        <DashboardSectionEyebrow accent="violet" className="mt-5">
+          Recruitment
+        </DashboardSectionEyebrow>
         <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
           Player profiles
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
-          Browse registered players on Maxime. Players already on your roster are hidden
-          here — manage them in Roster hub. Save candidates to your watchlist or send an
-          invite directly; players who requested to join show a badge on their card.
+          {teamTier === "collegiate"
+            ? "Browse collegiate players at your school. Campus talent outside your institution is hidden. Save candidates to your watchlist or send an invite directly."
+            : "Browse grassroots players on Maxime. Save candidates to your watchlist or send an invite directly."}
         </p>
       </header>
 

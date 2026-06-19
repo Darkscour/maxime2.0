@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getOrCreateUserAccount } from "@/lib/auth-user";
+import { getExistingUserAccount } from "@/lib/auth-user";
 import {
   getRanksForGame,
   isPrimaryGame,
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_ONBOARDING_REGIONS,
+  derivePlayerRegionFromInstitutionState,
 } from "@/lib/onboarding-options";
 import { isAccountTier } from "@/lib/account-tier";
 import { evaluateInstitutionEmailVerification } from "@/lib/institution-verification";
@@ -26,7 +27,13 @@ type PlayerBody = {
 
 export async function POST(req: Request) {
   try {
-    const account = await getOrCreateUserAccount();
+    const account = await getExistingUserAccount();
+    if (!account) {
+      return NextResponse.json(
+        { error: "No Maxime account. Sign up before onboarding." },
+        { status: 403 },
+      );
+    }
 
     if (account.accountType === "team_manager") {
       return NextResponse.json(
@@ -62,9 +69,16 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!body.game || !body.role || !body.rank || !body.region) {
+    if (!body.game || !body.role || !body.rank) {
       return NextResponse.json(
-        { error: "Game, role, rank, and region are required." },
+        { error: "Game, role, and rank are required." },
+        { status: 400 },
+      );
+    }
+
+    if (!isCollegiate && !body.region) {
+      return NextResponse.json(
+        { error: "Region is required for grassroots players." },
         { status: 400 },
       );
     }
@@ -84,6 +98,8 @@ export async function POST(req: Request) {
     }
 
     if (
+      !isCollegiate &&
+      body.region &&
       !PLAYER_ONBOARDING_REGIONS.includes(
         body.region as (typeof PLAYER_ONBOARDING_REGIONS)[number],
       )
@@ -98,6 +114,7 @@ export async function POST(req: Request) {
     let school: string | null = null;
     let playerSchoolEmail: string | null = null;
     let playerVerificationStatus: string | null = null;
+    let resolvedRegion = body.region?.trim() ?? "";
 
     if (isCollegiate) {
       const institutionIdRaw = body.institutionId?.trim();
@@ -112,6 +129,20 @@ export async function POST(req: Request) {
       if (!institution) {
         return NextResponse.json(
           { error: "Selected school is not in our U.S. university list." },
+          { status: 400 },
+        );
+      }
+
+      institutionId = institution.id;
+      school = institution.name;
+
+      const derivedRegion = derivePlayerRegionFromInstitutionState(
+        institution.state,
+      );
+      resolvedRegion = derivedRegion ?? body.region?.trim() ?? "";
+      if (!resolvedRegion) {
+        return NextResponse.json(
+          { error: "Could not determine region from the selected school." },
           { status: 400 },
         );
       }
@@ -134,10 +165,19 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: verification.reason }, { status: 400 });
       }
 
-      institutionId = institution.id;
-      school = institution.name;
       playerSchoolEmail = schoolEmail.toLowerCase();
       playerVerificationStatus = verification.status;
+    }
+
+    if (
+      !PLAYER_ONBOARDING_REGIONS.includes(
+        resolvedRegion as (typeof PLAYER_ONBOARDING_REGIONS)[number],
+      )
+    ) {
+      return NextResponse.json(
+        { error: "Select NA East or NA West as your region." },
+        { status: 400 },
+      );
     }
 
     const handleTaken = await db.playerProfile.findUnique({
@@ -169,7 +209,7 @@ export async function POST(req: Request) {
           game: body.game,
           role: body.role,
           rank: body.rank,
-          region: body.region,
+          region: resolvedRegion,
           school,
           institutionId,
           accountTier,

@@ -41,3 +41,32 @@ export function canPlayerJoinTeam(
   return playerTier === teamTier;
 }
 
+/** Prisma `where` clause for players visible to a manager's recruitment pool. */
+export function prismaPlayerPoolWhere(managerTeam: TeamAudienceContext) {
+  const teamTier = parseTier(managerTeam.accountTier);
+  if (!teamTier) return { id: { in: [] as string[] } };
+
+  if (teamTier === "grassroots") {
+    return { accountTier: "grassroots" as const };
+  }
+
+  if (!managerTeam.institutionId) {
+    return { id: { in: [] as string[] } };
+  }
+
+  return {
+    accountTier: "collegiate" as const,
+    institutionId: managerTeam.institutionId,
+  };
+}
+
+export function managerPoolContext(input: {
+  accountTier?: string | null;
+  institutionId?: string | null;
+}): TeamAudienceContext {
+  return {
+    accountTier: input.accountTier,
+    institutionId: input.institutionId,
+  };
+}
+

@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, Building2, Settings, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  navGroupAccentEyebrowClasses,
+  type NavGroupAccent,
+} from "@/lib/dashboard-nav";
 import { fieldClassName, selectClassName, selectChevronStyle } from "@/lib/form-styles";
 
 const inputClass = fieldClassName;
@@ -220,11 +224,13 @@ export function SettingsHero({
   title,
   description,
   preview,
+  accent = "cyan",
 }: {
   eyebrow: string;
   title: string;
   description: string;
   preview?: React.ReactNode;
+  accent?: NavGroupAccent;
 }) {
   return (
     <header className="relative mb-8 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-cyan-400/[0.06] via-[var(--surface)] to-violet-500/[0.05]">
@@ -237,7 +243,12 @@ export function SettingsHero({
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-400/90">
+        <p
+          className={cn(
+            "mt-5 text-xs font-semibold uppercase tracking-[0.22em]",
+            navGroupAccentEyebrowClasses[accent],
+          )}
+        >
           {eyebrow}
         </p>
         <h1 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">

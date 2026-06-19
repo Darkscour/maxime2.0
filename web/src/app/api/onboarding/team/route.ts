@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getOrCreateUserAccount } from "@/lib/auth-user";
+import { getExistingUserAccount } from "@/lib/auth-user";
 import { slugifyTeamName } from "@/lib/onboarding-options";
 import { evaluateGrassrootsManagerVerification } from "@/lib/manager-verification";
 import { isAccountTier } from "@/lib/account-tier";
@@ -26,7 +26,13 @@ function membershipRoleFromTitle(title: string): "captain" | "manager" {
 
 export async function POST(req: Request) {
   try {
-    const account = await getOrCreateUserAccount();
+    const account = await getExistingUserAccount();
+    if (!account) {
+      return NextResponse.json(
+        { error: "No Maxime account. Sign up before onboarding." },
+        { status: 403 },
+      );
+    }
 
     if (account.accountType === "player") {
       return NextResponse.json(
@@ -108,7 +114,9 @@ export async function POST(req: Request) {
     }
 
     const managerTitle = body.managerTitle?.trim();
-    const managerOrgEmail = body.managerOrgEmail?.trim();
+    const managerOrgEmail = isCollegiate
+      ? body.managerOrgEmail?.trim()
+      : (account.email?.trim() || body.managerOrgEmail?.trim());
 
     if (!managerTitle) {
       return NextResponse.json(
@@ -122,7 +130,7 @@ export async function POST(req: Request) {
         {
           error: isCollegiate
             ? "Official org or school email is required."
-            : "Org contact email is required.",
+            : "Sign in with an email address to continue.",
         },
         { status: 400 },
       );

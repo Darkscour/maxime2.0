@@ -1,6 +1,11 @@
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { clerkImageUrlMap } from "@/lib/clerk-avatars";
+import {
+  canManagerRecruitPlayer,
+  canPlayerJoinTeam,
+  type TeamAudienceContext,
+} from "@/lib/audience-guards";
 
 const CREATE_TABLE_SQL = `CREATE TABLE IF NOT EXISTS "TeamJoinRequest" (
   "id" TEXT NOT NULL,
@@ -55,16 +60,10 @@ export async function fetchPendingJoinRequestTeamIds(
 
 export async function fetchPendingJoinRequestPlayerIdsForTeam(
   teamId: string,
+  managerTeam?: TeamAudienceContext,
 ): Promise<string[]> {
-  return withJoinRequestSchema(async () => {
-    const rows = await db.$queryRaw<{ playerProfileId: string }[]>`
-      SELECT "playerProfileId"
-      FROM "TeamJoinRequest"
-      WHERE "teamId" = ${teamId}
-        AND "status" = 'pending'
-    `;
-    return rows.map((row) => row.playerProfileId);
-  });
+  const rows = await fetchPendingJoinRequestsForTeam(teamId, managerTeam);
+  return rows.map((row) => row.playerProfileId);
 }
 
 export type TeamJoinRequestRow = {
@@ -80,6 +79,8 @@ export type TeamJoinRequestRow = {
   tags: string[];
   requestedAt: Date;
   clerkId: string;
+  playerAccountTier: string | null;
+  playerInstitutionId: string | null;
 };
 
 export type TeamJoinRequestListing = TeamJoinRequestRow & {
@@ -88,8 +89,9 @@ export type TeamJoinRequestListing = TeamJoinRequestRow & {
 
 export async function fetchPendingJoinRequestsForTeam(
   teamId: string,
+  managerTeam?: TeamAudienceContext,
 ): Promise<TeamJoinRequestRow[]> {
-  return withJoinRequestSchema(() =>
+  const rows = await withJoinRequestSchema(() =>
     db.$queryRaw<TeamJoinRequestRow[]>`
       SELECT
         j."id",
@@ -103,7 +105,9 @@ export async function fetchPendingJoinRequestsForTeam(
         p."status",
         p."tags",
         j."createdAt" AS "requestedAt",
-        u."clerkId"
+        u."clerkId",
+        p."accountTier" AS "playerAccountTier",
+        p."institutionId" AS "playerInstitutionId"
       FROM "TeamJoinRequest" j
       JOIN "PlayerProfile" p ON p."id" = j."playerProfileId"
       JOIN "UserAccount" u ON u."id" = p."userId"
@@ -112,12 +116,22 @@ export async function fetchPendingJoinRequestsForTeam(
       ORDER BY j."createdAt" DESC
     `,
   );
+
+  if (!managerTeam) return rows;
+
+  return rows.filter((row) =>
+    canManagerRecruitPlayer(managerTeam, {
+      accountTier: row.playerAccountTier,
+      institutionId: row.playerInstitutionId,
+    }),
+  );
 }
 
 export async function fetchPendingJoinRequestsWithAvatars(
   teamId: string,
+  managerTeam?: TeamAudienceContext,
 ): Promise<TeamJoinRequestListing[]> {
-  const requests = await fetchPendingJoinRequestsForTeam(teamId);
+  const requests = await fetchPendingJoinRequestsForTeam(teamId, managerTeam);
   const imageByClerkId = await clerkImageUrlMap(requests.map((r) => r.clerkId));
   return requests.map((request) => ({
     ...request,

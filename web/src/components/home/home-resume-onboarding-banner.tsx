@@ -6,9 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { MARKETING_BROWSE_PARAM } from "@/lib/onboarding-path";
 import { Button } from "@/components/ui/button";
+import { useOnboardingComplete } from "@/hooks/use-onboarding-complete";
 
 export function HomeResumeOnboardingBanner() {
   const { isSignedIn, isLoaded } = useAuth();
+  const { showDashboard } = useOnboardingComplete();
   const searchParams = useSearchParams();
   const browsing = searchParams.get(MARKETING_BROWSE_PARAM) === "1";
 
@@ -25,12 +27,14 @@ export function HomeResumeOnboardingBanner() {
             Continue onboarding
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
-          <Link
-            href="/dashboard"
-            className="rounded-lg px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            Dashboard
-          </Link>
+          {showDashboard ? (
+            <Link
+              href="/dashboard"
+              className="rounded-lg px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+            >
+              Dashboard
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>

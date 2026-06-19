@@ -12,6 +12,7 @@ import {
   type LiveSponsorFilters,
 } from "@/components/sponsorships/live-sponsor-filters";
 import { SponsorDirectoryCard } from "@/components/sponsorships/sponsor-directory-card";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 
 type LiveSortKey = "alpha" | "difficulty";
 
@@ -68,9 +69,9 @@ export function LiveSponsorshipDirectory({
     <div className={embedded ? "mx-auto max-w-6xl" : ""}>
       {embedded ? (
         <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-            Sponsorships
-          </p>
+          <DashboardSectionEyebrow accent="emerald">
+            Partnerships
+          </DashboardSectionEyebrow>
           <h1 className="font-heading mt-2 text-2xl font-semibold text-white sm:text-3xl">
             Sponsor directory
           </h1>

@@ -9,6 +9,7 @@ import {
 import { hasPendingRecruitmentInvite, isOnWatchlist, isPlayerOnTeam } from "@/lib/player-watchlist-db";
 import { hasPendingJoinRequest } from "@/lib/team-join-request-db";
 import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-button";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { ScoutJoinRequestActions } from "@/components/dashboard/scout-join-request-actions";
 import { Badge } from "@/components/ui/badge";
 import { canEditTeam } from "@/lib/permissions";
@@ -80,6 +81,10 @@ export default async function ScoutPlayerProfilePage({
         <ArrowLeft className="h-4 w-4" />
         Scout
       </Link>
+
+      <DashboardSectionEyebrow accent="violet" className="mt-4">
+        Recruitment
+      </DashboardSectionEyebrow>
 
       <article className="rounded-2xl border border-white/5 bg-[var(--surface)] p-8">
         <p className="text-xs uppercase tracking-wider text-zinc-500">Player profile</p>

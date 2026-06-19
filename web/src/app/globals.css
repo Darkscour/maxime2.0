@@ -204,21 +204,7 @@ select option {
   color: #22d3ee !important;
 }
 
-/* Hide "(Optional)" hints on Clerk sign-up name fields */
-[class*="formFieldHintText"],
-.sign-up-clerk-panel [class*="formFieldHintText"] {
+/* Hide "(Optional)" hints on Clerk name fields */
+[class*="formFieldHintText"] {
   display: none !important;
-}
-
-.sign-up-clerk-panel [class*="formFieldInput"] {
-  border-radius: 0.75rem !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background-color: #0a0c10 !important;
-  color: #e6e8ee !important;
-  padding: 0.875rem 1rem !important;
-}
-
-.sign-up-clerk-panel [class*="formFieldLabel"] {
-  color: #e4e4e7 !important;
-  font-weight: 500 !important;
 }

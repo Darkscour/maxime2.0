@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchTeamRosterWithAvatars } from "@/lib/team-roster";
 import { RosterHubPanel } from "@/components/dashboard/roster-hub-panel";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { canEditTeam } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
@@ -32,9 +33,9 @@ export default async function RosterHubPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-          Roster hub
-        </p>
+        <DashboardSectionEyebrow accent="cyan" className="mt-5">
+          Team
+        </DashboardSectionEyebrow>
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
           <h1 className="font-heading text-3xl font-semibold text-white">
             {ctx.team.name}

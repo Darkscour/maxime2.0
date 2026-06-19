@@ -4,7 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchPendingJoinRequestsWithAvatars } from "@/lib/team-join-request-db";
 import { JoinRequestsPanel } from "@/components/dashboard/join-requests-panel";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { canEditTeam } from "@/lib/permissions";
+import { managerPoolContext } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +21,13 @@ export default async function JoinRequestsPage() {
     redirect("/dashboard/settings/team");
   }
 
-  const items = await fetchPendingJoinRequestsWithAvatars(ctx.team.id);
+  const items = await fetchPendingJoinRequestsWithAvatars(
+    ctx.team.id,
+    managerPoolContext({
+      accountTier: ctx.team.accountTier ?? ctx.accountTier,
+      institutionId: ctx.team.institutionId ?? null,
+    }),
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -31,15 +39,16 @@ export default async function JoinRequestsPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+        <DashboardSectionEyebrow accent="violet" className="mt-5">
           Recruitment
-        </p>
+        </DashboardSectionEyebrow>
         <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
           Join requests
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
-          Players who requested to join {ctx.team.name}. Review their profiles and
-          send a recruitment invite when you want them on the roster.
+          {ctx.accountTier === "collegiate"
+            ? `Players at your school who requested to join ${ctx.team.name}. Only collegiate players from your campus appear here.`
+            : `Grassroots players who requested to join ${ctx.team.name}.`}
         </p>
       </header>
 

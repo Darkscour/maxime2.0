@@ -1,6 +1,12 @@
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { clerkImageUrlMap } from "@/lib/clerk-avatars";
+import {
+  canManagerRecruitPlayer,
+  canPlayerJoinTeam,
+  type PlayerAudienceContext,
+  type TeamAudienceContext,
+} from "@/lib/audience-guards";
 
 function isMissingInviteMessageColumn(e: unknown): boolean {
   const msg =
@@ -41,14 +47,19 @@ export type WatchlistRow = {
   addedAt: Date;
   inviteStatus: string | null;
   clerkId: string;
+  playerAccountTier: string | null;
+  playerInstitutionId: string | null;
 };
 
 export type WatchlistListing = WatchlistRow & { imageUrl: string | null };
 
-export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]> {
+export async function fetchTeamWatchlist(
+  teamId: string,
+  managerTeam?: TeamAudienceContext,
+): Promise<WatchlistRow[]> {
   await pruneWatchlistForRosterMembers(teamId);
 
-  return db.$queryRaw<WatchlistRow[]>`
+  const rows = await db.$queryRaw<WatchlistRow[]>`
     SELECT
       w."id",
       p."id" AS "playerProfileId",
@@ -63,7 +74,9 @@ export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]
       p."hoursPerWeek",
       w."createdAt" AS "addedAt",
       i."status" AS "inviteStatus",
-      u."clerkId"
+      u."clerkId",
+      p."accountTier" AS "playerAccountTier",
+      p."institutionId" AS "playerInstitutionId"
     FROM "PlayerWatchlist" w
     JOIN "PlayerProfile" p ON p."id" = w."playerProfileId"
     JOIN "UserAccount" u ON u."id" = p."userId"
@@ -79,12 +92,22 @@ export async function fetchTeamWatchlist(teamId: string): Promise<WatchlistRow[]
       )
     ORDER BY w."createdAt" DESC
   `;
+
+  if (!managerTeam) return rows;
+
+  return rows.filter((row) =>
+    canManagerRecruitPlayer(managerTeam, {
+      accountTier: row.playerAccountTier,
+      institutionId: row.playerInstitutionId,
+    }),
+  );
 }
 
 export async function fetchTeamWatchlistWithAvatars(
   teamId: string,
+  managerTeam?: TeamAudienceContext,
 ): Promise<WatchlistListing[]> {
-  const items = await fetchTeamWatchlist(teamId);
+  const items = await fetchTeamWatchlist(teamId, managerTeam);
   const imageByClerkId = await clerkImageUrlMap(items.map((item) => item.clerkId));
   return items.map((item) => ({
     ...item,
@@ -226,13 +249,17 @@ export type InviteDetailRow = PendingInviteRow & {
 
 export async function fetchPendingInvitesForPlayer(
   playerProfileId: string,
+  player?: PlayerAudienceContext,
 ): Promise<PendingInviteRow[]> {
-  return withInviteMessageSchema(() => db.$queryRaw<PendingInviteRow[]>`
+  const rows = await withInviteMessageSchema(() => db.$queryRaw<
+    (PendingInviteRow & { teamAccountTier: string | null })[]
+  >`
     SELECT
       i."id",
       t."name" AS "teamName",
       t."id" AS "teamId",
       t."inviteCode",
+      t."accountTier" AS "teamAccountTier",
       i."message",
       i."createdAt" AS "invitedAt"
     FROM "PlayerRecruitmentInvite" i
@@ -241,6 +268,16 @@ export async function fetchPendingInvitesForPlayer(
       AND i."status" = 'pending'
     ORDER BY i."createdAt" DESC
   `);
+
+  if (!player?.accountTier) {
+    return rows.map(({ teamAccountTier: _t, ...invite }) => invite);
+  }
+
+  return rows
+    .filter((invite) =>
+      canPlayerJoinTeam(player, { accountTier: invite.teamAccountTier }),
+    )
+    .map(({ teamAccountTier: _t, ...invite }) => invite);
 }
 
 export async function getInviteById(inviteId: string): Promise<InviteDetailRow | null> {

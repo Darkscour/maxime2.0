@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getOnboardingStatus } from "@/lib/auth-user";
+import { getOnboardingStatusReadOnly } from "@/lib/auth-user";
 
 export async function GET() {
   const { userId } = await auth();
@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ signedIn: false });
   }
 
-  const status = await getOnboardingStatus();
+  const status = await getOnboardingStatusReadOnly();
   return NextResponse.json({
     signedIn: true,
     ...status,

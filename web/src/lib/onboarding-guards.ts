@@ -1,6 +1,20 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getOnboardingStatus } from "@/lib/auth-user";
 import { getOnboardingRouteGuard } from "@/lib/onboarding-complete";
+import { buildOnboardingHref } from "@/lib/onboarding-path";
+
+async function readNoticeFromRequest(): Promise<string | undefined> {
+  const headerStore = await headers();
+  const search =
+    headerStore.get("x-search") ??
+    new URL(headerStore.get("x-url") ?? "http://local/onboarding", "http://local")
+      .search;
+  const params = new URLSearchParams(
+    search.startsWith("?") ? search.slice(1) : search,
+  );
+  return params.get("notice") ?? undefined;
+}
 
 /** Server-only: redirect away from onboarding routes the user shouldn't access. */
 export async function enforceOnboardingRoute(
@@ -21,7 +35,14 @@ export async function enforceOnboardingRoute(
   };
 
   const guard = getOnboardingRouteGuard(path, account, options);
-  if (guard) redirect(guard);
+  if (guard) {
+    const notice = await readNoticeFromRequest();
+    redirect(
+      notice
+        ? buildOnboardingHref(guard, { extra: { notice } })
+        : guard,
+    );
+  }
 
   return status;
 }

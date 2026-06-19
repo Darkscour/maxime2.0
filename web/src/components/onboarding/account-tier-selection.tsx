@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { GraduationCap, Globe2 } from "lucide-react";
 import type { AccountTier } from "@/lib/account-tier";
 import { getTierDescription } from "@/lib/account-tier";
 import { OnboardingBackNav } from "@/components/onboarding/onboarding-back-nav";
 import { StepHeader } from "@/components/onboarding/form-fields";
+import { recordOnboardingCheckpoint } from "@/lib/onboarding-checkpoint-client";
 
 type AccountTierSelectionProps = {
   role: "team_manager" | "player";
@@ -72,6 +76,7 @@ function TierCard({
   role: "team_manager" | "player";
   tone: "cyan" | "violet";
 }) {
+  const router = useRouter();
   const { title, description } = getTierDescription(tier, role);
   const ring =
     tone === "cyan"
@@ -79,9 +84,20 @@ function TierCard({
       : "hover:border-violet-400/30 hover:bg-violet-400/[0.04]";
   const iconColor = tone === "cyan" ? "text-cyan-400" : "text-violet-400";
 
+  async function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    try {
+      await recordOnboardingCheckpoint(href);
+    } catch {
+      // Continue navigation even if checkpoint sync fails.
+    }
+    router.push(href);
+  }
+
   return (
     <Link
       href={href}
+      onClick={handleClick}
       className={`group flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-6 transition-colors ${ring}`}
     >
       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">

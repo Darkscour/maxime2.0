@@ -92,6 +92,7 @@ model UserAccount {
   accountType        String?  // "team_manager" | "player"
   accountTier        String?  // "collegiate" | "grassroots"
   onboardingComplete Boolean  @default(false)
+  hasWelcomedToDashboard Boolean @default(false)
   managerTitle       String?
   managerOrgEmail    String?
   managerVerificationStatus String? // "verified" | "pending"

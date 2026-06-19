@@ -79,6 +79,7 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
     <form onSubmit={handleSubmit}>
       <SettingsHero
         eyebrow="Team"
+        accent="cyan"
         title="Org profile"
         description="Your team's public identity — titles, region, and roster size."
         preview={

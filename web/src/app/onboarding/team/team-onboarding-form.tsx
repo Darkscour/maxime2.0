@@ -55,7 +55,13 @@ const INITIAL_TEAM_DRAFT: TeamDraft = {
   authorized: false,
 };
 
-export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
+export function TeamOnboardingForm({
+  tier,
+  signInEmail,
+}: {
+  tier: AccountTier;
+  signInEmail?: string | null;
+}) {
   const isCollegiate = tier === "collegiate";
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -85,6 +91,18 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
     setError("");
     setLoading(true);
 
+    if (isCollegiate && !draft.institution) {
+      setError("Select your school / university from the list.");
+      setLoading(false);
+      return;
+    }
+
+    if (isCollegiate && !draft.managerOrgEmail.trim()) {
+      setError("School email is required to verify your collegiate affiliation.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/onboarding/team", {
         method: "POST",
@@ -98,7 +116,9 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
           rosterSize: draft.rosterSize ? Number(draft.rosterSize) : undefined,
           discordUrl: draft.discordUrl || undefined,
           managerTitle: draft.managerTitle,
-          managerOrgEmail: draft.managerOrgEmail,
+          managerOrgEmail: isCollegiate
+            ? draft.managerOrgEmail
+            : (signInEmail?.trim() || draft.managerOrgEmail),
           authorized: draft.authorized,
         }),
       });
@@ -128,14 +148,15 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
     draft.name &&
     draft.games.length > 0 &&
     draft.managerTitle &&
-    draft.managerOrgEmail &&
     draft.authorized &&
-    (!isCollegiate || !!draft.institution) &&
+    (isCollegiate
+      ? !!draft.managerOrgEmail.trim() && !!draft.institution
+      : !!signInEmail?.trim()) &&
     (isCollegiate || !!draft.region);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <OnboardingBackNav href={tierBackHref} label="Back to account type" />
+      <OnboardingBackNav href="/onboarding/team/tier" label="Back to account type" />
       <StepHeader
         step="Team onboarding"
         title={
@@ -152,19 +173,69 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
 
       <FormError message={error} />
 
-      <div
-        className={
-          isCollegiate
-            ? "space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5"
-            : "space-y-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5"
-        }
-      >
-        <p className="text-sm font-medium text-violet-100">
-          {isCollegiate ? "Collegiate manager verification" : "Org contact"}
-        </p>
+      {isCollegiate ? (
+        <div className="space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5">
+          <div>
+            <p className="text-sm font-medium text-violet-100">
+              Collegiate org verification
+            </p>
+            <p className="mt-1 text-sm text-zinc-400">
+              Collegiate teams require a school affiliation and official school
+              email. You cannot create a campus org profile with a personal email
+              alone.
+            </p>
+          </div>
+          <SchoolCombobox
+            value={draft.institution}
+            onChange={(institution) => patchDraft("institution", institution)}
+            hint="Search registered U.S. colleges and universities"
+            required
+          />
+          <FormField
+            label="School email"
+            required
+            hint={
+              draft.institution?.primaryDomain
+                ? `Must be your official address at ${draft.institution.name} (e.g. you@${draft.institution.primaryDomain})`
+                : "Use your official .edu or university alias email"
+            }
+          >
+            <TextInput
+              type="email"
+              value={draft.managerOrgEmail}
+              onChange={(e) => patchDraft("managerOrgEmail", e.target.value)}
+              placeholder={
+                draft.institution?.primaryDomain
+                  ? `you@${draft.institution.primaryDomain}`
+                  : "you@school.edu"
+              }
+              required
+            />
+          </FormField>
+        </div>
+      ) : (
+        <div className="space-y-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5">
+          <p className="text-sm font-medium text-cyan-100">Manager contact</p>
+          <FormField
+            label="Your email"
+            hint="We use your sign-in email for your grassroots manager account — no school verification required."
+          >
+            <TextInput
+              type="email"
+              value={signInEmail ?? ""}
+              readOnly
+              className="opacity-80"
+            />
+          </FormField>
+        </div>
+      )}
+
+      <div className="space-y-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+        <p className="text-sm font-medium text-zinc-200">Leadership details</p>
         <FormField
           label="Your role at the org"
           hint={isCollegiate ? "Required for collegiate team managers" : "Required"}
+          required
         >
           <SelectInput
             value={draft.managerTitle}
@@ -178,24 +249,6 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
               </option>
             ))}
           </SelectInput>
-        </FormField>
-        <FormField
-          label={isCollegiate ? "Official org / school email" : "Org contact email"}
-          hint={
-            isCollegiate
-              ? draft.institution?.primaryDomain
-                ? `Use your .edu or @${draft.institution.primaryDomain} address to verify you represent ${draft.institution.name}`
-                : "Use your .edu or team domain email — we use this to verify you represent the org"
-              : "Primary email for your organization"
-          }
-        >
-          <TextInput
-            type="email"
-            value={draft.managerOrgEmail}
-            onChange={(e) => patchDraft("managerOrgEmail", e.target.value)}
-            placeholder={isCollegiate ? "you@school.edu" : "contact@yourteam.gg"}
-            required
-          />
         </FormField>
         <label className="flex items-start gap-3 text-sm text-zinc-300">
           <input
@@ -212,7 +265,7 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
         </label>
       </div>
 
-      <FormField label="Team name" hint="How your org appears on Maxime">
+      <FormField label="Team name" hint="How your org appears on Maxime" required>
         <TextInput
           value={draft.name}
           onChange={(e) => patchDraft("name", e.target.value)}
@@ -223,15 +276,6 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
           maxLength={80}
         />
       </FormField>
-
-      {isCollegiate && (
-        <SchoolCombobox
-          value={draft.institution}
-          onChange={(institution) => patchDraft("institution", institution)}
-          hint="Required — campus players at this school appear in your talent pool"
-          required
-        />
-      )}
 
       <FormField label="Games" hint="Select all titles your org competes in">
         <div className="flex flex-wrap gap-2">
@@ -256,23 +300,26 @@ export function TeamOnboardingForm({ tier }: { tier: AccountTier }) {
       </FormField>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <FormField
-          label="Primary region"
-          hint={isCollegiate ? undefined : "Required — used for regional player discovery"}
-        >
-          <SelectInput
-            value={draft.region}
-            onChange={(e) => patchDraft("region", e.target.value)}
-            required={!isCollegiate}
+        {!isCollegiate && (
+          <FormField
+            label="Primary region"
+            hint="Required — used for regional player discovery"
+            required
           >
-            <option value="">Select region</option>
-            {ONBOARDING_REGIONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </SelectInput>
-        </FormField>
+            <SelectInput
+              value={draft.region}
+              onChange={(e) => patchDraft("region", e.target.value)}
+              required
+            >
+              <option value="">Select region</option>
+              {ONBOARDING_REGIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </SelectInput>
+          </FormField>
+        )}
 
         {isCollegiate && (
           <FormField label="Target roster size" hint="Approximate players you plan to field">

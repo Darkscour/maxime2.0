@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getOrCreateUserAccount } from "@/lib/auth-user";
+import { getExistingUserAccount } from "@/lib/auth-user";
 import { removeFromWatchlist } from "@/lib/player-watchlist-db";
 import { canPlayerJoinTeam } from "@/lib/audience-guards";
 
 export async function POST(req: Request) {
   try {
-    const account = await getOrCreateUserAccount();
+    const account = await getExistingUserAccount();
+    if (!account) {
+      return NextResponse.json(
+        { error: "No Maxime account. Sign up before onboarding." },
+        { status: 403 },
+      );
+    }
 
     if (account.accountType === "team_manager") {
       return NextResponse.json(

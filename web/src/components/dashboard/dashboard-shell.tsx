@@ -8,7 +8,13 @@ import { SignOutButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
-import { getDashboardNavItems, onboardingPreviewNavItem } from "@/lib/dashboard-nav";
+import {
+  getDashboardNavGroups,
+  navGroupAccentBorderClasses,
+  navGroupAccentEyebrowClasses,
+  navGroupAccentLinkClasses,
+  type NavGroupAccent,
+} from "@/lib/dashboard-nav";
 
 export function DashboardShell({
   children,
@@ -21,38 +27,13 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navItems = getDashboardNavItems(accountType, accountTier);
+  const navGroups = getDashboardNavGroups(accountType, accountTier);
 
   return (
     <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
       <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
         <SidebarHeader accountType={accountType} accountTier={accountTier} />
-        <nav className="space-y-1 px-3 py-4">
-          {navItems.map((item) => (
-            <SidebarLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              active={item.isActive?.(pathname) ?? pathname === item.href}
-            />
-          ))}
-          <div className="my-3 border-t border-dashed border-amber-400/20 pt-3">
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-400/80">
-              Temporary
-            </p>
-            <SidebarLink
-              href={onboardingPreviewNavItem.href}
-              label={onboardingPreviewNavItem.label}
-              icon={onboardingPreviewNavItem.icon}
-              active={
-                onboardingPreviewNavItem.isActive?.(pathname) ??
-                pathname.startsWith("/onboarding")
-              }
-              preview
-            />
-          </div>
-        </nav>
+        <SidebarNav groups={navGroups} pathname={pathname} />
         <SidebarFooter />
       </aside>
 
@@ -79,34 +60,11 @@ export function DashboardShell({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <nav className="space-y-1 px-3 py-4">
-          {navItems.map((item) => (
-            <SidebarLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              active={item.isActive?.(pathname) ?? pathname === item.href}
-              onNavigate={() => setMobileOpen(false)}
-            />
-          ))}
-          <div className="my-3 border-t border-dashed border-amber-400/20 pt-3">
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-400/80">
-              Temporary
-            </p>
-            <SidebarLink
-              href={onboardingPreviewNavItem.href}
-              label={onboardingPreviewNavItem.label}
-              icon={onboardingPreviewNavItem.icon}
-              active={
-                onboardingPreviewNavItem.isActive?.(pathname) ??
-                pathname.startsWith("/onboarding")
-              }
-              preview
-              onNavigate={() => setMobileOpen(false)}
-            />
-          </div>
-        </nav>
+        <SidebarNav
+          groups={navGroups}
+          pathname={pathname}
+          onNavigate={() => setMobileOpen(false)}
+        />
         <SidebarFooter onSignOut={() => setMobileOpen(false)} />
       </aside>
 
@@ -189,46 +147,90 @@ function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
   );
 }
 
+function SidebarNav({
+  groups,
+  pathname,
+  onNavigate,
+}: {
+  groups: ReturnType<typeof getDashboardNavGroups>;
+  pathname: string;
+  onNavigate?: () => void;
+}) {
+  return (
+    <nav className="px-3 py-4">
+      {groups.map((group, index) => {
+        const accent = group.accent ?? "cyan";
+
+        return (
+          <div
+            key={group.label ?? `nav-group-${index}`}
+            className={cn(
+              index > 0 && "mt-3 border-t border-dashed pt-3",
+              index > 0 && navGroupAccentBorderClasses[accent],
+            )}
+          >
+            {group.label ? (
+              <p
+                className={cn(
+                  "mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider",
+                  navGroupAccentEyebrowClasses[accent],
+                )}
+              >
+                {group.label}
+              </p>
+            ) : null}
+            <div className="space-y-1">
+              {group.items.map((item) => (
+                <SidebarLink
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  accent={accent}
+                  active={item.isActive?.(pathname) ?? pathname === item.href}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
 function SidebarLink({
   href,
   label,
   icon: Icon,
   active,
-  preview,
+  accent = "cyan",
   onNavigate,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
-  preview?: boolean;
+  accent?: NavGroupAccent;
   onNavigate?: () => void;
 }) {
+  const linkStyles = navGroupAccentLinkClasses[accent];
+
   return (
     <Link
       href={href}
       onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-        preview
-          ? active
-            ? "bg-amber-400/10 text-amber-100 ring-1 ring-inset ring-amber-400/30"
-            : "text-amber-200/70 hover:bg-amber-400/5 hover:text-amber-100"
-          : active
-            ? "bg-cyan-400/10 text-white ring-1 ring-inset ring-cyan-400/25"
-            : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+        active
+          ? linkStyles.active
+          : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
       )}
     >
       <Icon
         className={cn(
           "h-4 w-4",
-          preview
-            ? active
-              ? "text-amber-300"
-              : "text-amber-400/70"
-            : active
-              ? "text-cyan-400"
-              : "text-zinc-500",
+          active ? linkStyles.iconActive : "text-zinc-500",
         )}
       />
       {label}

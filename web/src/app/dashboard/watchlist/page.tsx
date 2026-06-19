@@ -4,7 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchTeamWatchlistWithAvatars } from "@/lib/player-watchlist-db";
 import { WatchlistPanel } from "@/components/dashboard/watchlist-panel";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { canEditTeam } from "@/lib/permissions";
+import { managerPoolContext } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +21,13 @@ export default async function WatchlistPage() {
     redirect("/dashboard/settings/team");
   }
 
-  const items = await fetchTeamWatchlistWithAvatars(ctx.team.id);
+  const items = await fetchTeamWatchlistWithAvatars(
+    ctx.team.id,
+    managerPoolContext({
+      accountTier: ctx.team.accountTier ?? ctx.accountTier,
+      institutionId: ctx.team.institutionId ?? null,
+    }),
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -31,15 +39,16 @@ export default async function WatchlistPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
+        <DashboardSectionEyebrow accent="violet" className="mt-5">
           Recruitment
-        </p>
+        </DashboardSectionEyebrow>
         <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
           Watchlist
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
-          Shortlist players you&apos;re considering, then send invites when you&apos;re
-          ready to recruit them to {ctx.team.name}.
+          {ctx.accountTier === "collegiate"
+            ? `Shortlist collegiate players at your school, then send invites when you're ready to recruit them to ${ctx.team.name}.`
+            : `Shortlist grassroots players, then send invites when you're ready to recruit them to ${ctx.team.name}.`}
         </p>
       </header>
 

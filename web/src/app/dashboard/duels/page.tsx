@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { canEditTeam } from "@/lib/permissions";
 import { DuelsPanel } from "@/components/dashboard/duels-panel";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { listDuelsForTeam } from "@/lib/duels";
 import type { PublicTeamListing } from "@/lib/teams-directory";
@@ -34,9 +35,9 @@ export default async function DuelsPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-violet-400">
-          Grassroots
-        </p>
+        <DashboardSectionEyebrow accent="cyan" className="mt-5">
+          Team
+        </DashboardSectionEyebrow>
         <h1 className="font-heading mt-2 text-3xl font-semibold text-white">Duels</h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
           Challenge other grassroots teams and track responses.

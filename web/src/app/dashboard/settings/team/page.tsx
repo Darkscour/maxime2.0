@@ -6,6 +6,7 @@ import {
   TeamProfileEditForm,
   type TeamProfileFormData,
 } from "@/components/dashboard/team-profile-edit-form";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 
 export const dynamic = "force-dynamic";
 
@@ -45,9 +46,9 @@ export default async function TeamSettingsPage() {
             <ArrowLeft className="h-4 w-4" />
             Dashboard
           </Link>
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.22em] text-violet-400/90">
+          <DashboardSectionEyebrow accent="cyan" className="mt-5">
             Team
-          </p>
+          </DashboardSectionEyebrow>
           <h1 className="font-heading mt-2 text-2xl font-semibold text-white">
             Team settings
           </h1>

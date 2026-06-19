@@ -19,6 +19,7 @@ import {
   ONBOARDING_GAMES,
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_ONBOARDING_REGIONS,
+  derivePlayerRegionFromInstitutionState,
   getRanksForGame,
 } from "@/lib/onboarding-options";
 import type { AccountTier } from "@/lib/account-tier";
@@ -29,6 +30,7 @@ import {
 } from "@/lib/onboarding-path";
 import type { InstitutionListItem } from "@/lib/institutions";
 import { SchoolCombobox } from "@/components/onboarding/school-combobox";
+import { recordOnboardingCheckpoint } from "@/lib/onboarding-checkpoint-client";
 import {
   clearOnboardingDraft,
   onboardingDraftKey,
@@ -61,7 +63,6 @@ const INITIAL_PLAYER_DRAFT: PlayerDraft = {
 
 export function PlayerOnboardingForm({
   tier,
-  signInEmail,
 }: {
   tier: AccountTier;
   signInEmail?: string | null;
@@ -108,6 +109,17 @@ export function PlayerOnboardingForm({
     }
 
     try {
+      const region = isCollegiate
+        ? derivePlayerRegionFromInstitutionState(draft.institution?.state) ??
+          draft.region
+        : draft.region;
+
+      if (isCollegiate && !region) {
+        setError("Select your school so we can place you in the correct region.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/onboarding/player", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +129,7 @@ export function PlayerOnboardingForm({
           game: draft.game,
           role: draft.role,
           rank: draft.rank,
-          region: draft.region,
+          region,
           institutionId: isCollegiate ? draft.institution?.id : undefined,
           schoolEmail: isCollegiate ? draft.schoolEmail : undefined,
           bio: draft.bio || undefined,
@@ -156,13 +168,13 @@ export function PlayerOnboardingForm({
     draft.game &&
     draft.role &&
     draft.rank &&
-    draft.region &&
-    (!isCollegiate ||
-      (!!draft.institution && draft.schoolEmail.trim().length > 0));
+    (isCollegiate
+      ? !!draft.institution && draft.schoolEmail.trim().length > 0
+      : !!draft.region);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <OnboardingBackNav href={tierBackHref} label="Back to account type" />
+      <OnboardingBackNav href="/onboarding/player/tier" label="Back to account type" />
       <StepHeader
         step="Player onboarding"
         title={
@@ -198,12 +210,11 @@ export function PlayerOnboardingForm({
           />
           <FormField
             label="School email"
+            required
             hint={
               draft.institution?.primaryDomain
                 ? `Must be your official address at ${draft.institution.name} (e.g. you@${draft.institution.primaryDomain})`
-                : signInEmail
-                  ? `Use your official .edu or university alias (signed in as ${signInEmail})`
-                  : "Use your official .edu or university alias email"
+                : "Use your official .edu or university alias email"
             }
           >
             <TextInput
@@ -263,10 +274,11 @@ export function PlayerOnboardingForm({
           </FormField>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className={`grid gap-6 ${isCollegiate ? "" : "sm:grid-cols-2"}`}>
           <FormField
             label="Rank"
             hint={draft.game ? `Current tier in ${draft.game}` : undefined}
+            required
           >
             <SelectInput
               value={draft.rank}
@@ -285,27 +297,26 @@ export function PlayerOnboardingForm({
             </SelectInput>
           </FormField>
 
-          <FormField
-            label="Region"
-            hint={
-              isCollegiate
-                ? "Helps campus teams understand your ping / schedule"
-                : "Grassroots teams filter recruits by region"
-            }
-          >
-            <SelectInput
-              value={draft.region}
-              onChange={(e) => patchDraft("region", e.target.value)}
+          {!isCollegiate && (
+            <FormField
+              label="Region"
+              hint="Grassroots teams filter recruits by region"
               required
             >
-              <option value="">Select region</option>
-              {PLAYER_ONBOARDING_REGIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </SelectInput>
-          </FormField>
+              <SelectInput
+                value={draft.region}
+                onChange={(e) => patchDraft("region", e.target.value)}
+                required
+              >
+                <option value="">Select region</option>
+                {PLAYER_ONBOARDING_REGIONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </SelectInput>
+            </FormField>
+          )}
         </div>
       </div>
 
@@ -374,6 +385,15 @@ export function PlayerOnboardingForm({
         </Button>
         <Link
           href={tierBackHref}
+          onClick={async (e) => {
+            e.preventDefault();
+            try {
+              await recordOnboardingCheckpoint(tierBackHref);
+            } catch {
+              // Continue navigation even if checkpoint sync fails.
+            }
+            router.push(tierBackHref);
+          }}
           className="text-sm text-zinc-400 hover:text-white"
         >
           ← Back

@@ -45,7 +45,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const pendingInvites = await fetchPendingInvitesForPlayer(profile.id);
+    const pendingInvites = await fetchPendingInvitesForPlayer(profile.id, {
+      accountTier: profile.accountTier,
+      institutionId: profile.institutionId,
+    });
     if (pendingInvites.some((invite) => invite.teamId === teamId)) {
       return NextResponse.json(
         { error: "This team already sent you an invite — check Team invites on your dashboard." },

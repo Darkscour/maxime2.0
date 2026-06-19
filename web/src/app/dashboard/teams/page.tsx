@@ -6,6 +6,7 @@ import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
+import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
 import { parseTier } from "@/lib/audience-guards";
 
@@ -27,7 +28,12 @@ export default async function DashboardTeamsPage() {
     ? await fetchPendingJoinRequestTeamIds(ctx.playerProfile.id)
     : [];
   const pendingInviteTeamIds = ctx.playerProfile
-    ? (await fetchPendingInvitesForPlayer(ctx.playerProfile.id)).map((invite) => invite.teamId)
+    ? (
+        await fetchPendingInvitesForPlayer(ctx.playerProfile.id, {
+          accountTier: ctx.playerProfile.accountTier ?? ctx.accountTier,
+          institutionId: ctx.playerProfile.institutionId,
+        })
+      ).map((invite) => invite.teamId)
     : [];
 
   return (
@@ -40,15 +46,16 @@ export default async function DashboardTeamsPage() {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-          Teams
-        </p>
+        <DashboardSectionEyebrow accent="cyan" className="mt-5">
+          Explore
+        </DashboardSectionEyebrow>
         <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
           Browse registered teams
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
-          Explore orgs on Maxime and join one with an invite code from their captain
-          or manager.
+          {playerTier === "collegiate"
+            ? "Explore collegiate orgs on Maxime and join one with an invite code from their captain or manager."
+            : "Explore grassroots orgs on Maxime and join one with an invite code from their captain or manager."}
         </p>
       </header>
 

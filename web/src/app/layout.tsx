@@ -42,18 +42,24 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider
-      appearance={clerkAuthAppearance}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      afterSignInUrl="/auth/continue?intent=sign-in"
-      afterSignUpUrl="/auth/continue?intent=sign-up"
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <html
-        lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      <body
+        className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-cyan-500/30"
+        suppressHydrationWarning
       >
-        <body className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-cyan-500/30">
+        <ClerkProvider
+          appearance={clerkAuthAppearance}
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInForceRedirectUrl="/auth/continue?intent=sign-in"
+          signUpForceRedirectUrl="/auth/continue?intent=sign-up"
+          signInFallbackRedirectUrl="/auth/continue?intent=sign-in"
+          signUpFallbackRedirectUrl="/auth/continue?intent=sign-up"
+        >
           <MarketingOnly>
             <Navbar />
           </MarketingOnly>
@@ -61,8 +67,8 @@ export default function RootLayout({
           <MarketingOnly>
             <Footer />
           </MarketingOnly>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

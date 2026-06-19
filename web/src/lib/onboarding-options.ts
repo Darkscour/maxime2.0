@@ -81,6 +81,32 @@ export const ONBOARDING_REGIONS: Region[] = [
 /** Player onboarding — limited region list for now. */
 export const PLAYER_ONBOARDING_REGIONS: Region[] = ["NA East", "NA West"];
 
+/** U.S. states mapped to NA West for collegiate region auto-fill. */
+const NA_WEST_STATE_CODES = new Set([
+  "AK",
+  "AZ",
+  "CA",
+  "CO",
+  "HI",
+  "ID",
+  "MT",
+  "NV",
+  "NM",
+  "OR",
+  "UT",
+  "WA",
+  "WY",
+]);
+
+/** Infer NA East / NA West from a U.S. collegiate institution's state. */
+export function derivePlayerRegionFromInstitutionState(
+  state: string | null | undefined,
+): (typeof PLAYER_ONBOARDING_REGIONS)[number] | null {
+  if (!state?.trim()) return null;
+  const code = state.trim().toUpperCase();
+  return NA_WEST_STATE_CODES.has(code) ? "NA West" : "NA East";
+}
+
 export const PLAYER_BIO_MAX_LENGTH = 150;
 
 export const PLAYER_STATUSES = [

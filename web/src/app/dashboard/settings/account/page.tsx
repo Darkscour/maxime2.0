@@ -16,6 +16,7 @@ export default async function AccountSettingsPage() {
     <div className="space-y-8">
       <SettingsHero
         eyebrow="Account"
+        accent="muted"
         title="User settings"
         description="Your sign-in identity on Maxime. Team and player profiles are managed separately."
       />

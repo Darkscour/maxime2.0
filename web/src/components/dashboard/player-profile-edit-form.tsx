@@ -112,7 +112,8 @@ export function PlayerProfileEditForm({
   return (
     <form onSubmit={handleSubmit}>
       <SettingsHero
-        eyebrow="Profile"
+        eyebrow="Account"
+        accent="violet"
         title="Your player card"
         description="Shape how captains and scouts see you — competitive details, availability, and the story behind your playstyle."
         preview={

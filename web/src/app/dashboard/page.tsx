@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Clock, Sparkles } from "lucide-react";
-import { getDashboardContext } from "@/lib/auth-user";
+import { getDashboardContext, markDashboardWelcomed } from "@/lib/auth-user";
 import { isDeveloperEmail } from "@/lib/developer";
 import { DeveloperMarketingPreview } from "@/components/dashboard/developer-marketing-preview";
 import { Badge } from "@/components/ui/badge";
@@ -57,8 +57,14 @@ function playerTeamStatHint(team: TeamMeta) {
 function managerAccountHint(
   managerVerificationStatus: string | null | undefined,
   hasTeam: boolean,
+  accountTier?: string | null,
 ) {
   if (!hasTeam) return "Complete team setup";
+  if (accountTier === "grassroots") {
+    return isVerifiedManager(managerVerificationStatus)
+      ? "Grassroots manager"
+      : "Email verification pending";
+  }
   return isVerifiedManager(managerVerificationStatus)
     ? "Verified manager"
     : "Verification pending";
@@ -76,6 +82,11 @@ function rosterStatHint(pendingInvites: number) {
 
 export default async function DashboardPage() {
   const ctx = await getDashboardContext();
+  const isFirstDashboardVisit = !ctx.hasWelcomedToDashboard;
+  if (isFirstDashboardVisit) {
+    await markDashboardWelcomed(ctx.userId);
+  }
+
   const isManager = ctx.accountType === "team_manager";
   const isGrassroots = ctx.accountTier === "grassroots";
   const welcomeName = isManager
@@ -96,7 +107,10 @@ export default async function DashboardPage() {
         ? getManagerOrgAnalytics(ctx.team.id)
         : Promise.resolve(null),
       !isManager && ctx.playerProfile
-        ? fetchPendingInvitesForPlayer(ctx.playerProfile.id)
+        ? fetchPendingInvitesForPlayer(ctx.playerProfile.id, {
+            accountTier: ctx.playerProfile.accountTier ?? ctx.accountTier,
+            institutionId: ctx.playerProfile.institutionId,
+          })
         : Promise.resolve([]),
       isManager && ctx.team
         ? fetchTeamRosterWithAvatars(ctx.team.id)
@@ -108,7 +122,11 @@ export default async function DashboardPage() {
     : "Player";
 
   const accountHint = isManager
-    ? managerAccountHint(ctx.managerVerificationStatus, !!ctx.team)
+    ? managerAccountHint(
+        ctx.managerVerificationStatus,
+        !!ctx.team,
+        ctx.accountTier,
+      )
     : ctx.membershipRole && ctx.team
       ? `${formatMembershipRole(ctx.membershipRole)} · ${ctx.team.name}`
       : "Individual account";
@@ -126,14 +144,16 @@ export default async function DashboardPage() {
             Your workspace
           </p>
           <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Welcome back, {welcomeName}
+            {isFirstDashboardVisit ? "Welcome" : "Welcome back"}, {welcomeName}
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
             {isManager
               ? isGrassroots
                 ? "Run grassroots recruiting, challenge teams in Duels, and manage your roster."
-                : "Manage sponsorship outreach, scout players, and keep your org profile in one place."
-              : "Your player profile is live. Browse registered teams, join a roster, and keep your scout card up to date."}
+                : "Manage sponsorship outreach, scout campus players, and keep your org profile in one place."
+              : isGrassroots
+                ? "Your grassroots player profile is live. Browse grassroots teams and join a roster when you're ready."
+                : "Your collegiate player profile is live. Browse teams at your school and keep your scout card up to date."}
           </p>
           {ctx.email && (
             <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
@@ -322,7 +342,11 @@ export default async function DashboardPage() {
               <FeatureTile
                 href="/dashboard/scout"
                 title="Scout players"
-                description="Browse registered players, save candidates to your watchlist, and send invites."
+                description={
+                  isGrassroots
+                    ? "Browse grassroots players, save candidates to your watchlist, and send invites."
+                    : "Browse collegiate players at your school, save candidates, and send invites."
+                }
                 icon={Search}
                 tone="violet"
               />
@@ -369,7 +393,11 @@ export default async function DashboardPage() {
               <FeatureTile
                 href="/dashboard/teams"
                 title="Browse teams"
-                description="View orgs registered on Maxime and join one with an invite code."
+                description={
+                  isGrassroots
+                    ? "View grassroots orgs on Maxime and join one with an invite code."
+                    : "View collegiate teams on Maxime and join one with an invite code."
+                }
                 icon={Building2}
                 tone="cyan"
               />

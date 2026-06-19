@@ -9,6 +9,7 @@ import { parseAccountTier } from "@/lib/account-tier";
 import { isAccountTier } from "@/lib/account-tier";
 import type { AccountTier } from "@/lib/account-tier";
 import { buildOnboardingHref } from "@/lib/onboarding-path";
+import { syncOnboardingCheckpoint } from "@/lib/persist-onboarding-progress";
 import { PlayerOnboardingForm } from "./player-onboarding-form";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function PlayerOnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ test?: string; revise?: string; tier?: string }>;
+  searchParams: Promise<{ test?: string; revise?: string; tier?: string; notice?: string }>;
 }) {
   const params = await searchParams;
   const testMode = isOnboardingTestMode(params);
@@ -40,9 +41,12 @@ export default async function PlayerOnboardingPage({
       buildOnboardingHref("/onboarding/player/tier", {
         test: testMode,
         revise: reviseMode,
+        extra: params.notice ? { notice: params.notice } : undefined,
       }),
     );
   }
+
+  await syncOnboardingCheckpoint("/onboarding/player", `?tier=${tier}`);
 
   return (
     <Suspense fallback={null}>

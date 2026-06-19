@@ -6,15 +6,20 @@ export function FormField({
   hint,
   children,
   className,
+  required,
 }: {
   label: string;
   hint?: string;
   children: React.ReactNode;
   className?: string;
+  required?: boolean;
 }) {
   return (
     <label className={cn("block", className)}>
-      <span className="text-sm font-medium text-zinc-200">{label}</span>
+      <span className="text-sm font-medium text-zinc-200">
+        {label}
+        {required && <span className="text-red-400"> *</span>}
+      </span>
       {hint && <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>}
       <div className="mt-2">{children}</div>
     </label>

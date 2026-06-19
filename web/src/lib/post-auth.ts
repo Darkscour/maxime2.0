@@ -1,32 +1,24 @@
 import { deriveOnboardingComplete } from "@/lib/onboarding-complete";
+import { appendMaximeSignupPending } from "@/lib/auth-intent";
+import {
+  hasOnboardingProgress,
+  resolveIncompleteOnboardingPath,
+} from "@/lib/onboarding-resume";
 
 export type AuthIntent = "sign-in" | "sign-up";
 
 export type PostAuthInput = {
   accountType: string | null;
+  accountTier?: string | null;
   onboardingComplete: boolean;
   hasTeam: boolean;
   hasPlayerProfile: boolean;
   membershipRole?: string | null;
+  teamId?: string;
+  playerProfileId?: string;
   intent: AuthIntent;
   hadPlatformAccount: boolean;
 };
-
-function onboardingPath(status: Omit<PostAuthInput, "intent" | "hadPlatformAccount">) {
-  if (status.accountType === "team_manager" && !status.hasTeam) {
-    return "/onboarding/team";
-  }
-
-  if (status.accountType === "player" && !status.hasPlayerProfile) {
-    return "/onboarding/player";
-  }
-
-  if (status.hasTeam || status.hasPlayerProfile) {
-    return "/onboarding/done";
-  }
-
-  return "/onboarding";
-}
 
 /** Where to send a user right after Clerk sign-in or sign-up. */
 export function resolvePostAuthPath(status: PostAuthInput): string {
@@ -47,14 +39,25 @@ export function resolvePostAuthPath(status: PostAuthInput): string {
     return "/dashboard";
   }
 
-  // New sign-ups always begin at onboarding role selection.
+  // Incomplete users with saved progress resume where they left off.
+  const progress = {
+    accountType: status.accountType,
+    accountTier: status.accountTier,
+    hasTeam: status.hasTeam,
+    hasPlayerProfile: status.hasPlayerProfile,
+  };
+
+  if (status.hadPlatformAccount || hasOnboardingProgress(progress)) {
+    const path = resolveIncompleteOnboardingPath(status);
+    const separator = path.includes("?") ? "&" : "?";
+    return `${path}${separator}notice=existing-account-resume`;
+  }
+
+  // Brand-new platform users start at role selection.
   if (status.intent === "sign-up") {
-    return "/onboarding";
+    return appendMaximeSignupPending("/onboarding");
   }
 
-  if (status.intent === "sign-in" && !status.hadPlatformAccount) {
-    return "/onboarding?notice=no-platform-account";
-  }
-
-  return onboardingPath(status);
+  // Sign-in without a platform profile — never shown during sign-up.
+  return "/auth/no-maxime-account";
 }

@@ -9,14 +9,14 @@ const NOTICES = {
   "existing-account": {
     tone: "cyan" as const,
     message:
-      "You already have a Maxime account. We sent you to your dashboard instead of creating a duplicate.",
+      "You already have a Maxime account with this email. We sent you to your dashboard instead of creating a duplicate.",
   },
-  "no-platform-account": {
-    tone: "amber" as const,
+  "existing-account-resume": {
+    tone: "cyan" as const,
     message:
-      "You signed in, but this email does not have a Maxime profile yet. Complete onboarding to set up your account.",
+      "You've already signed up with this email but haven't finished onboarding yet. Pick up where you left off below.",
   },
-};
+} as const;
 
 type NoticeKey = keyof typeof NOTICES;
 

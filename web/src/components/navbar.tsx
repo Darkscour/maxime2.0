@@ -12,6 +12,7 @@ import {
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { useOnboardingComplete } from "@/hooks/use-onboarding-complete";
 import { cn } from "@/lib/utils";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
@@ -25,6 +26,7 @@ const links = [
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { showDashboard } = useOnboardingComplete();
   const resolveHref = (href: string) => {
     if (!href.includes("#")) return href;
     const hash = href.slice(href.indexOf("#"));
@@ -83,12 +85,14 @@ export function Navbar() {
             </Button>
           </SignedOut>
           <SignedIn>
-            <Link
-              href="/dashboard"
-              className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
-            >
-              Dashboard
-            </Link>
+            {showDashboard ? (
+              <Link
+                href="/dashboard"
+                className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
+              >
+                Dashboard
+              </Link>
+            ) : null}
             <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
           </SignedIn>
         </div>
@@ -131,13 +135,15 @@ export function Navbar() {
                 </Button>
               </SignedOut>
               <SignedIn>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 rounded-md px-3 py-2 text-center text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
-                >
-                  Dashboard
-                </Link>
+                {showDashboard ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="flex-1 rounded-md px-3 py-2 text-center text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
+                  >
+                    Dashboard
+                  </Link>
+                ) : null}
                 <div className="flex items-center justify-end px-2">
                   <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
                 </div>
