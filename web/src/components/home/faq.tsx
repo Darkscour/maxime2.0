@@ -1,51 +1,61 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { SectionHeader } from "./section-header";
 import { cn } from "@/lib/utils";
 
 const faqs = [
   {
     q: "Who is Maxime built for?",
-    a: "Collegiate esports clubs, semi‑pro orgs, and grassroots teams below the top tier. If you have a roster and a Discord, you're our audience.",
+    a: "Collegiate and grassroots esports orgs — team managers who recruit and run rosters, and players who want to get discovered and join teams. You choose your track during onboarding.",
   },
   {
-    q: "Which games do you support?",
-    a: "League of Legends, VALORANT, Counter‑Strike 2, Rocket League, Overwatch 2, Apex Legends, Dota 2, and Super Smash Bros. — with more added each month.",
+    q: "What's the difference between collegiate and grassroots?",
+    a: "Collegiate accounts tie to a verified school: managers recruit players on campus and access the sponsorship directory. Grassroots accounts are region-based — managers scout openly, players browse community teams, and both can use Duels for matchups.",
   },
   {
-    q: "Where does the player data come from?",
-    a: "We aggregate from PandaScore, Riot Games API, OpenDota, FACEIT, and Tracker.gg, then enrich with verified player‑connected accounts. Curated collegiate data is built up as teams onboard.",
+    q: "How does recruitment work?",
+    a: "Managers search player profiles, save prospects to a watchlist, and send roster invites. Players can browse recruiting teams, request to join, and accept or decline offers from a single inbox — no more scattered Discord threads.",
   },
   {
-    q: "How do you find sponsors?",
-    a: "A combination of manual curation, monitoring esports news for sponsorship announcements, and on‑demand enrichment via Clearbit and Hunter.io. Every sponsor in the portal has a verified application URL or contact.",
+    q: "What do managers get that players don't?",
+    a: "Managers run the recruitment portal, roster hub, join-request queue, and (for collegiate orgs) sponsorship outreach. Players get a scout profile, team discovery, and an invite inbox. Grassroots managers and players both have access to Duels.",
   },
   {
-    q: "Is this free for student clubs?",
-    a: "Yes. The free tier covers one team with a generous limit on players and sponsorship leads. Paid plans unlock the AI coach, unlimited rosters, and outreach automation.",
+    q: "Is Maxime free?",
+    a: "Yes — you can sign up and run your org on the free tier. Create a team or player profile, recruit, and manage your roster without paying upfront.",
   },
   {
-    q: "How is the AI fit score calculated?",
-    a: "We weight player stats (rank, win rate, role consistency, recent form) against your team's stated criteria using a gradient‑boosted model. Every score comes with an explanation of which factors drove it.",
+    q: "What's on the roadmap?",
+    a: "AI VOD review, Discord-native workflows, and a scrim finder are in active development. Everything else on the Features section — recruitment, rosters, sponsorships, Duels, and the AI assistant — is available today.",
   },
 ];
 
 export function FAQ() {
   return (
-    <section id="faq" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-16 sm:py-20">
+    <section
+      id="faq"
+      className="scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/40 py-10 sm:py-12"
+    >
       <Container>
-        <SectionHeader
-          eyebrow="FAQ"
-          title="Everything you wanted to ask"
-          subtitle="Still curious? Drop us a line in our Discord."
-        />
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+            <HelpCircle className="h-3.5 w-3.5" />
+            FAQ
+          </div>
+          <h2 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            Answers before you sign up
+          </h2>
+          <p className="mt-3 text-base leading-7 text-zinc-400">
+            The essentials on account types, recruitment, and what&apos;s live
+            today.
+          </p>
+        </div>
 
-        <div className="mx-auto mt-14 max-w-3xl divide-y divide-white/5 rounded-2xl border border-white/5 bg-[var(--surface)]">
+        <div className="mx-auto mt-8 max-w-3xl divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] shadow-lg shadow-black/20">
           {faqs.map((f, i) => (
-            <FAQItem key={i} q={f.q} a={f.a} />
+            <FAQItem key={i} q={f.q} a={f.a} defaultOpen={i === 0} />
           ))}
         </div>
       </Container>
@@ -53,28 +63,36 @@ export function FAQ() {
   );
 }
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
+function FAQItem({
+  q,
+  a,
+  defaultOpen = false,
+}: {
+  q: string;
+  a: string;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="px-6 py-5 sm:px-8">
+    <div className="px-5 py-4 sm:px-7 sm:py-5">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-start justify-between gap-4 text-left"
         aria-expanded={open}
       >
-        <span className="font-heading text-sm font-semibold text-white sm:text-base">
+        <span className="font-heading text-base font-semibold text-white sm:text-lg">
           {q}
         </span>
         <ChevronDown
           className={cn(
-            "mt-1 h-5 w-5 shrink-0 text-zinc-500 transition-transform",
+            "mt-1 h-5 w-5 shrink-0 text-cyan-400/70 transition-transform",
             open && "rotate-180",
           )}
         />
       </button>
       {open && (
-        <p className="mt-4 text-sm leading-7 text-zinc-400">{a}</p>
+        <p className="mt-3 text-sm leading-7 text-zinc-400 sm:text-base">{a}</p>
       )}
     </div>
   );

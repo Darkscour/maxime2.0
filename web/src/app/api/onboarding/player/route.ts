@@ -7,6 +7,7 @@ import {
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_ONBOARDING_REGIONS,
   derivePlayerRegionFromInstitutionState,
+  isPlayerRole,
 } from "@/lib/onboarding-options";
 import { isAccountTier } from "@/lib/account-tier";
 import { evaluateInstitutionEmailVerification } from "@/lib/institution-verification";
@@ -65,6 +66,13 @@ export async function POST(req: Request) {
     if (!body.game || !body.role || !body.rank) {
       return NextResponse.json(
         { error: "Game, role, and rank are required." },
+        { status: 400 },
+      );
+    }
+
+    if (!isPlayerRole(body.role)) {
+      return NextResponse.json(
+        { error: "Select a valid in-game role." },
         { status: 400 },
       );
     }

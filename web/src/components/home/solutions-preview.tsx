@@ -44,7 +44,7 @@ export function SolutionsPreview() {
   return (
     <section
       id="solutions"
-      className="relative border-b border-white/5 bg-[var(--background-elevated)]/30 py-16 sm:py-20"
+      className="relative scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/30 py-10 sm:py-12"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
@@ -54,13 +54,13 @@ export function SolutionsPreview() {
           <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Built for two kinds of esports orgs
           </h2>
-          <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
+          <p className="mt-3 text-base leading-7 text-zinc-400 sm:text-lg">
             Pick the track that matches your org. The cards below explain who
             each path is for and how membership works — not every product module.
           </p>
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row sm:justify-center">
           {AUDIENCE_OPTIONS.map((option) => {
             const Icon = option.icon;
             const active = audience === option.id;
@@ -91,9 +91,9 @@ export function SolutionsPreview() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: false, margin: "-80px" }}
-            className="mx-auto mt-12 max-w-5xl"
+            className="mx-auto mt-8 max-w-5xl"
           >
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2">
               <AudienceCard
                 eyebrow="Managers"
                 heading={content.managerHeading}

@@ -63,10 +63,10 @@ export default async function SponsorshipsPage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Link
-                href="/solutions/collegiate"
+                href="/#solutions"
                 className="text-sm text-zinc-400 hover:text-white"
               >
-                Learn about collegiate solutions →
+                Explore solutions →
               </Link>
             </div>
           </div>

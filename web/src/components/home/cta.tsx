@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export function CTA() {
   return (
-    <section id="cta" className="py-16 sm:py-20">
+    <section id="cta" className="py-10 sm:py-12">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -16,7 +16,7 @@ export function CTA() {
           transition={{ duration: 0.5 }}
           className="gradient-border relative overflow-hidden rounded-3xl bg-[var(--surface)] p-1"
         >
-          <div className="relative overflow-hidden rounded-[calc(theme(borderRadius.3xl)-4px)] bg-[var(--background)] px-8 py-16 sm:px-16 sm:py-20">
+          <div className="relative overflow-hidden rounded-[calc(theme(borderRadius.3xl)-4px)] bg-[var(--background)] px-8 py-12 sm:px-14 sm:py-14">
             <div className="bg-grid bg-grid-fade absolute inset-0 opacity-50" aria-hidden />
             <div
               className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-3xl"
@@ -28,9 +28,9 @@ export function CTA() {
                 Ready to level up your org?
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
-                Free for one team forever. Whether you run a campus club or a
-                grassroots stack — scout players, manage rosters, and grow your
-                org from one dashboard.
+                Whether you run a campus club or a grassroots stack — managers
+                scout players and land sponsors while players get discovered and
+                join teams, all from one workspace.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                 <Button href="/sign-up" size="lg">

@@ -16,11 +16,12 @@ import { OnboardingBackNav } from "@/components/onboarding/onboarding-back-nav";
 import { OnboardingHomeLink } from "@/components/onboarding/onboarding-home-link";
 import { BioCharacterCount } from "@/components/onboarding/bio-character-count";
 import {
-  ONBOARDING_GAMES,
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_ONBOARDING_REGIONS,
+  PLAYER_ROLES,
   derivePlayerRegionFromInstitutionState,
   getRanksForGame,
+  isPlayerRole,
 } from "@/lib/onboarding-options";
 import type { AccountTier } from "@/lib/account-tier";
 import { TIER_LABELS } from "@/lib/account-tier";
@@ -36,6 +37,8 @@ import {
 import { domainFromEmail, normalizeEmail } from "@/lib/manager-verification";
 import { useClientMounted } from "@/hooks/use-client-mounted";
 import { SchoolCombobox } from "@/components/onboarding/school-combobox";
+import { GameSelect } from "@/components/onboarding/game-select";
+import { parseJsonResponse } from "@/lib/safe-json";
 import { recordOnboardingCheckpoint } from "@/lib/onboarding-checkpoint-client";
 import {
   clearOnboardingDraft,
@@ -94,9 +97,10 @@ async function fetchCollegiateInstitution(
   try {
     const res = await fetch(`/api/institutions/${institution.id}`);
     if (!res.ok) return normalized;
-    const data = (await res.json()) as {
+    const data = await parseJsonResponse<{
       institution?: InstitutionListItem & { domains?: string[] };
-    };
+    }>(res);
+    if (!res.ok || !data) return normalized;
     const inst = data.institution;
     if (!inst) return normalized;
     return normalizeInstitutionListItem({
@@ -211,6 +215,11 @@ export function PlayerOnboardingForm({
         return;
       }
 
+      if (!isPlayerRole(draft.role)) {
+        setError("Select your main in-game role from the list.");
+        return;
+      }
+
       const region = isCollegiate
         ? derivePlayerRegionFromInstitutionState(resolvedInstitution?.state) ??
           draft.region
@@ -236,9 +245,9 @@ export function PlayerOnboardingForm({
         }),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Something went wrong.");
+        setError(data?.error || "Something went wrong.");
         return;
       }
 
@@ -263,7 +272,7 @@ export function PlayerOnboardingForm({
       draftReady &&
       draft.handle.trim() &&
       draft.game &&
-      draft.role.trim() &&
+      isPlayerRole(draft.role) &&
       draft.rank &&
       (isCollegiate
         ? !!draft.institution && draft.schoolEmail.trim().length > 0
@@ -354,36 +363,33 @@ export function PlayerOnboardingForm({
           />
         </FormField>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <FormField label="Primary game">
+        <div className="grid gap-6 sm:grid-cols-2 sm:items-start">
+          <GameSelect
+            value={draft.game}
+            onChange={(game) => {
+              patchDraft("game", game);
+              patchDraft("rank", "");
+            }}
+            required
+          />
+
+          <FormField label="Role" hint="Your main in-game position" required>
             <SelectInput
-              value={draft.game}
-              onChange={(e) => {
-                patchDraft("game", e.target.value);
-                patchDraft("rank", "");
-              }}
+              value={draft.role}
+              onChange={(e) => patchDraft("role", e.target.value)}
               required
             >
-              <option value="">Select game</option>
-              {ONBOARDING_GAMES.map((g) => (
-                <option key={g} value={g}>
-                  {g}
+              <option value="">Select role</option>
+              {PLAYER_ROLES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </SelectInput>
           </FormField>
-
-          <FormField label="Role" hint="Your main in-game position">
-            <TextInput
-              value={draft.role}
-              onChange={(e) => patchDraft("role", e.target.value)}
-              placeholder="Duelist, Mid, AWPer…"
-              required
-            />
-          </FormField>
         </div>
 
-        <div className={`grid gap-6 ${isCollegiate ? "" : "sm:grid-cols-2"}`}>
+        <div className={`grid gap-6 sm:items-start ${isCollegiate ? "" : "sm:grid-cols-2"}`}>
           <FormField
             label="Rank"
             hint={draft.game ? `Current tier in ${draft.game}` : undefined}

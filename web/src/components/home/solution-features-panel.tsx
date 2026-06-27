@@ -81,8 +81,9 @@ const PLAYER_FEATURES: FeatureCard[] = [
     id: "duels",
     illustration: <DuelsArt />,
     title: "Duels",
-    description: "Challenge other grassroots teams and track outcomes.",
-    access: "Grassroots players",
+    description:
+      "Teams challenge rival orgs and players join community matchups — grassroots competition for both sides.",
+    access: "Players & teams",
   },
 ];
 
@@ -135,7 +136,7 @@ export function PlatformFeatures() {
   return (
     <section
       id="features"
-      className="scroll-mt-24 border-y border-white/5 bg-[var(--background-elevated)]/20 py-16 sm:py-20"
+      className="scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/20 py-10 sm:py-12"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
@@ -145,7 +146,7 @@ export function PlatformFeatures() {
           <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             Everything on the platform
           </h2>
-          <p className="mt-4 text-base leading-7 text-zinc-400">
+          <p className="mt-3 text-base leading-7 text-zinc-400">
             A full look at the product surfaces Maxime offers. What you unlock
             after signup depends on your account type — collegiate or grassroots,
             manager or player — not every module appears on every dashboard.
@@ -157,7 +158,7 @@ export function PlatformFeatures() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-40px" }}
-          className="mt-10 space-y-10"
+          className="mt-8 space-y-8"
         >
           <FeatureRow
             label="For team managers"
@@ -170,17 +171,23 @@ export function PlatformFeatures() {
             cols="lg:grid-cols-4"
           />
 
-          <div className="pt-4">
+          <div className="pt-2">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                On the roadmap
-              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                  On the roadmap
+                </p>
+                <Badge tone="amber" className="text-[10px]">
+                  <Clock className="h-3 w-3" />
+                  Coming soon
+                </Badge>
+              </div>
               <p className="mt-2 text-sm leading-6 text-zinc-500">
                 These features are still in active development and aren&apos;t
                 available yet — here&apos;s what&apos;s coming next.
               </p>
             </div>
-            <div className="mx-auto mt-6 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto mt-5 grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {ROADMAP_FEATURES.map((card) => (
                 <motion.div
                   key={card.id}
@@ -188,16 +195,10 @@ export function PlatformFeatures() {
                   className="group flex flex-col rounded-xl border border-dashed border-white/10 bg-[var(--surface)]/70 p-2.5 opacity-80 shadow-lg shadow-black/10 transition-all hover:border-amber-400/30 hover:opacity-100"
                 >
                   {card.illustration}
-                  <div className="px-2.5 pt-4 pb-2">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className="font-heading text-sm font-semibold text-white">
-                        {card.title}
-                      </h3>
-                      <Badge tone="amber" className="shrink-0 text-[10px]">
-                        <Clock className="h-3 w-3" />
-                        Coming soon
-                      </Badge>
-                    </div>
+                  <div className="px-2.5 pt-3 pb-2">
+                    <h3 className="font-heading text-sm font-semibold text-white">
+                      {card.title}
+                    </h3>
                     <p className="mt-1 text-xs leading-5 text-zinc-400">
                       {card.description}
                     </p>

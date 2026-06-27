@@ -13,12 +13,12 @@ const games = [
 
 export function Logos() {
   return (
-    <section id="logos" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-10">
+    <section id="logos" className="border-b border-white/5 bg-[var(--background-elevated)]/30 py-6 sm:py-8">
       <Container>
         <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
           Built for every major competitive title
         </p>
-        <div className="fade-x mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+        <div className="fade-x mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {games.map((g) => (
             <span
               key={g}

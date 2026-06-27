@@ -13,8 +13,11 @@ export function loadOnboardingDraft<T extends object>(key: string): Partial<T> |
   try {
     const raw = sessionStorage.getItem(key);
     if (!raw) return null;
-    return JSON.parse(raw) as Partial<T>;
+    const parsed = JSON.parse(raw) as Partial<T>;
+    if (!parsed || typeof parsed !== "object") return null;
+    return parsed;
   } catch {
+    sessionStorage.removeItem(key);
     return null;
   }
 }

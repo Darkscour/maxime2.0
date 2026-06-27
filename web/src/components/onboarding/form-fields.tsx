@@ -20,7 +20,11 @@ export function FormField({
         {label}
         {required && <span className="text-red-400"> *</span>}
       </span>
-      {hint && <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>}
+      {hint ? (
+        <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>
+      ) : (
+        <span className="mt-0.5 block min-h-4" aria-hidden />
+      )}
       <div className="mt-2">{children}</div>
     </label>
   );

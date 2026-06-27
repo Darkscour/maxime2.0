@@ -2,6 +2,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 type OnboardingStatus = {
   signedIn: boolean;
@@ -26,9 +27,9 @@ export function useOnboardingComplete() {
     let cancelled = false;
 
     fetch("/api/onboarding/status")
-      .then((res) => res.json() as Promise<OnboardingStatus>)
+      .then((res) => parseJsonResponse<OnboardingStatus>(res))
       .then((data) => {
-        if (cancelled) return;
+        if (cancelled || !data) return;
         setOnboardingComplete(
           data.signedIn ? !!data.onboardingComplete : false,
         );

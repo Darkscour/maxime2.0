@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Bell, LogOut, Menu, X, Zap } from "lucide-react";
+import { Bell, LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { ClerkSignOutButton } from "@/components/auth/clerk-sign-out-button";
+import { MaximeLogo } from "@/components/brand/maxime-logo";
 import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
 import { useDashboardNavBadges } from "@/hooks/use-dashboard-nav-badges";
 import {
@@ -82,7 +83,9 @@ export function DashboardShell({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <p className="text-sm text-zinc-500 lg:hidden">Maxime</p>
+          <div className="lg:hidden">
+          <MaximeLogo size="sm" href="/dashboard" />
+          </div>
           <div className="ml-auto flex items-center gap-1">
             <DashboardNotifications />
             <div className="lg:hidden">
@@ -107,23 +110,18 @@ function SidebarHeader({
 }) {
   return (
     <div className={cn("border-b border-white/5", compact ? "" : "px-4 py-5")}>
-      <Link href="/dashboard" className="group flex items-center gap-2.5">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500">
-          <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
-        </span>
+      <Link href="/dashboard" className="group flex flex-col gap-1">
+        <MaximeLogo size="md" href={null} />
         {!compact && (
-          <div>
-            <p className="font-heading text-sm font-semibold text-white">Maxime</p>
-            <p className="text-xs text-zinc-500">
-              {accountType === "team_manager"
-                ? accountTier === "grassroots"
-                  ? "Grassroots manager"
-                  : "Collegiate manager"
-                : accountTier === "grassroots"
-                  ? "Grassroots player"
-                  : "Collegiate player"}
-            </p>
-          </div>
+          <p className="pl-0.5 text-xs text-zinc-500">
+            {accountType === "team_manager"
+              ? accountTier === "grassroots"
+                ? "Grassroots manager"
+                : "Collegiate manager"
+              : accountTier === "grassroots"
+                ? "Grassroots player"
+                : "Collegiate player"}
+          </p>
         )}
       </Link>
     </div>

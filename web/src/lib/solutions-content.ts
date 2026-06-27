@@ -210,7 +210,7 @@ export const SOLUTIONS: Record<SolutionAudience, SolutionContent> = {
         tone: "cyan",
       },
       {
-        text: "Challenge other teams and track Duels activity",
+        text: "Challenge rival teams and track Duels for your org",
         icon: Swords,
         tone: "violet",
       },
@@ -248,7 +248,7 @@ export const SOLUTIONS: Record<SolutionAudience, SolutionContent> = {
       },
       {
         title: "Duels",
-        description: "Challenge teams and track match history.",
+        description: "Teams challenge rivals; players join community matchups.",
         icon: Swords,
         tone: "violet",
       },
@@ -273,7 +273,7 @@ export const SOLUTIONS: Record<SolutionAudience, SolutionContent> = {
         tone: "violet",
       },
       {
-        text: "Join community matchups through Duels",
+        text: "Join community matchups through Duels as a player or team",
         icon: Trophy,
         tone: "violet",
       },

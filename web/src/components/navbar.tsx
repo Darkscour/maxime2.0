@@ -3,23 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   SignedIn,
   SignedOut,
   SignInButton,
 } from "@clerk/nextjs";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
-import { SolutionsNavDropdown } from "@/components/nav/solutions-nav-dropdown";
+import { MaximeLogo } from "@/components/brand/maxime-logo";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { useOnboardingComplete } from "@/hooks/use-onboarding-complete";
 import { cn } from "@/lib/utils";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
-// Solutions is rendered separately via SolutionsNavDropdown.
+// Chronological order matches homepage sections.
 const links = [
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#solutions", label: "Solutions" },
   { href: "/#features", label: "Features" },
   { href: "/#compare", label: "Why Maxime" },
   { href: "/#faq", label: "FAQ" },
@@ -38,17 +39,9 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-xl">
       <Container className="flex h-16 items-center justify-between">
-        <Link href="/" className="group flex items-center gap-2">
-          <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500">
-            <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
-          </span>
-          <span className="font-heading text-base font-semibold tracking-tight text-white">
-            Maxime
-          </span>
-        </Link>
+        <MaximeLogo size="md" priority />
 
         <nav className="hidden items-center gap-1 md:flex">
-          <SolutionsNavDropdown />
           {links.map((link) => {
             const active =
               pathname === link.href ||
@@ -112,14 +105,6 @@ export function Navbar() {
       {open && (
         <div className="border-t border-white/5 bg-[var(--background)] md:hidden">
           <Container className="flex flex-col gap-1 py-3">
-            <Link
-              href="/#solutions"
-              onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
-            >
-              Solutions overview
-            </Link>
-            <SolutionsNavDropdown mobile />
             {links.map((link) => (
               <Link
                 key={link.href}

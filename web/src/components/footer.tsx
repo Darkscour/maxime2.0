@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { Zap } from "lucide-react";
+import { MaximeLogo } from "@/components/brand/maxime-logo";
 
 const footerNav = [
   {
     title: "Product",
     items: [
-      { label: "Collegiate esports", href: "/solutions/collegiate" },
-      { label: "Grassroots esports", href: "/solutions/grassroots" },
+      { label: "Solutions", href: "/#solutions" },
       { label: "Features", href: "/#features" },
       { label: "How it works", href: "/#how-it-works" },
     ],
@@ -15,19 +14,19 @@ const footerNav = [
   {
     title: "Resources",
     items: [
-      { label: "Documentation", href: "#" },
-      { label: "Discord", href: "#" },
-      { label: "Changelog", href: "#" },
-      { label: "Roadmap", href: "#" },
+      { label: "Documentation", href: "/coming-soon/documentation" },
+      { label: "Discord", href: "/coming-soon/discord" },
+      { label: "Changelog", href: "/coming-soon/changelog" },
+      { label: "Roadmap", href: "/coming-soon/roadmap" },
     ],
   },
   {
     title: "Company",
     items: [
-      { label: "About", href: "#" },
-      { label: "Pricing", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About", href: "/coming-soon/about" },
+      { label: "Pricing", href: "/coming-soon/pricing" },
+      { label: "Careers", href: "/coming-soon/careers" },
+      { label: "Contact", href: "/coming-soon/contact" },
     ],
   },
 ];
@@ -37,17 +36,11 @@ export function Footer() {
     <footer className="border-t border-white/5 bg-[var(--background-elevated)]/40">
       <Container className="grid gap-12 py-16 md:grid-cols-5">
         <div className="md:col-span-2">
-          <div className="flex items-center gap-2">
-            <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500">
-              <Zap className="h-4 w-4 text-zinc-950" strokeWidth={2.5} />
-            </span>
-            <span className="font-heading text-base font-semibold tracking-tight text-white">
-              Maxime
-            </span>
-          </div>
+          <MaximeLogo size="lg" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-zinc-400">
             The AI operating system for collegiate and grassroots esports
-            organizations. Built by ex‑players for the next generation of teams.
+            organizations. Built by ex team founders for the next generation of
+            teams.
           </p>
           <p className="mt-6 text-xs text-zinc-600">
             © {new Date().getFullYear()} Maxime — All rights reserved.

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
+import { parseJsonResponse } from "@/lib/safe-json";
 import type { InstitutionListItem } from "@/lib/institutions";
 import { InstitutionLogoWithFallback } from "@/components/onboarding/institution-logo";
 import { fieldClassName } from "@/lib/form-styles";
@@ -55,14 +56,14 @@ export function SchoolCombobox({
       const res = await fetch(
         `/api/institutions/search?q=${encodeURIComponent(normalized)}`,
       );
-      const data = (await res.json()) as {
+      const data = await parseJsonResponse<{
         results?: InstitutionListItem[];
         needsBootstrap?: boolean;
         error?: string;
-      };
-      if (!res.ok) {
+      }>(res);
+      if (!res.ok || !data) {
         setResults([]);
-        setSearchError(data.error ?? "Could not load schools.");
+        setSearchError("Could not load schools. Check your connection.");
         return;
       }
       const next = data.results ?? [];

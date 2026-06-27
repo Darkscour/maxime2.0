@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
   const resolved = await resolveInstitutionLogo(null, parts);
 
-  if (!resolved) {
+  if (!resolved || resolved.body.byteLength < 200) {
     return new NextResponse(null, { status: 404 });
   }
 

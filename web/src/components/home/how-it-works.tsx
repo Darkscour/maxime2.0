@@ -34,7 +34,7 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative border-y border-white/5 bg-[var(--background-elevated)]/30 py-16 sm:py-20"
+      className="relative scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/30 py-10 sm:py-12"
     >
       <Container className="max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
@@ -50,7 +50,7 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {steps.map((step, i) => (
             <motion.div
               key={step.number}

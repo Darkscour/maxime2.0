@@ -71,7 +71,7 @@ export default function RecruitmentPage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Link
-                href="/solutions/collegiate"
+                href="/#solutions"
                 className="text-sm text-zinc-400 hover:text-white"
               >
                 See collegiate vs grassroots →

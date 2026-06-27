@@ -13,6 +13,37 @@ export type PrimaryGame = (typeof PRIMARY_GAMES)[number];
 
 export const ONBOARDING_GAMES: PrimaryGame[] = [...PRIMARY_GAMES];
 
+export const GAME_LOGO_PATHS: Record<PrimaryGame, string> = {
+  VALORANT: "/games/valorant.svg",
+  "League of Legends": "/games/league-of-legends.svg",
+  "Rocket League": "/games/rocket-league.svg",
+  Overwatch: "/games/overwatch.svg",
+};
+
+export function getGameLogoPath(game: string): string | null {
+  if (isPrimaryGame(game)) return GAME_LOGO_PATHS[game];
+  return null;
+}
+
+export const PLAYER_ROLES = [
+  { value: "In-Game Leader (IGL)", label: "🧠 In-Game Leader (IGL)" },
+  { value: "Entry Fragger", label: "🎯 Entry Fragger" },
+  { value: "Carry", label: "🔥 Carry" },
+  { value: "Support", label: "🛡️ Support" },
+  { value: "Flex", label: "🔄 Flex" },
+] as const;
+
+export type PlayerRole = (typeof PLAYER_ROLES)[number]["value"];
+
+export function isPlayerRole(role: string): role is PlayerRole {
+  return PLAYER_ROLES.some((option) => option.value === role);
+}
+
+export function formatPlayerRole(role: string): string {
+  const match = PLAYER_ROLES.find((option) => option.value === role);
+  return match?.label ?? role;
+}
+
 export const RANKS_BY_GAME: Record<PrimaryGame, readonly string[]> = {
   VALORANT: [
     "Iron",

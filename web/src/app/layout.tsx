@@ -36,6 +36,10 @@ export const metadata: Metadata = {
     "AI esports",
     "team management",
   ],
+  icons: {
+    icon: "/maxime-mark.png",
+    apple: "/maxime-mark.png",
+  },
 };
 
 export default function RootLayout({
