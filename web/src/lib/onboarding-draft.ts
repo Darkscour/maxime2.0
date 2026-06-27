@@ -36,20 +36,20 @@ export function clearOnboardingDraft(key: string) {
 /** Persist onboarding form fields across back navigation within the same session. */
 export function useOnboardingDraft<T extends object>(key: string, initial: T) {
   const [values, setValues] = useState<T>(initial);
-  const [hydrated, setHydrated] = useState(false);
+  const [draftReady, setDraftReady] = useState(false);
 
   useEffect(() => {
     const saved = loadOnboardingDraft<T>(key);
     if (saved) {
       setValues((prev) => ({ ...prev, ...saved }));
     }
-    setHydrated(true);
+    setDraftReady(true);
   }, [key]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!draftReady) return;
     saveOnboardingDraft(key, values);
-  }, [key, values, hydrated]);
+  }, [key, values, draftReady]);
 
-  return [values, setValues, hydrated] as const;
+  return [values, setValues, draftReady] as const;
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/container";
-import { SectionHeader } from "./features";
+import { SectionHeader } from "./section-header";
 import { cn } from "@/lib/utils";
 
 const faqs = [
@@ -35,7 +35,7 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section id="faq" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-24 sm:py-32">
+    <section id="faq" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-16 sm:py-20">
       <Container>
         <SectionHeader
           eyebrow="FAQ"
@@ -58,25 +58,24 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <div className="px-6 py-5 sm:px-8">
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 text-left"
+        className="flex w-full items-start justify-between gap-4 text-left"
+        aria-expanded={open}
       >
-        <span className="font-heading text-base font-medium text-white">{q}</span>
+        <span className="font-heading text-sm font-semibold text-white sm:text-base">
+          {q}
+        </span>
         <ChevronDown
           className={cn(
-            "h-5 w-5 shrink-0 text-zinc-400 transition-transform",
-            open && "rotate-180 text-cyan-400",
+            "mt-1 h-5 w-5 shrink-0 text-zinc-500 transition-transform",
+            open && "rotate-180",
           )}
         />
       </button>
-      <div
-        className={cn(
-          "grid overflow-hidden transition-[grid-template-rows] duration-300",
-          open ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]",
-        )}
-      >
-        <div className="min-h-0 text-sm leading-6 text-zinc-400">{a}</div>
-      </div>
+      {open && (
+        <p className="mt-4 text-sm leading-7 text-zinc-400">{a}</p>
+      )}
     </div>
   );
 }

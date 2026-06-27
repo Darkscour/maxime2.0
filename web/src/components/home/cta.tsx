@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export function CTA() {
   return (
-    <section id="cta" className="py-24 sm:py-32">
+    <section id="cta" className="py-16 sm:py-20">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -28,17 +28,17 @@ export function CTA() {
                 Ready to level up your org?
               </h2>
               <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
-                Free for one team forever. No credit card, no analyst, no
-                spreadsheets — just the AI back office your club has been
-                missing.
+                Free for one team forever. Whether you run a campus club or a
+                grassroots stack — scout players, manage rosters, and grow your
+                org from one dashboard.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                <Button href="/recruitment" size="lg">
+                <Button href="/sign-up" size="lg">
                   Start free
                   <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button href="#" variant="outline" size="lg">
-                  Book a demo
+                <Button href="/#solutions" variant="outline" size="lg">
+                  Compare solutions
                 </Button>
               </div>
             </div>

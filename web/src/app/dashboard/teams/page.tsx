@@ -59,6 +59,18 @@ export default async function DashboardTeamsPage() {
         </p>
       </header>
 
+      <section>
+        <h2 className="font-heading mb-4 text-lg font-semibold text-white">
+          {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
+        </h2>
+        <TeamsDirectory
+          teams={teams}
+          playerOnTeam={!!ctx.team}
+          pendingRequestTeamIds={pendingRequestTeamIds}
+          pendingInviteTeamIds={pendingInviteTeamIds}
+        />
+      </section>
+
       <section className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
         <h2 className="font-heading text-lg font-semibold text-white">
           Join with an invite code
@@ -73,18 +85,6 @@ export default async function DashboardTeamsPage() {
             membershipRole={ctx.membershipRole}
           />
         </div>
-      </section>
-
-      <section>
-        <h2 className="font-heading mb-4 text-lg font-semibold text-white">
-          {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
-        </h2>
-        <TeamsDirectory
-          teams={teams}
-          playerOnTeam={!!ctx.team}
-          pendingRequestTeamIds={pendingRequestTeamIds}
-          pendingInviteTeamIds={pendingInviteTeamIds}
-        />
       </section>
     </div>
   );

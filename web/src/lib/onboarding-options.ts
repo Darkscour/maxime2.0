@@ -1,4 +1,5 @@
 import type { Region } from "@/lib/mock-data";
+import { normalizeUsStateCode } from "@/lib/us-states";
 
 /** Supported titles for onboarding and team competitive profiles. */
 export const PRIMARY_GAMES = [
@@ -102,8 +103,8 @@ const NA_WEST_STATE_CODES = new Set([
 export function derivePlayerRegionFromInstitutionState(
   state: string | null | undefined,
 ): (typeof PLAYER_ONBOARDING_REGIONS)[number] | null {
-  if (!state?.trim()) return null;
-  const code = state.trim().toUpperCase();
+  const code = normalizeUsStateCode(state);
+  if (!code) return null;
   return NA_WEST_STATE_CODES.has(code) ? "NA West" : "NA East";
 }
 

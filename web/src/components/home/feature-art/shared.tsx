@@ -41,7 +41,7 @@ export function IllustrationFrame({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-white/5 bg-[var(--background-elevated)]/40",
+        "relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.035]",
         "before:absolute before:inset-0 before:opacity-80 before:content-['']",
         ACCENT_GLOW[accent],
         className,

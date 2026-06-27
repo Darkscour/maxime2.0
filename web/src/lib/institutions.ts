@@ -1,5 +1,8 @@
 import { db } from "@/lib/db";
 import { institutionLogoUrl } from "@/lib/logo-dev";
+import { lookupInstitutionStateByDomain } from "@/lib/institution-state-lookup";
+import { inferStateFromInstitutionName } from "@/lib/institution-state-infer";
+import { normalizeUsStateCode } from "@/lib/us-states";
 
 export type InstitutionListItem = {
   id: string;
@@ -8,6 +11,7 @@ export type InstitutionListItem = {
   state: string | null;
   city: string | null;
   primaryDomain: string | null;
+  domains: string[];
   logoUrl: string | null;
 };
 
@@ -51,6 +55,7 @@ function toListItem(row: {
     state: row.state,
     city: row.city,
     primaryDomain: row.primaryDomain,
+    domains,
     logoUrl: institutionLogoUrl(row.primaryDomain, domains),
   };
 }
@@ -61,12 +66,38 @@ function mapRow(row: InstitutionRow): InstitutionRecord {
     scorecardId: row.scorecardId,
     name: row.name,
     nameLower: row.name.toLowerCase(),
-    state: row.state,
+    state: normalizeUsStateCode(row.state) ?? row.state,
     city: row.city,
     primaryDomain: row.primaryDomain,
     domains: row.domains ?? [],
     aliases: row.aliases ?? [],
   };
+}
+
+async function ensureInstitutionState(
+  institution: InstitutionRecord,
+): Promise<InstitutionRecord> {
+  const existing = normalizeUsStateCode(institution.state);
+  if (existing) {
+    return existing === institution.state
+      ? institution
+      : { ...institution, state: existing };
+  }
+
+  const lookedUp =
+    (await lookupInstitutionStateByDomain(
+      institution.primaryDomain,
+      institution.domains,
+    )) ?? inferStateFromInstitutionName(institution.name);
+  if (!lookedUp) return institution;
+
+  await db.$executeRaw`
+    UPDATE "Institution"
+    SET state = ${lookedUp}, "updatedAt" = NOW()
+    WHERE id = ${institution.id}
+  `;
+
+  return { ...institution, state: lookedUp };
 }
 
 /** Raw SQL — reliable when Prisma client is stale in dev (Institution model added after generate). */
@@ -114,8 +145,10 @@ export async function getInstitutionById(id: string) {
   const row = rows[0];
   if (!row) return null;
 
+  const institution = await ensureInstitutionState(mapRow(row));
+
   return {
-    ...mapRow(row),
+    ...institution,
     logoUrl: institutionLogoUrl(row.primaryDomain, row.domains ?? []),
   };
 }
@@ -125,6 +158,13 @@ export async function getInstitutionCount() {
     `SELECT COUNT(*)::bigint AS count FROM "Institution"`,
   );
   return Number(rows[0]?.count ?? 0);
+}
+
+export async function hasInstitutions() {
+  const rows = await db.$queryRawUnsafe<Array<{ exists: number }>>(
+    `SELECT 1 AS exists FROM "Institution" LIMIT 1`,
+  );
+  return rows.length > 0;
 }
 
 export async function requireInstitutionRecord(id: string) {
@@ -137,5 +177,6 @@ export async function requireInstitutionRecord(id: string) {
   );
 
   const row = rows[0];
-  return row ? mapRow(row) : null;
+  if (!row) return null;
+  return ensureInstitutionState(mapRow(row));
 }

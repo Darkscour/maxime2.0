@@ -1,6 +1,7 @@
 import {
   Bookmark,
   Building2,
+  Mail,
   Swords,
   Handshake,
   LayoutDashboard,
@@ -16,6 +17,7 @@ export type NavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
+  badgeKey?: "joinRequests" | "teamInvites";
   isActive?: (pathname: string) => boolean;
 };
 
@@ -55,9 +57,20 @@ const joinRequests: NavItem = {
   href: "/dashboard/join-requests",
   label: "Join requests",
   icon: UserPlus,
+  badgeKey: "joinRequests",
   isActive: (pathname) =>
     pathname === "/dashboard/join-requests" ||
     pathname.startsWith("/dashboard/join-requests/"),
+};
+
+const teamInvites: NavItem = {
+  href: "/dashboard/invites",
+  label: "Team invites",
+  icon: Mail,
+  badgeKey: "teamInvites",
+  isActive: (pathname) =>
+    pathname === "/dashboard/invites" ||
+    pathname.startsWith("/dashboard/invites/"),
 };
 
 const rosterHub: NavItem = {
@@ -173,6 +186,7 @@ export function getDashboardNavGroups(
             pathname === "/dashboard/teams" ||
             pathname.startsWith("/dashboard/teams/"),
         },
+        teamInvites,
       ],
     },
     {

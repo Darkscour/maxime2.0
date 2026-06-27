@@ -30,8 +30,10 @@ import {
 } from "@/lib/onboarding-draft";
 import type { InstitutionListItem } from "@/lib/institutions";
 import { SchoolCombobox } from "@/components/onboarding/school-combobox";
+import { useClientMounted } from "@/hooks/use-client-mounted";
 
 type TeamDraft = {
+  displayName: string;
   name: string;
   institution: InstitutionListItem | null;
   games: string[];
@@ -44,6 +46,7 @@ type TeamDraft = {
 };
 
 const INITIAL_TEAM_DRAFT: TeamDraft = {
+  displayName: "",
   name: "",
   institution: null,
   games: [],
@@ -63,11 +66,15 @@ export function TeamOnboardingForm({
   signInEmail?: string | null;
 }) {
   const isCollegiate = tier === "collegiate";
+  const mounted = useClientMounted();
   const router = useRouter();
   const searchParams = useSearchParams();
   const onboardingQuery = onboardingQueryFromSearchParams(searchParams);
   const draftKey = onboardingDraftKey("team", tier);
-  const [draft, setDraft] = useOnboardingDraft(draftKey, INITIAL_TEAM_DRAFT);
+  const [draft, setDraft, draftReady] = useOnboardingDraft(
+    draftKey,
+    INITIAL_TEAM_DRAFT,
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -109,6 +116,7 @@ export function TeamOnboardingForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           accountTier: tier,
+          displayName: !isCollegiate ? draft.displayName.trim() : undefined,
           name: draft.name,
           institutionId: isCollegiate ? draft.institution?.id : undefined,
           games: draft.games,
@@ -144,15 +152,19 @@ export function TeamOnboardingForm({
     }
   }
 
-  const profileReady =
-    draft.name &&
-    draft.games.length > 0 &&
-    draft.managerTitle &&
-    draft.authorized &&
-    (isCollegiate
-      ? !!draft.managerOrgEmail.trim() && !!draft.institution
-      : !!signInEmail?.trim()) &&
-    (isCollegiate || !!draft.region);
+  const profileReady = Boolean(
+    mounted &&
+      draftReady &&
+      draft.name.trim() &&
+      draft.games.length > 0 &&
+      draft.managerTitle &&
+      draft.authorized &&
+      (isCollegiate
+        ? !!draft.managerOrgEmail.trim() && !!draft.institution
+        : !!signInEmail?.trim() && !!draft.displayName.trim()) &&
+      (isCollegiate || !!draft.region),
+  );
+  const submitDisabled = !profileReady || loading;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -217,8 +229,21 @@ export function TeamOnboardingForm({
         <div className="space-y-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5">
           <p className="text-sm font-medium text-cyan-100">Manager contact</p>
           <FormField
+            label="Name on Maxime"
+            hint="How you appear on the platform — not derived from your email."
+            required
+          >
+            <TextInput
+              value={draft.displayName}
+              onChange={(e) => patchDraft("displayName", e.target.value)}
+              placeholder="Alex"
+              required
+              maxLength={80}
+            />
+          </FormField>
+          <FormField
             label="Your email"
-            hint="We use your sign-in email for your grassroots manager account — no school verification required."
+            hint="Sign-in email for your grassroots manager account."
           >
             <TextInput
               type="email"
@@ -343,7 +368,7 @@ export function TeamOnboardingForm({
         />
       </FormField>
 
-      <Button type="submit" size="lg" disabled={loading || !profileReady}>
+      <Button type="submit" size="lg" disabled={submitDisabled}>
         {loading ? "Creating team…" : "Create team & get invite code"}
       </Button>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { SignOutButton } from "@clerk/nextjs";
+import { ClerkSignOutButton } from "@/components/auth/clerk-sign-out-button";
 
 export function AuthSignOutLink({
   redirectUrl,
@@ -12,8 +12,8 @@ export function AuthSignOutLink({
   children: string;
 }) {
   return (
-    <SignOutButton redirectUrl={redirectUrl}>
+    <ClerkSignOutButton redirectUrl={redirectUrl}>
       <span className={className}>{children}</span>
-    </SignOutButton>
+    </ClerkSignOutButton>
   );
 }

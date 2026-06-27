@@ -135,13 +135,17 @@ async function syncIdentityFields(
   email: string | undefined,
   displayName: string | undefined,
 ): Promise<AccountWithRelations> {
-  if (account.email === email && account.displayName === displayName) {
+  const keepDisplayName = account.displayName?.trim();
+  const nextDisplayName = keepDisplayName || displayName?.trim() || null;
+  const nextEmail = email ?? null;
+
+  if (account.email === nextEmail && account.displayName === nextDisplayName) {
     return account;
   }
 
   return db.userAccount.update({
     where: { id: account.id },
-    data: { email: email ?? null, displayName: displayName ?? null },
+    data: { email: nextEmail, displayName: nextDisplayName },
     include: accountInclude,
   });
 }
@@ -196,16 +200,22 @@ async function reconcileUserAccount(
   clerkId: string,
   email: string | undefined,
   displayName: string | undefined,
-  options?: { createIfMissing?: boolean },
+  options?: {
+    createIfMissing?: boolean;
+    preloadedByClerkId?: UserAccountWithRelations | null;
+  },
 ): Promise<{
   account: UserAccountWithRelations | null;
   hadPlatformAccount: boolean;
 }> {
   const createIfMissing = options?.createIfMissing ?? true;
-  const byClerkId = await db.userAccount.findUnique({
-    where: { clerkId },
-    include: accountInclude,
-  });
+  const byClerkId =
+    options?.preloadedByClerkId !== undefined
+      ? options.preloadedByClerkId
+      : await db.userAccount.findUnique({
+          where: { clerkId },
+          include: accountInclude,
+        });
   const byEmail = await findUserAccountByEmail(email);
 
   if (byClerkId && byEmail && byClerkId.id !== byEmail.id) {
@@ -218,7 +228,7 @@ async function reconcileUserAccount(
       data: {
         clerkId,
         email: email ?? null,
-        displayName: displayName ?? null,
+        displayName: canonical.displayName?.trim() || displayName?.trim() || null,
       },
       include: accountInclude,
     });
@@ -237,7 +247,7 @@ async function reconcileUserAccount(
       data: {
         clerkId,
         email: email ?? null,
-        displayName: displayName ?? null,
+        displayName: byEmail.displayName?.trim() || displayName?.trim() || null,
       },
       include: accountInclude,
     });
@@ -275,8 +285,26 @@ export async function getMeaningfulUserAccount() {
  */
 export const getOrCreateUserAccount = cache(async function getOrCreateUserAccount() {
   const clerkId = await requireClerkId();
+
+  // Fast path: an existing, meaningful account needs only one DB query.
+  // Skips the Clerk identity round-trip and the by-email reconcile lookup,
+  // which matters a lot when the database is geographically distant.
+  const existing = await db.userAccount.findUnique({
+    where: { clerkId },
+    include: accountInclude,
+  });
+  if (existing && isMeaningfulMaximeAccount(existing)) {
+    return existing;
+  }
+
+  // Slow path: blank shell or no row — fetch Clerk identity to create/link.
   const { email, displayName } = await clerkIdentity();
-  const { account } = await reconcileUserAccount(clerkId, email, displayName);
+  const { account } = await reconcileUserAccount(clerkId, email, displayName, {
+    preloadedByClerkId: existing,
+  });
+  if (!account) {
+    throw new Error("NO_PLATFORM_ACCOUNT");
+  }
   return account;
 });
 
@@ -287,6 +315,15 @@ export async function resolveUserAccountOnAuth(options?: {
   const clerkId = await requireClerkId();
   const { email, displayName } = await clerkIdentity();
   return reconcileUserAccount(clerkId, email, displayName, options);
+}
+
+/** Ensures a UserAccount exists before onboarding API writes (creates if missing). */
+export async function requireOnboardingUserAccount() {
+  const { account } = await resolveUserAccountOnAuth({ createIfMissing: true });
+  if (!account) {
+    throw new Error("NO_PLATFORM_ACCOUNT");
+  }
+  return account;
 }
 
 export async function syncOnboardingCompleteFlag(

@@ -8,6 +8,8 @@ export type PublicTeamListing = {
   games: string[];
   region: string | null;
   rosterSize: number | null;
+  discordUrl: string | null;
+  accountTier: string | null;
   memberCount: number;
   createdAt: Date;
 };
@@ -26,6 +28,8 @@ export async function listPublicTeams(playerTier?: string | null): Promise<Publi
       games: true,
       region: true,
       rosterSize: true,
+      discordUrl: true,
+      accountTier: true,
       createdAt: true,
       _count: { select: { members: { where: { status: "active" } } } },
     },
@@ -38,6 +42,8 @@ export async function listPublicTeams(playerTier?: string | null): Promise<Publi
     games: team.games,
     region: team.region,
     rosterSize: team.rosterSize,
+    discordUrl: team.discordUrl,
+    accountTier: team.accountTier,
     memberCount: team._count.members,
     createdAt: team.createdAt,
   }));

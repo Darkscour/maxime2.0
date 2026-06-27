@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { Menu, X, Zap } from "lucide-react";
 import {
   SignedIn,
@@ -10,17 +10,19 @@ import {
   SignInButton,
 } from "@clerk/nextjs";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
+import { SolutionsNavDropdown } from "@/components/nav/solutions-nav-dropdown";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { useOnboardingComplete } from "@/hooks/use-onboarding-complete";
 import { cn } from "@/lib/utils";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
+// Solutions is rendered separately via SolutionsNavDropdown.
 const links = [
-  { href: "/#recruitment", label: "Recruitment" },
-  { href: "/#sponsorships", label: "Sponsorships" },
-  { href: "/#features", label: "Features" },
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#features", label: "Features" },
+  { href: "/#compare", label: "Why Maxime" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export function Navbar() {
@@ -46,6 +48,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
+          <SolutionsNavDropdown />
           {links.map((link) => {
             const active =
               pathname === link.href ||
@@ -109,6 +112,14 @@ export function Navbar() {
       {open && (
         <div className="border-t border-white/5 bg-[var(--background)] md:hidden">
           <Container className="flex flex-col gap-1 py-3">
+            <Link
+              href="/#solutions"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-3 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white"
+            >
+              Solutions overview
+            </Link>
+            <SolutionsNavDropdown mobile />
             {links.map((link) => (
               <Link
                 key={link.href}

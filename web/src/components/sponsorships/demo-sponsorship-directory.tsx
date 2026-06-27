@@ -127,7 +127,7 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
             </button>
           </div>
         ) : (
-          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+          <div className="mt-4 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((sponsor, i) => {
               const isLastGated =
                 gateLast && filtered.length > 1 && i === filtered.length - 1;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Mail } from "lucide-react";
 import type { PendingInviteRow } from "@/lib/player-watchlist-db";
@@ -85,7 +86,16 @@ export function TeamInvitesWidget({
             <span className="ml-1 text-sm font-normal text-zinc-500">pending</span>
           </p>
           <p className="mt-1 text-xs text-zinc-500">
-            {invites.length > 0 ? "Accept or decline below" : "No invites right now"}
+            {invites.length > 0 ? (
+              <>
+                Accept or decline below ·{" "}
+                <Link href="/dashboard/invites" className="text-cyan-400 hover:text-cyan-300">
+                  View all
+                </Link>
+              </>
+            ) : (
+              "No invites right now"
+            )}
           </p>
         </div>
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">

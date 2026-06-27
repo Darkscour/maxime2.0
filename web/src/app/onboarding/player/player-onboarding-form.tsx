@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,12 @@ import {
   onboardingQueryFromSearchParams,
 } from "@/lib/onboarding-path";
 import type { InstitutionListItem } from "@/lib/institutions";
+import {
+  evaluateInstitutionEmailVerification,
+  toInstitutionEmailTarget,
+} from "@/lib/institution-verification";
+import { domainFromEmail, normalizeEmail } from "@/lib/manager-verification";
+import { useClientMounted } from "@/hooks/use-client-mounted";
 import { SchoolCombobox } from "@/components/onboarding/school-combobox";
 import { recordOnboardingCheckpoint } from "@/lib/onboarding-checkpoint-client";
 import {
@@ -61,23 +67,103 @@ const INITIAL_PLAYER_DRAFT: PlayerDraft = {
   inviteCode: "",
 };
 
+function normalizeInstitutionListItem(
+  institution: InstitutionListItem,
+): InstitutionListItem {
+  return {
+    ...institution,
+    domains: institution.domains ?? [],
+  };
+}
+
+function needsInstitutionRefresh(institution: InstitutionListItem): boolean {
+  return !Array.isArray(institution.domains) || !institution.state;
+}
+
+/** US campus emails use a .edu TLD (not country suffixes like .edu.in). */
+function isLikelyUsCampusEmail(email: string): boolean {
+  const domain = domainFromEmail(normalizeEmail(email));
+  if (!domain) return false;
+  return /\.edu$/i.test(domain);
+}
+
+async function fetchCollegiateInstitution(
+  institution: InstitutionListItem,
+): Promise<InstitutionListItem> {
+  const normalized = normalizeInstitutionListItem(institution);
+  try {
+    const res = await fetch(`/api/institutions/${institution.id}`);
+    if (!res.ok) return normalized;
+    const data = (await res.json()) as {
+      institution?: InstitutionListItem & { domains?: string[] };
+    };
+    const inst = data.institution;
+    if (!inst) return normalized;
+    return normalizeInstitutionListItem({
+      ...normalized,
+      ...inst,
+      domains: inst.domains ?? normalized.domains,
+      logoUrl: inst.logoUrl ?? normalized.logoUrl,
+    });
+  } catch {
+    return normalized;
+  }
+}
+
 export function PlayerOnboardingForm({
   tier,
+  signInEmail,
 }: {
   tier: AccountTier;
   signInEmail?: string | null;
 }) {
   const isCollegiate = tier === "collegiate";
+  const mounted = useClientMounted();
   const router = useRouter();
   const searchParams = useSearchParams();
   const onboardingQuery = onboardingQueryFromSearchParams(searchParams);
   const draftKey = onboardingDraftKey("player", tier);
-  const [draft, setDraft, hydrated] = useOnboardingDraft(
+  const [draft, setDraft, draftReady] = useOnboardingDraft(
     draftKey,
     INITIAL_PLAYER_DRAFT,
   );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!error || !errorRef.current) return;
+    errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [error]);
+
+  useEffect(() => {
+    if (!draftReady || !isCollegiate || !signInEmail?.trim()) return;
+    if (!isLikelyUsCampusEmail(signInEmail)) return;
+    setDraft((prev) =>
+      prev.schoolEmail.trim()
+        ? prev
+        : { ...prev, schoolEmail: signInEmail.trim() },
+    );
+  }, [draftReady, isCollegiate, signInEmail, setDraft]);
+
+  useEffect(() => {
+    if (!draftReady || !draft.institution) return;
+    if (!needsInstitutionRefresh(draft.institution)) return;
+
+    let cancelled = false;
+    void fetchCollegiateInstitution(draft.institution).then((institution) => {
+      if (cancelled) return;
+      setDraft((prev) =>
+        prev.institution?.id === institution.id
+          ? { ...prev, institution }
+          : prev,
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [draftReady, draft.institution, setDraft]);
 
   const tierBackHref = buildOnboardingHref("/onboarding/player/tier", onboardingQuery);
   const ranksForGame = getRanksForGame(draft.game);
@@ -90,35 +176,45 @@ export function PlayerOnboardingForm({
     setError("");
     setLoading(true);
 
-    if (isCollegiate && !draft.institution) {
-      setError("Select your school / university from the list.");
-      setLoading(false);
-      return;
-    }
-
-    if (isCollegiate && !draft.schoolEmail.trim()) {
-      setError("School email is required to verify your collegiate affiliation.");
-      setLoading(false);
-      return;
-    }
-
-    if (draft.rank && !ranksForGame.includes(draft.rank)) {
-      setError("Select a rank that matches your primary game.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const region = isCollegiate
-        ? derivePlayerRegionFromInstitutionState(draft.institution?.state) ??
-          draft.region
-        : draft.region;
-
-      if (isCollegiate && !region) {
-        setError("Select your school so we can place you in the correct region.");
-        setLoading(false);
+      if (isCollegiate && !draft.institution) {
+        setError("Select your school / university from the list.");
         return;
       }
+
+      if (isCollegiate && !draft.schoolEmail.trim()) {
+        setError("School email is required to verify your collegiate affiliation.");
+        return;
+      }
+
+      let resolvedInstitution = draft.institution;
+
+      if (isCollegiate && draft.institution) {
+        resolvedInstitution = needsInstitutionRefresh(draft.institution)
+          ? await fetchCollegiateInstitution(draft.institution)
+          : normalizeInstitutionListItem(draft.institution);
+        const verification = evaluateInstitutionEmailVerification({
+          email: draft.schoolEmail,
+          institution: toInstitutionEmailTarget(resolvedInstitution),
+          signInEmail,
+        });
+        if (verification.status !== "verified") {
+          setError(
+            `${verification.reason} If you are not on a U.S. campus team, go back and choose Grassroots instead.`,
+          );
+          return;
+        }
+      }
+
+      if (draft.rank && !ranksForGame.includes(draft.rank)) {
+        setError("Select a rank that matches your primary game.");
+        return;
+      }
+
+      const region = isCollegiate
+        ? derivePlayerRegionFromInstitutionState(resolvedInstitution?.state) ??
+          draft.region
+        : draft.region;
 
       const res = await fetch("/api/onboarding/player", {
         method: "POST",
@@ -162,15 +258,19 @@ export function PlayerOnboardingForm({
     await submitProfile(true);
   }
 
-  const profileReady =
-    hydrated &&
-    draft.handle &&
-    draft.game &&
-    draft.role &&
-    draft.rank &&
-    (isCollegiate
-      ? !!draft.institution && draft.schoolEmail.trim().length > 0
-      : !!draft.region);
+  const profileReady = Boolean(
+    mounted &&
+      draftReady &&
+      draft.handle.trim() &&
+      draft.game &&
+      draft.role.trim() &&
+      draft.rank &&
+      (isCollegiate
+        ? !!draft.institution && draft.schoolEmail.trim().length > 0
+        : !!draft.region),
+  );
+
+  const submitDisabled = !mounted || !draftReady || loading || !profileReady;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -189,7 +289,9 @@ export function PlayerOnboardingForm({
         }
       />
 
-      <FormError message={error} />
+      <div ref={errorRef}>
+        <FormError message={error} />
+      </div>
 
       {isCollegiate && (
         <div className="space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5">
@@ -204,7 +306,12 @@ export function PlayerOnboardingForm({
           </div>
           <SchoolCombobox
             value={draft.institution}
-            onChange={(institution) => patchDraft("institution", institution)}
+            onChange={(institution) =>
+              patchDraft(
+                "institution",
+                institution ? normalizeInstitutionListItem(institution) : null,
+              )
+            }
             hint="Search registered U.S. colleges and universities"
             required
           />
@@ -212,9 +319,11 @@ export function PlayerOnboardingForm({
             label="School email"
             required
             hint={
-              draft.institution?.primaryDomain
-                ? `Must be your official address at ${draft.institution.name} (e.g. you@${draft.institution.primaryDomain})`
-                : "Use your official .edu or university alias email"
+              signInEmail && !isLikelyUsCampusEmail(signInEmail)
+                ? "Collegiate verification requires a U.S. campus .edu email for your selected school (your sign-in email cannot be used)."
+                : draft.institution?.primaryDomain
+                  ? `Must be your official address at ${draft.institution.name} (e.g. you@${draft.institution.primaryDomain})`
+                  : "Use your official .edu or university alias email"
             }
           >
             <TextInput
@@ -284,7 +393,7 @@ export function PlayerOnboardingForm({
               value={draft.rank}
               onChange={(e) => patchDraft("rank", e.target.value)}
               required
-              disabled={!draft.game}
+              disabled={!mounted || !draft.game}
             >
               <option value="">
                 {draft.game ? "Select rank" : "Select a game first"}
@@ -368,7 +477,7 @@ export function PlayerOnboardingForm({
           variant="outline"
           size="lg"
           className="mt-4 w-full sm:w-auto"
-          disabled={loading || !profileReady}
+          disabled={submitDisabled}
           onClick={() => submitProfile(false)}
         >
           {loading ? "Saving profile…" : "Create profile without a team"}
@@ -376,7 +485,7 @@ export function PlayerOnboardingForm({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" size="lg" disabled={loading || !profileReady}>
+        <Button type="submit" size="lg" disabled={submitDisabled}>
           {loading
             ? "Saving profile…"
             : draft.inviteCode.trim()

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Features } from "@/components/home/features";
+import { PlatformFeatures } from "@/components/home/solution-features-panel";
 import { RecruitmentPreview } from "@/components/home/recruitment-preview";
 import { SponsorshipsPreview } from "@/components/home/sponsorships-preview";
 
@@ -19,7 +19,7 @@ export function DeveloperMarketingPreview() {
       </div>
       <RecruitmentPreview />
       <SponsorshipsPreview />
-      <Features />
+      <PlatformFeatures />
     </div>
   );
 }

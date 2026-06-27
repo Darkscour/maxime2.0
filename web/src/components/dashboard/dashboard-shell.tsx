@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LogOut, Menu, X, Zap } from "lucide-react";
-import { SignOutButton } from "@clerk/nextjs";
+import { Bell, LogOut, Menu, X, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
+import { ClerkSignOutButton } from "@/components/auth/clerk-sign-out-button";
 import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
+import { useDashboardNavBadges } from "@/hooks/use-dashboard-nav-badges";
 import {
   getDashboardNavGroups,
   navGroupAccentBorderClasses,
   navGroupAccentEyebrowClasses,
   navGroupAccentLinkClasses,
   type NavGroupAccent,
+  type NavItem,
 } from "@/lib/dashboard-nav";
 
 export function DashboardShell({
@@ -28,12 +30,13 @@ export function DashboardShell({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navGroups = getDashboardNavGroups(accountType, accountTier);
+  const badges = useDashboardNavBadges();
 
   return (
     <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
       <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
         <SidebarHeader accountType={accountType} accountTier={accountTier} />
-        <SidebarNav groups={navGroups} pathname={pathname} />
+        <SidebarNav groups={navGroups} pathname={pathname} badges={badges} />
         <SidebarFooter />
       </aside>
 
@@ -63,6 +66,7 @@ export function DashboardShell({
         <SidebarNav
           groups={navGroups}
           pathname={pathname}
+          badges={badges}
           onNavigate={() => setMobileOpen(false)}
         />
         <SidebarFooter onSignOut={() => setMobileOpen(false)} />
@@ -133,16 +137,14 @@ function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
         <ClerkUserButton avatarClassName="h-9 w-9 shrink-0 ring-1 ring-cyan-400/30" />
         <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
       </div>
-      <SignOutButton redirectUrl="/sign-in">
-        <button
-          type="button"
-          onClick={onSignOut}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
-        >
-          <LogOut className="h-4 w-4 text-zinc-500" />
-          Sign out
-        </button>
-      </SignOutButton>
+      <ClerkSignOutButton
+        redirectUrl="/sign-in"
+        onClick={onSignOut}
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+      >
+        <LogOut className="h-4 w-4 text-zinc-500" />
+        Sign out
+      </ClerkSignOutButton>
     </div>
   );
 }
@@ -150,10 +152,12 @@ function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
 function SidebarNav({
   groups,
   pathname,
+  badges,
   onNavigate,
 }: {
   groups: ReturnType<typeof getDashboardNavGroups>;
   pathname: string;
+  badges: ReturnType<typeof useDashboardNavBadges>;
   onNavigate?: () => void;
 }) {
   return (
@@ -183,11 +187,12 @@ function SidebarNav({
               {group.items.map((item) => (
                 <SidebarLink
                   key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  icon={item.icon}
+                  item={item}
                   accent={accent}
                   active={item.isActive?.(pathname) ?? pathname === item.href}
+                  badgeCount={
+                    item.badgeKey ? badges[item.badgeKey] : 0
+                  }
                   onNavigate={onNavigate}
                 />
               ))}
@@ -200,25 +205,25 @@ function SidebarNav({
 }
 
 function SidebarLink({
-  href,
-  label,
-  icon: Icon,
+  item,
   active,
   accent = "cyan",
+  badgeCount = 0,
   onNavigate,
 }: {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  item: NavItem;
   active: boolean;
   accent?: NavGroupAccent;
+  badgeCount?: number;
   onNavigate?: () => void;
 }) {
   const linkStyles = navGroupAccentLinkClasses[accent];
+  const Icon = item.icon;
+  const showBadge = badgeCount > 0;
 
   return (
     <Link
-      href={href}
+      href={item.href}
       onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
@@ -229,11 +234,20 @@ function SidebarLink({
     >
       <Icon
         className={cn(
-          "h-4 w-4",
+          "h-4 w-4 shrink-0",
           active ? linkStyles.iconActive : "text-zinc-500",
         )}
       />
-      {label}
+      <span className="min-w-0 flex-1 truncate">{item.label}</span>
+      {showBadge && (
+        <span
+          className="inline-flex shrink-0 items-center gap-1 rounded-full bg-cyan-400/15 px-2 py-0.5 text-[10px] font-semibold text-cyan-200 ring-1 ring-inset ring-cyan-400/30"
+          aria-label={`${badgeCount} pending`}
+        >
+          <Bell className="h-3 w-3" />
+          {badgeCount > 9 ? "9+" : badgeCount}
+        </span>
+      )}
     </Link>
   );
 }

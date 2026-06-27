@@ -16,7 +16,7 @@ export function Logos() {
     <section id="logos" className="border-y border-white/5 bg-[var(--background-elevated)]/30 py-10">
       <Container>
         <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
-          Built for every collegiate title
+          Built for every major competitive title
         </p>
         <div className="fade-x mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
           {games.map((g) => (

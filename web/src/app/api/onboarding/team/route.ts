@@ -9,6 +9,7 @@ import { requireInstitutionRecord } from "@/lib/institutions";
 
 type TeamBody = {
   accountTier?: string;
+  displayName?: string;
   name: string;
   institutionId?: string;
   games: string[];
@@ -111,6 +112,20 @@ export async function POST(req: Request) {
           { status: 400 },
         );
       }
+
+      const displayName = body.displayName?.trim();
+      if (!displayName || displayName.length < 2) {
+        return NextResponse.json(
+          { error: "Enter the name you want to use on Maxime (at least 2 characters)." },
+          { status: 400 },
+        );
+      }
+      if (displayName.length > 80) {
+        return NextResponse.json(
+          { error: "Display name must be 80 characters or fewer." },
+          { status: 400 },
+        );
+      }
     }
 
     const managerTitle = body.managerTitle?.trim();
@@ -195,6 +210,9 @@ export async function POST(req: Request) {
           managerTitle,
           managerOrgEmail,
           managerVerificationStatus: verification.status,
+          ...(!isCollegiate && body.displayName?.trim()
+            ? { displayName: body.displayName.trim() }
+            : {}),
         },
       });
 

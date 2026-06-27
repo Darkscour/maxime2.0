@@ -27,15 +27,7 @@ export async function fetchSponsorsForDisplay(): Promise<SponsorFetchResult> {
     if (prismaRows.length > 0) {
       return {
         source: "database",
-        sponsors: prismaRows.map((r) =>
-          mapPrismaSponsor({
-            id: r.id,
-            name: r.name,
-            industry: r.industry,
-            tier: r.tier,
-            applicationUrl: r.applicationUrl,
-          }),
-        ),
+        sponsors: prismaRows.map((r) => mapPrismaSponsor(r)),
       };
     }
   } catch (err) {

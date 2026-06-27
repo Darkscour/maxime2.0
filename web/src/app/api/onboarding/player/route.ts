@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getExistingUserAccount } from "@/lib/auth-user";
+import { requireOnboardingUserAccount } from "@/lib/auth-user";
 import {
   getRanksForGame,
   isPrimaryGame,
@@ -27,14 +27,7 @@ type PlayerBody = {
 
 export async function POST(req: Request) {
   try {
-    const account = await getExistingUserAccount();
-    if (!account) {
-      return NextResponse.json(
-        { error: "No Maxime account. Sign up before onboarding." },
-        { status: 403 },
-      );
-    }
-
+    const account = await requireOnboardingUserAccount();
     if (account.accountType === "team_manager") {
       return NextResponse.json(
         { error: "Team managers use the team profile, not a player profile." },
@@ -263,6 +256,12 @@ export async function POST(req: Request) {
   } catch (e) {
     if (e instanceof Error && e.message === "UNAUTHORIZED") {
       return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+    }
+    if (e instanceof Error && e.message === "NO_PLATFORM_ACCOUNT") {
+      return NextResponse.json(
+        { error: "Sign in required to save your profile." },
+        { status: 401 },
+      );
     }
     if (e instanceof Error && e.message === "INVALID_INVITE") {
       return NextResponse.json(

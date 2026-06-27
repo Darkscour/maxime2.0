@@ -9,6 +9,10 @@ type Body = {
 export async function PATCH(req: Request) {
   try {
     const account = await getOrCreateUserAccount();
+    if (!account) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
     const body = (await req.json()) as Body;
     const displayName = body.displayName?.trim();
 

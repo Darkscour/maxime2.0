@@ -6,10 +6,10 @@ const footerNav = [
   {
     title: "Product",
     items: [
-      { label: "Recruitment", href: "/recruitment" },
-      { label: "Sponsorships", href: "/sponsorships" },
-      { label: "AI Coach", href: "#" },
-      { label: "Roster Hub", href: "#" },
+      { label: "Collegiate esports", href: "/solutions/collegiate" },
+      { label: "Grassroots esports", href: "/solutions/grassroots" },
+      { label: "Features", href: "/#features" },
+      { label: "How it works", href: "/#how-it-works" },
     ],
   },
   {

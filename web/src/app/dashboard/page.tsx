@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Clock, Sparkles } from "lucide-react";
-import { getDashboardContext, markDashboardWelcomed } from "@/lib/auth-user";
+import { getDashboardContext } from "@/lib/auth-user";
 import { isDeveloperEmail } from "@/lib/developer";
 import { DeveloperMarketingPreview } from "@/components/dashboard/developer-marketing-preview";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analyti
 import { getPlayerAnalytics } from "@/lib/player-analytics";
 import { getManagerOrgAnalytics } from "@/lib/manager-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
-import { Bookmark, Building2, Handshake, Search, Settings, Swords, UserPlus, UserRound, Users } from "lucide-react";
+import { Bookmark, Building2, Handshake, Mail, Search, Settings, Swords, UserPlus, UserRound, Users } from "lucide-react";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
 import { RosterHubPreview } from "@/components/dashboard/roster-hub-preview";
@@ -21,9 +21,11 @@ import { fetchTeamRosterWithAvatars } from "@/lib/team-roster";
 import { canEditTeam } from "@/lib/permissions";
 import { formatMembershipRole } from "@/lib/dashboard-nav";
 import { isVerifiedManager } from "@/lib/manager-verification";
-import { InviteCodeStatCard } from "@/components/dashboard/invite-code-stat-card";
+import { ManagerTeamSnapshotCard } from "@/components/dashboard/manager-team-snapshot-card";
+import { WorkspaceInviteCode } from "@/components/dashboard/workspace-invite-code";
 import { PlayTimeWidget } from "@/components/dashboard/play-time-widget";
 import { TeamInvitesWidget } from "@/components/dashboard/team-invites-widget";
+import { DashboardWelcomeMarker } from "@/components/dashboard/dashboard-welcome-marker";
 
 export const dynamic = "force-dynamic";
 
@@ -83,9 +85,6 @@ function rosterStatHint(pendingInvites: number) {
 export default async function DashboardPage() {
   const ctx = await getDashboardContext();
   const isFirstDashboardVisit = !ctx.hasWelcomedToDashboard;
-  if (isFirstDashboardVisit) {
-    await markDashboardWelcomed(ctx.userId);
-  }
 
   const isManager = ctx.accountType === "team_manager";
   const isGrassroots = ctx.accountTier === "grassroots";
@@ -133,6 +132,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
+      <DashboardWelcomeMarker isFirstVisit={isFirstDashboardVisit} />
       <Suspense fallback={null}>
         <AuthNoticeBanner />
       </Suspense>
@@ -158,6 +158,9 @@ export default async function DashboardPage() {
           {ctx.email && (
             <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
           )}
+          {isManager && ctx.team && (
+            <WorkspaceInviteCode inviteCode={ctx.team.inviteCode} />
+          )}
         </div>
         <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 text-cyan-400/10" />
       </header>
@@ -182,7 +185,14 @@ export default async function DashboardPage() {
           icon={Building2}
         />
         {isManager && ctx.team ? (
-          <InviteCodeStatCard inviteCode={ctx.team.inviteCode} />
+          <ManagerTeamSnapshotCard
+            games={ctx.team.games}
+            region={ctx.team.region}
+            school={ctx.team.school}
+            memberCount={ctx.team.memberCount}
+            rosterSize={ctx.team.rosterSize}
+            pendingJoinRequests={managerAnalytics?.pendingJoinRequests ?? 0}
+          />
         ) : (
           <DashboardStatCard
             label={hasProfile ? "Your game" : "Profile"}
@@ -400,6 +410,17 @@ export default async function DashboardPage() {
                 }
                 icon={Building2}
                 tone="cyan"
+              />
+              <FeatureTile
+                href="/dashboard/invites"
+                title="Team invites"
+                description={
+                  pendingInvites.length > 0
+                    ? `${pendingInvites.length} pending invite${pendingInvites.length === 1 ? "" : "s"} — accept or decline recruitment offers.`
+                    : "See recruitment invites from teams and accept them when you're ready to join a roster."
+                }
+                icon={Mail}
+                tone="violet"
               />
               <FeatureTile
                 href="/dashboard/settings/profile"

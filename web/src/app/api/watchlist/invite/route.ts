@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createNotification } from "@/lib/notifications-db";
 import { sendRecruitmentInvite, isPlayerOnTeam, removeFromWatchlist } from "@/lib/player-watchlist-db";
-import { fulfillJoinRequest } from "@/lib/team-join-request-db";
+import { fulfillJoinRequest, hasPendingJoinRequest } from "@/lib/team-join-request-db";
 import {
   canEditTeam,
   permissionErrorResponse,
@@ -60,11 +60,15 @@ export async function POST(req: Request) {
       ? `Hi ${profile.handle}, ${team.name} would like to invite you to join our roster. Accept the invite from your dashboard when you're ready.`
       : `Hi ${profile.handle}, we'd like to invite you to join our roster.`;
 
+    const inviteMessage = body.message?.trim() || defaultMessage;
+
+    const hadJoinRequest = await hasPendingJoinRequest(teamId, body.playerProfileId);
+
     await sendRecruitmentInvite({
       teamId,
       playerProfileId: body.playerProfileId,
       invitedByUserId: account.id,
-      message: body.message?.trim() || defaultMessage,
+      message: inviteMessage,
     });
 
     await fulfillJoinRequest(teamId, body.playerProfileId).catch(() => undefined);
@@ -73,9 +77,13 @@ export async function POST(req: Request) {
       await createNotification({
         userId: profile.userId,
         type: "recruitment",
-        title: `Team invite from ${team?.name ?? "a team"}`,
-        body: body.message?.trim() || defaultMessage,
-        href: "/dashboard",
+        title: hadJoinRequest
+          ? `Join request accepted — ${team?.name ?? "team"}`
+          : `Team invite from ${team?.name ?? "a team"}`,
+        body: hadJoinRequest
+          ? `${team?.name ?? "The team"} reviewed your join request and sent you a roster invite. Accept it from Team invites on your dashboard.`
+          : inviteMessage,
+        href: "/dashboard/invites",
       });
     } catch (e) {
       console.error("[watchlist/invite] notification", e);

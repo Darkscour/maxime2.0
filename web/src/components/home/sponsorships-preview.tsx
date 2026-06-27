@@ -1,28 +1,8 @@
-import { ArrowRight, Filter, Handshake, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { DemoSponsorshipDirectory } from "@/components/sponsorships/demo-sponsorship-directory";
-
-const bullets = [
-  {
-    icon: Filter,
-    title: "Filter by fit",
-    description:
-      "Industry and sponsorship difficulty — find brands that match your org.",
-  },
-  {
-    icon: Handshake,
-    title: "Curated sponsor directory",
-    description:
-      "Hand-picked brands with real application links — sign in for the full directory.",
-  },
-  {
-    icon: Sparkles,
-    title: "Fit-first browsing",
-    description:
-      "Filter by industry and difficulty to find sponsors that match your org.",
-  },
-];
+import { MarketingFeaturePreviewShell } from "@/components/home/marketing-feature-preview-shell";
 
 export function SponsorshipsPreview() {
   return (
@@ -31,46 +11,24 @@ export function SponsorshipsPreview() {
       className="relative border-y border-white/5 bg-[var(--background-elevated)]/30 py-24 sm:py-32"
     >
       <Container>
-        <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-              Sponsorships
-            </p>
-            <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Land sponsors that actually fund collegiate teams
-            </h2>
-            <p className="mt-5 text-base leading-7 text-zinc-400 sm:text-lg">
-              Preview a curated selection of sponsors — sign in for the full
-              directory on your team dashboard.
-            </p>
+        <MarketingFeaturePreviewShell
+          eyebrow="Partnerships"
+          eyebrowAccent="emerald"
+          title="Sponsor directory"
+          description="Collegiate managers filter brands by industry and difficulty, review typical deal sizes and regions, and track outreach through a lead pipeline. Grassroots orgs focus on recruitment and roster tools."
+          previewNote="Sample sponsors — reputable brands for preview only"
+        >
+          <DemoSponsorshipDirectory />
+        </MarketingFeaturePreviewShell>
 
-            <ul className="mt-8 space-y-5">
-              {bullets.map((item) => (
-                <li key={item.title} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400/30">
-                    <item.icon className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <h3 className="font-heading text-sm font-semibold text-white">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1 text-sm leading-6 text-zinc-400">
-                      {item.description}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10">
-              <Button href="/sponsorships" size="lg">
-                Open sponsorship portal
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <DemoSponsorshipDirectory compact />
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Button href="/sponsorships" size="lg">
+            Open sponsorship portal
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+          <p className="text-sm text-zinc-500">
+            Matches your dashboard sponsor directory — placeholder data on the marketing site.
+          </p>
         </div>
       </Container>
     </section>

@@ -3,15 +3,26 @@ import { domainFromEmail, normalizeEmail } from "@/lib/manager-verification";
 export type InstitutionEmailTarget = {
   name: string;
   primaryDomain: string | null;
-  domains: string[];
+  domains?: string[];
 };
+
+export function toInstitutionEmailTarget(
+  institution: InstitutionEmailTarget,
+): Required<InstitutionEmailTarget> {
+  return {
+    name: institution.name,
+    primaryDomain: institution.primaryDomain,
+    domains: institution.domains ?? [],
+  };
+}
 
 export function collectInstitutionDomains(
   institution: InstitutionEmailTarget,
 ): string[] {
   const set = new Set<string>();
+  const normalized = toInstitutionEmailTarget(institution);
 
-  for (const raw of [institution.primaryDomain, ...institution.domains]) {
+  for (const raw of [normalized.primaryDomain, ...normalized.domains]) {
     if (!raw) continue;
     const domain = raw.trim().toLowerCase().replace(/^www\./, "");
     if (domain.includes(".")) set.add(domain);

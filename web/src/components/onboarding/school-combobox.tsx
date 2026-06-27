@@ -24,6 +24,7 @@ export function SchoolCombobox({
   required,
   placeholder = "Search by school name…",
 }: SchoolComboboxProps) {
+  const resultCacheRef = useRef<Map<string, InstitutionListItem[]>>(new Map());
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -34,8 +35,17 @@ export function SchoolCombobox({
   const [searchError, setSearchError] = useState("");
 
   const search = useCallback(async (q: string) => {
-    if (q.trim().length < 2) {
+    const normalized = q.trim().toLowerCase();
+    if (normalized.length < 2) {
       setResults([]);
+      return;
+    }
+
+    const cached = resultCacheRef.current.get(normalized);
+    if (cached) {
+      setResults(cached);
+      setNeedsBootstrap(false);
+      setSearchError("");
       return;
     }
 
@@ -43,7 +53,7 @@ export function SchoolCombobox({
     setSearchError("");
     try {
       const res = await fetch(
-        `/api/institutions/search?q=${encodeURIComponent(q.trim())}`,
+        `/api/institutions/search?q=${encodeURIComponent(normalized)}`,
       );
       const data = (await res.json()) as {
         results?: InstitutionListItem[];
@@ -55,7 +65,9 @@ export function SchoolCombobox({
         setSearchError(data.error ?? "Could not load schools.");
         return;
       }
-      setResults(data.results ?? []);
+      const next = data.results ?? [];
+      setResults(next);
+      resultCacheRef.current.set(normalized, next);
       setNeedsBootstrap(!!data.needsBootstrap);
     } catch {
       setResults([]);
@@ -117,10 +129,8 @@ export function SchoolCombobox({
               <p className="truncate text-sm font-medium text-zinc-100">
                 {value.name}
               </p>
-              {(value.city || value.state) && (
-                <p className="truncate text-xs text-zinc-500">
-                  {[value.city, value.state].filter(Boolean).join(", ")}
-                </p>
+              {value.city && (
+                <p className="truncate text-xs text-zinc-500">{value.city}</p>
               )}
             </div>
             <button
@@ -211,11 +221,11 @@ export function SchoolCombobox({
                   <p className="truncate text-sm text-zinc-100">
                     {institution.name}
                   </p>
-                  <p className="truncate text-xs text-zinc-500">
-                    {[institution.city, institution.state]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
+                  {institution.city && (
+                    <p className="truncate text-xs text-zinc-500">
+                      {institution.city}
+                    </p>
+                  )}
                 </div>
               </button>
             </li>

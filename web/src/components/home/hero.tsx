@@ -31,7 +31,7 @@ export function Hero() {
           className="font-heading mx-auto mt-6 max-w-4xl text-center text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl"
         >
           The all‑in‑one OS for{" "}
-          <span className="text-gradient">collegiate esports</span>
+          <span className="text-gradient">collegiate & grassroots esports</span>
         </motion.h1>
 
         <motion.p
@@ -40,9 +40,10 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.12 }}
           className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-zinc-400"
         >
-          Recruit the right players, land the right sponsors, and run your
-          team's back office — powered by AI built for amateur and lower‑tier
-          organizations. No analysts, no spreadsheets, no Discord chaos.
+          Managers scout players, track invites, and land sponsors. Players get
+          discovered, browse teams, and respond to roster offers — all in one
+          workspace built for amateur and lower‑tier orgs. No analysts, no
+          spreadsheets, no Discord chaos.
         </motion.p>
 
         <motion.div
@@ -51,12 +52,12 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <Button href="/recruitment" size="lg">
-            See how recruitment works
+          <Button href="/sign-up" size="lg">
+            Get started free
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <Button href="/sponsorships" variant="outline" size="lg">
-            Browse Sponsorships
+          <Button href="/#solutions" variant="outline" size="lg">
+            Explore solutions
           </Button>
         </motion.div>
 
@@ -84,7 +85,7 @@ export function Hero() {
                 <StatCard
                   icon={<Trophy className="h-5 w-5" />}
                   value="300+"
-                  label="Collegiate orgs onboarded"
+                  label="Orgs onboarded"
                   tone="green"
                 />
               </div>

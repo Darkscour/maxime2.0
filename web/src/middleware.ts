@@ -81,6 +81,8 @@ const isProtectedRoute = createRouteMatcher([
 
   "/api/account/profile",
 
+  "/api/dashboard(.*)",
+
 ]);
 
 

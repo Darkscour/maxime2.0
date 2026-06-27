@@ -43,6 +43,9 @@ export async function syncOnboardingCheckpoint(pathname: string, search: string)
   }
 
   if (pathname === "/onboarding/team/tier") {
+    if (account.accountType === "team_manager" && account.accountTier === null) {
+      return account;
+    }
     return db.userAccount.update({
       where: { id: account.id },
       data: { accountType: "team_manager", accountTier: null },
@@ -51,6 +54,9 @@ export async function syncOnboardingCheckpoint(pathname: string, search: string)
   }
 
   if (pathname === "/onboarding/player/tier") {
+    if (account.accountType === "player" && account.accountTier === null) {
+      return account;
+    }
     return db.userAccount.update({
       where: { id: account.id },
       data: { accountType: "player", accountTier: null },
@@ -61,11 +67,21 @@ export async function syncOnboardingCheckpoint(pathname: string, search: string)
   if (pathname === "/onboarding/team") {
     const accountTier = tierFromQuery ?? account.accountTier;
     if (!isAccountTier(accountTier ?? undefined)) {
+      if (account.accountType === "team_manager" && account.accountTier === null) {
+        return account;
+      }
       return db.userAccount.update({
         where: { id: account.id },
         data: { accountType: "team_manager", accountTier: null },
         include: accountInclude,
       });
+    }
+
+    if (
+      account.accountType === "team_manager" &&
+      account.accountTier === accountTier
+    ) {
+      return account;
     }
 
     return db.userAccount.update({
@@ -81,11 +97,18 @@ export async function syncOnboardingCheckpoint(pathname: string, search: string)
   if (pathname === "/onboarding/player") {
     const accountTier = tierFromQuery ?? account.accountTier;
     if (!isAccountTier(accountTier ?? undefined)) {
+      if (account.accountType === "player" && account.accountTier === null) {
+        return account;
+      }
       return db.userAccount.update({
         where: { id: account.id },
         data: { accountType: "player", accountTier: null },
         include: accountInclude,
       });
+    }
+
+    if (account.accountType === "player" && account.accountTier === accountTier) {
+      return account;
     }
 
     return db.userAccount.update({
