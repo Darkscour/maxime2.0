@@ -3,10 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Bell, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { parseJsonResponse } from "@/lib/safe-json";
+import { fetchJson } from "@/lib/safe-json";
 import { useAbortableIntervalFetch } from "@/hooks/use-abortable-interval-fetch";
 
 type NotificationItem = {
@@ -40,7 +39,6 @@ function typeTone(type: string) {
 }
 
 export function DashboardNotifications() {
-  const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -118,13 +116,12 @@ export function DashboardNotifications() {
   }, [open]);
 
   async function markAllRead() {
-    const res = await fetch("/api/notifications", {
+    const { ok, data } = await fetchJson<{ unread?: number }>("/api/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
     });
-    if (res.ok) {
-      const data = await parseJsonResponse<{ unread?: number }>(res);
+    if (ok) {
       setUnread(data?.unread ?? 0);
       setItems((prev) => prev.map((n) => ({ ...n, read: true })));
     }
@@ -132,7 +129,7 @@ export function DashboardNotifications() {
 
   async function openItem(item: NotificationItem) {
     if (!item.read) {
-      await fetch("/api/notifications", {
+      void fetchJson("/api/notifications", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: [item.id] }),
@@ -144,7 +141,7 @@ export function DashboardNotifications() {
     }
     setOpen(false);
     if (item.href) {
-      router.push(item.href);
+      window.location.assign(item.href);
     }
   }
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { parseJsonResponse } from "@/lib/safe-json";
+import { isBenignFetchError } from "@/lib/benign-fetch-error";
+import { fetchJson } from "@/lib/safe-json";
 
 type Options = {
   /** Delay before the first request so SSR/navigation can settle. */
@@ -34,12 +35,11 @@ export function useAbortableIntervalFetch<T>(
     abortRef.current = controller;
 
     try {
-      const res = await fetch(url, { signal: controller.signal });
-      const data = await parseJsonResponse<T>(res);
-      if (!res.ok || !data) return;
+      const { ok, data } = await fetchJson<T>(url, { signal: controller.signal });
+      if (!ok || !data) return;
       onDataRef.current(data);
     } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
+      if (isBenignFetchError(error)) return;
     } finally {
       inFlightRef.current = false;
     }

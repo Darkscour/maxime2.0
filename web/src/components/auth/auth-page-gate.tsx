@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AuthRedirectShell } from "@/components/auth/auth-redirect-shell";
 import { authContinuePath, type AuthIntent } from "@/lib/auth-intent";
@@ -21,12 +20,12 @@ export function AuthPageGate({
   children: React.ReactNode;
 }) {
   const { isLoaded, isSignedIn } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn || skipSignedInRedirect) return;
-    router.replace(authContinuePath(intent));
-  }, [intent, isLoaded, isSignedIn, router, skipSignedInRedirect]);
+    // Full navigation avoids RSC stream errors during OAuth handoff.
+    window.location.assign(authContinuePath(intent));
+  }, [intent, isLoaded, isSignedIn, skipSignedInRedirect]);
 
   if (!isLoaded) {
     return <AuthRedirectShell />;

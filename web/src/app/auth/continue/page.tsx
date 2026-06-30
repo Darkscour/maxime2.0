@@ -16,17 +16,106 @@ import {
   pathForUnregisteredSession,
   resolveEffectiveAuthIntent,
 } from "@/lib/auth-intent";
+import { isNextControlFlowError } from "@/lib/next-control-flow";
 import { resolvePostAuthPath } from "@/lib/post-auth";
 
 export const dynamic = "force-dynamic";
 
-function postAuthRedirect(
+function logResolvedRoute(
   intent: "sign-in" | "sign-up",
+  target: string,
   synced: Awaited<ReturnType<typeof syncOnboardingCompleteFlag>>,
-  hadPlatformAccount: boolean,
 ) {
-  const target = resolvePostAuthPath({
+  console.info("[auth/continue] resolved", {
     intent,
+    target,
+    accountType: synced.accountType,
+    onboardingComplete: synced.onboardingComplete,
+    hasTeam: !!synced.membership,
+    hasPlayerProfile: !!synced.playerProfile,
+  });
+}
+
+async function resolveAuthContinueTarget(
+  searchParams: Promise<{ intent?: string; maxime_signup?: string }>,
+): Promise<string> {
+  const params = await searchParams;
+  const cookieStore = await cookies();
+  const sessionIntent = parseSessionAuthIntent(
+    cookieStore.get(AUTH_INTENT_COOKIE)?.value,
+  );
+  const intent = resolveEffectiveAuthIntent(
+    parseAuthIntent(params.intent),
+    sessionIntent,
+    hasMaximeSignupConfirm(params),
+  );
+
+  if (intent === "sign-up") {
+    const { account, hadPlatformAccount } = await resolveUserAccountOnAuth({
+      createIfMissing: true,
+    });
+
+    if (!account) {
+      return appendMaximeSignupPending("/onboarding");
+    }
+
+    const synced = await syncOnboardingCompleteFlag(account);
+    const target = resolvePostAuthPath({
+      intent: "sign-up",
+      hadPlatformAccount,
+      accountType: synced.accountType,
+      accountTier: synced.accountTier,
+      onboardingComplete: synced.onboardingComplete,
+      hasTeam: !!synced.membership,
+      hasPlayerProfile: !!synced.playerProfile,
+      membershipRole: synced.membership?.role ?? null,
+      teamId: synced.membership?.teamId,
+      playerProfileId: synced.playerProfile?.id,
+    });
+    logResolvedRoute("sign-up", target, synced);
+    return target;
+  }
+
+  // Sign-in fast path: existing meaningful account needs only DB, no Clerk round-trip.
+  const existing = await getMeaningfulUserAccount();
+  if (existing) {
+    const synced = await syncOnboardingCompleteFlag(existing);
+    const target = resolvePostAuthPath({
+      intent: "sign-in",
+      hadPlatformAccount: true,
+      accountType: synced.accountType,
+      accountTier: synced.accountTier,
+      onboardingComplete: synced.onboardingComplete,
+      hasTeam: !!synced.membership,
+      hasPlayerProfile: !!synced.playerProfile,
+      membershipRole: synced.membership?.role ?? null,
+      teamId: synced.membership?.teamId,
+      playerProfileId: synced.playerProfile?.id,
+    });
+    logResolvedRoute("sign-in", target, synced);
+    return target;
+  }
+
+  // Sign-in: never create a Maxime profile — only existing users may continue.
+  const { account, hadPlatformAccount } = await resolveUserAccountOnAuth({
+    createIfMissing: false,
+  });
+
+  if (!account || !isMeaningfulMaximeAccount(account)) {
+    const target = pathForUnregisteredSession({
+      sessionIntent: "sign-in",
+      hasPlatformShell: !!account,
+    });
+    console.info("[auth/continue] unregistered sign-in", {
+      target,
+      hasPlatformShell: !!account,
+    });
+    return target;
+  }
+
+  const synced = await syncOnboardingCompleteFlag(account);
+  const target = resolvePostAuthPath({
+    intent: "sign-in",
     hadPlatformAccount,
     accountType: synced.accountType,
     accountTier: synced.accountTier,
@@ -37,17 +126,8 @@ function postAuthRedirect(
     teamId: synced.membership?.teamId,
     playerProfileId: synced.playerProfile?.id,
   });
-  console.info("[auth/continue] resolved", {
-    intent,
-    target,
-    accountType: synced.accountType,
-    onboardingComplete: synced.onboardingComplete,
-    hasTeam: !!synced.membership,
-    hasPlayerProfile: !!synced.playerProfile,
-  });
-  redirect(
-    target,
-  );
+  logResolvedRoute("sign-in", target, synced);
+  return target;
 }
 
 /** Clerk lands here after sign-in / sign-up; we route to onboarding or dashboard. */
@@ -56,79 +136,19 @@ export default async function AuthContinuePage({
 }: {
   searchParams: Promise<{ intent?: string; maxime_signup?: string }>;
 }) {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  let target: string;
   try {
-    const { userId } = await auth();
-    if (!userId) redirect("/sign-in");
-
-    const params = await searchParams;
-    const cookieStore = await cookies();
-    const sessionIntent = parseSessionAuthIntent(
-      cookieStore.get(AUTH_INTENT_COOKIE)?.value,
-    );
-    const intent = resolveEffectiveAuthIntent(
-      parseAuthIntent(params.intent),
-      sessionIntent,
-      hasMaximeSignupConfirm(params),
-    );
-
-    if (intent === "sign-up") {
-      const { account, hadPlatformAccount } = await resolveUserAccountOnAuth({
-        createIfMissing: true,
-      });
-
-      if (!account) {
-        redirect(appendMaximeSignupPending("/onboarding"));
-      }
-
-      const synced = await syncOnboardingCompleteFlag(account);
-      postAuthRedirect("sign-up", synced, hadPlatformAccount);
-    }
-
-    // Sign-in fast path: existing meaningful account needs only DB, no Clerk round-trip.
-    const existing = await getMeaningfulUserAccount();
-    if (existing) {
-      const synced = await syncOnboardingCompleteFlag(existing);
-      postAuthRedirect("sign-in", synced, true);
-    }
-
-    // Sign-in: never create a Maxime profile — only existing users may continue.
-    const { account, hadPlatformAccount } = await resolveUserAccountOnAuth({
-      createIfMissing: false,
-    });
-
-    if (!account || !isMeaningfulMaximeAccount(account)) {
-      const target = pathForUnregisteredSession({
-        sessionIntent: "sign-in",
-        hasPlatformShell: !!account,
-      });
-      console.info("[auth/continue] unregistered sign-in", {
-        target,
-        hasPlatformShell: !!account,
-      });
-      redirect(
-        target,
-      );
-    }
-
-    const synced = await syncOnboardingCompleteFlag(account);
-    postAuthRedirect("sign-in", synced, hadPlatformAccount);
+    target = await resolveAuthContinueTarget(searchParams);
   } catch (error) {
-    // redirect()/notFound() signal navigation by throwing — never swallow them,
-    // or the page gets stuck in a reload loop.
     if (isNextControlFlowError(error)) throw error;
-    console.error("[auth/continue] failed to resolve post-auth route", error);
-    throw error;
-  }
-}
 
-/** True for Next.js redirect()/notFound() control-flow throws, which must propagate. */
-function isNextControlFlowError(error: unknown): boolean {
-  if (typeof error !== "object" || error === null) return false;
-  const digest = (error as { digest?: unknown }).digest;
-  return (
-    typeof digest === "string" &&
-    (digest.startsWith("NEXT_REDIRECT") ||
-      digest === "NEXT_NOT_FOUND" ||
-      digest.startsWith("NEXT_HTTP_ERROR_FALLBACK"))
-  );
+    console.error("[auth/continue] failed to resolve post-auth route", error);
+    target = "/dashboard";
+  }
+
+  // redirect() must run outside try/catch so Next.js control-flow throws propagate.
+  redirect(target);
 }

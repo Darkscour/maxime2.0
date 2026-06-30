@@ -40,6 +40,7 @@ type ButtonAsLink = CommonProps & {
   href: string;
   target?: string;
   rel?: string;
+  prefetch?: boolean;
 };
 
 export function Button(props: ButtonAsButton | ButtonAsLink) {
@@ -47,9 +48,9 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
   const classes = cn(base, variants[variant], sizes[size], className);
 
   if ("href" in props && props.href) {
-    const { href, target, rel } = props;
+    const { href, target, rel, prefetch } = props;
     return (
-      <Link href={href} target={target} rel={rel} className={classes}>
+      <Link href={href} target={target} rel={rel} prefetch={prefetch} className={classes}>
         {children}
       </Link>
     );

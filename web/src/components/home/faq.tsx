@@ -55,7 +55,7 @@ export function FAQ() {
 
         <div className="mx-auto mt-8 max-w-3xl divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] shadow-lg shadow-black/20">
           {faqs.map((f, i) => (
-            <FAQItem key={i} q={f.q} a={f.a} defaultOpen={i === 0} />
+            <FAQItem key={i} q={f.q} a={f.a} />
           ))}
         </div>
       </Container>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
 import { parseJsonResponse } from "@/lib/safe-json";
+import { isBenignFetchError } from "@/lib/benign-fetch-error";
 import type { InstitutionListItem } from "@/lib/institutions";
 import { InstitutionLogoWithFallback } from "@/components/onboarding/institution-logo";
 import { fieldClassName } from "@/lib/form-styles";
@@ -26,6 +27,7 @@ export function SchoolCombobox({
   placeholder = "Search by school name…",
 }: SchoolComboboxProps) {
   const resultCacheRef = useRef<Map<string, InstitutionListItem[]>>(new Map());
+  const searchAbortRef = useRef<AbortController | null>(null);
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -52,9 +54,13 @@ export function SchoolCombobox({
 
     setLoading(true);
     setSearchError("");
+    searchAbortRef.current?.abort();
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
     try {
       const res = await fetch(
         `/api/institutions/search?q=${encodeURIComponent(normalized)}`,
+        { signal: controller.signal },
       );
       const data = await parseJsonResponse<{
         results?: InstitutionListItem[];
@@ -70,12 +76,19 @@ export function SchoolCombobox({
       setResults(next);
       resultCacheRef.current.set(normalized, next);
       setNeedsBootstrap(!!data.needsBootstrap);
-    } catch {
+    } catch (error) {
+      if (isBenignFetchError(error)) return;
       setResults([]);
       setSearchError("Could not load schools. Check your connection.");
     } finally {
-      setLoading(false);
+      if (searchAbortRef.current === controller) {
+        setLoading(false);
+      }
     }
+  }, []);
+
+  useEffect(() => {
+    return () => searchAbortRef.current?.abort();
   }, []);
 
   useEffect(() => {

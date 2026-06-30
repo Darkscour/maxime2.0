@@ -144,7 +144,9 @@ export default async function DashboardPage() {
             Your workspace
           </p>
           <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            {isFirstDashboardVisit ? "Welcome" : "Welcome back"}, {welcomeName}
+            {isFirstDashboardVisit
+              ? `Welcome, ${welcomeName}`
+              : `Welcome back, ${welcomeName}`}
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
             {isManager
@@ -186,12 +188,10 @@ export default async function DashboardPage() {
         />
         {isManager && ctx.team ? (
           <ManagerTeamSnapshotCard
-            games={ctx.team.games}
-            region={ctx.team.region}
-            school={ctx.team.school}
             memberCount={ctx.team.memberCount}
             rosterSize={ctx.team.rosterSize}
             pendingJoinRequests={managerAnalytics?.pendingJoinRequests ?? 0}
+            pendingInvites={managerAnalytics?.pendingInvites ?? 0}
           />
         ) : (
           <DashboardStatCard

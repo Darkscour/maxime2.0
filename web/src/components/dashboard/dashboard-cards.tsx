@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+/** Shared rectangular footprint for the four overview stat cards. */
+export const dashboardStatCardClassName =
+  "flex min-h-[7.5rem] flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5";
+
 export function DashboardStatCard({
   label,
   value,
@@ -13,12 +17,16 @@ export function DashboardStatCard({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div>
+    <div className={dashboardStatCardClassName}>
+      <div className="flex flex-1 items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wider text-zinc-500">{label}</p>
-          <p className="font-heading mt-2 text-2xl font-semibold text-white">{value}</p>
-          {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
+          <p className="font-heading mt-2 truncate text-2xl font-semibold text-white">
+            {value}
+          </p>
+          {hint && (
+            <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{hint}</p>
+          )}
         </div>
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
           <Icon className="h-4 w-4 text-cyan-400" />

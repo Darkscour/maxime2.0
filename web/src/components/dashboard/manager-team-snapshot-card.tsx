@@ -1,63 +1,73 @@
 import Link from "next/link";
 import { Activity, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { dashboardStatCardClassName } from "@/components/dashboard/dashboard-cards";
 
 type ManagerTeamSnapshotCardProps = {
-  games: string[];
-  region: string | null;
-  school: string | null;
   memberCount: number;
   rosterSize: number | null;
   pendingJoinRequests: number;
+  pendingInvites: number;
   className?: string;
 };
 
-/** Compact team snapshot — same footprint as other overview stat cards. */
+function rosterHeadline(memberCount: number, rosterSize: number | null): string {
+  if (rosterSize != null && rosterSize > 0) {
+    const openSlots = Math.max(0, rosterSize - memberCount);
+    if (openSlots === 0) return "Roster full";
+    if (openSlots === 1) return "1 slot open";
+    return `${openSlots} slots open`;
+  }
+  return "Roster active";
+}
+
+function pipelineHint(pendingJoinRequests: number, pendingInvites: number): string {
+  const parts: string[] = [];
+
+  if (pendingJoinRequests > 0) {
+    parts.push(
+      `${pendingJoinRequests} join request${pendingJoinRequests === 1 ? "" : "s"}`,
+    );
+  }
+
+  if (pendingInvites > 0) {
+    parts.push(
+      `${pendingInvites} invite${pendingInvites === 1 ? "" : "s"} pending`,
+    );
+  }
+
+  return parts.length > 0 ? parts.join(" · ") : "No pending requests";
+}
+
+/** Compact recruiting health — same footprint as other overview stat cards. */
 export function ManagerTeamSnapshotCard({
-  games,
-  region,
-  school,
   memberCount,
   rosterSize,
   pendingJoinRequests,
+  pendingInvites,
   className,
 }: ManagerTeamSnapshotCardProps) {
-  const primaryGame = games[0] ?? "—";
-  const extraGames = games.length > 1 ? ` +${games.length - 1}` : "";
-  const location = [school, region].filter(Boolean).join(" · ");
-  const rosterLabel =
-    rosterSize != null && rosterSize > 0
-      ? `${memberCount}/${rosterSize} roster`
-      : `${memberCount} on roster`;
-
-  const hintParts = [location, rosterLabel].filter(Boolean);
-  const hint = hintParts.join(" · ") || "Team overview";
+  const headline = rosterHeadline(memberCount, rosterSize);
+  const hint = pipelineHint(pendingJoinRequests, pendingInvites);
 
   return (
-    <div
-      className={cn(
-        "rounded-2xl border border-white/5 bg-[var(--surface)] p-5",
-        className,
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
+    <div className={cn(dashboardStatCardClassName, className)}>
+      <div className="flex flex-1 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Team snapshot</p>
-          <p className="font-heading mt-2 truncate text-2xl font-semibold text-white">
-            {primaryGame}
-            {extraGames && (
-              <span className="text-base font-normal text-zinc-500">{extraGames}</span>
-            )}
+          <p className="text-xs uppercase tracking-wider text-zinc-500">
+            Team snapshot
           </p>
-          <p className="mt-1 truncate text-xs text-zinc-500">{hint}</p>
+          <p className="font-heading mt-2 truncate text-2xl font-semibold text-white">
+            {headline}
+          </p>
+          <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{hint}</p>
           {pendingJoinRequests > 0 && (
             <Link
               href="/dashboard/join-requests"
               className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-cyan-400/90 hover:text-cyan-300"
             >
-              <Users className="h-3 w-3" />
-              {pendingJoinRequests} join request
-              {pendingJoinRequests === 1 ? "" : "s"}
+              <Users className="h-3 w-3 shrink-0" />
+              Review join requests
             </Link>
           )}
         </div>

@@ -2,6 +2,7 @@ import { cache } from "react";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
+import { withDbRetry } from "@/lib/db-retry";
 import { deriveOnboardingComplete } from "@/lib/onboarding-complete";
 import { hasOnboardingProgress } from "@/lib/onboarding-resume";
 
@@ -266,10 +267,12 @@ async function reconcileUserAccount(
 /** Fetch the Maxime UserAccount row without creating one. */
 export async function getExistingUserAccount() {
   const clerkId = await requireClerkId();
-  return db.userAccount.findUnique({
-    where: { clerkId },
-    include: accountInclude,
-  });
+  return withDbRetry(() =>
+    db.userAccount.findUnique({
+      where: { clerkId },
+      include: accountInclude,
+    }),
+  );
 }
 
 /** Like getExistingUserAccount, but ignores blank shell rows left from sign-in attempts. */
@@ -289,10 +292,12 @@ export const getOrCreateUserAccount = cache(async function getOrCreateUserAccoun
   // Fast path: an existing, meaningful account needs only one DB query.
   // Skips the Clerk identity round-trip and the by-email reconcile lookup,
   // which matters a lot when the database is geographically distant.
-  const existing = await db.userAccount.findUnique({
-    where: { clerkId },
-    include: accountInclude,
-  });
+  const existing = await withDbRetry(() =>
+    db.userAccount.findUnique({
+      where: { clerkId },
+      include: accountInclude,
+    }),
+  );
   if (existing && isMeaningfulMaximeAccount(existing)) {
     return existing;
   }
@@ -330,16 +335,25 @@ export async function syncOnboardingCompleteFlag(
   account: Awaited<ReturnType<typeof getOrCreateUserAccount>>,
 ) {
   const derived = deriveOnboardingComplete(account);
-  if (account.onboardingComplete === derived) return account;
+  if (account.onboardingComplete === derived) {
+    return { ...account, onboardingComplete: derived };
+  }
 
-  return db.userAccount.update({
-    where: { id: account.id },
-    data: { onboardingComplete: derived },
-    include: {
-      membership: { include: { team: true } },
-      playerProfile: true,
-    },
-  });
+  try {
+    return await withDbRetry(() =>
+      db.userAccount.update({
+        where: { id: account.id },
+        data: { onboardingComplete: derived },
+        include: {
+          membership: { include: { team: true } },
+          playerProfile: true,
+        },
+      }),
+    );
+  } catch (error) {
+    console.error("[syncOnboardingCompleteFlag] write failed; using derived flag", error);
+    return { ...account, onboardingComplete: derived };
+  }
 }
 
 /** Whether the user has already seen the dashboard overview welcome. */

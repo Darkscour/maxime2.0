@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
+import { authContinueSignupPath } from "@/lib/auth-intent";
 import "./globals.css";
 import { MarketingOnly } from "@/components/app-chrome";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { BenignNavigationErrors } from "@/components/providers/benign-navigation-errors";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,10 +62,11 @@ export default function RootLayout({
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
           signInForceRedirectUrl="/auth/continue?intent=sign-in"
-          signUpForceRedirectUrl="/auth/continue?intent=sign-up"
+          signUpForceRedirectUrl={authContinueSignupPath()}
           signInFallbackRedirectUrl="/auth/continue?intent=sign-in"
-          signUpFallbackRedirectUrl="/auth/continue?intent=sign-up"
+          signUpFallbackRedirectUrl={authContinueSignupPath()}
         >
+          <BenignNavigationErrors />
           <MarketingOnly>
             <Navbar />
           </MarketingOnly>
