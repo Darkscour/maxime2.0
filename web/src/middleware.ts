@@ -190,7 +190,7 @@ export default clerkMiddleware(async (auth, req) => {
       pathname === "/sign-up" &&
       req.nextUrl.searchParams.get(AUTH_PAGE_ALLOW_PARAM) !== "1"
     ) {
-      return authContinueRedirect(req, "sign-up");
+      return authContinueRedirect(req, "sign-in");
     }
 
     if (
@@ -206,15 +206,11 @@ export default clerkMiddleware(async (auth, req) => {
         return authContinueRedirect(req, "sign-in");
       }
 
-      const response = NextResponse.next({
+      return NextResponse.next({
 
         request: { headers: withRequestHeaders(req) },
 
       });
-
-      clearAuthIntentCookie(response);
-
-      return response;
 
     }
 

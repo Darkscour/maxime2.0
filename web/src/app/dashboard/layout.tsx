@@ -31,7 +31,7 @@ export default async function DashboardLayout({
     redirect(
       pathForUnregisteredSession({
         sessionIntent,
-        hasPlatformShell: !!existing,
+        hasPlatformShell: !!existing && sessionIntent === "sign-up",
       }),
     );
   }

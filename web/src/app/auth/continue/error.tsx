@@ -15,7 +15,7 @@ export default function AuthContinueError({
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
-    window.location.replace("/dashboard");
+    window.location.replace("/auth/no-maxime-account");
   }, [isLoaded, isSignedIn]);
 
   if (!isLoaded || isSignedIn) {

@@ -44,13 +44,10 @@ export function resolveEffectiveAuthIntent(
   sessionIntent: AuthIntent | null | undefined,
   explicitSignupConfirm?: boolean,
 ): AuthIntent {
-  // Explicit confirmation from our own UI always means register.
   if (explicitSignupConfirm) return "sign-up";
-  // Otherwise trust the cookie set when the user opened /sign-in vs /sign-up.
-  if (sessionIntent === "sign-up") return "sign-up";
-  if (sessionIntent === "sign-in") return "sign-in";
-  // No cookie and no confirm: never auto-register, regardless of the URL intent.
-  void urlIntent;
+  // Sign-in URLs always mean sign-in — never let a stale sign-up cookie auto-register.
+  if (urlIntent === "sign-in") return "sign-in";
+  if (urlIntent === "sign-up" && sessionIntent === "sign-up") return "sign-up";
   return "sign-in";
 }
 
@@ -68,10 +65,14 @@ export function pathForUnregisteredSession(options: {
   signupPending?: boolean;
   hasPlatformShell?: boolean;
 }): string {
-  if (options.hasPlatformShell) {
+  const signingUp =
+    options.signupPending ||
+    options.sessionIntent === "sign-up";
+
+  if (options.hasPlatformShell && signingUp) {
     return appendMaximeSignupPending("/onboarding");
   }
-  if (options.signupPending || options.sessionIntent === "sign-up") {
+  if (signingUp) {
     return authContinueSignupPath();
   }
   return "/auth/no-maxime-account";

@@ -1,22 +1,13 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ArrowRight, UserRound } from "lucide-react";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { AuthSignOutLink } from "@/components/auth/auth-sign-out-link";
 import { SignOutToSignInButton } from "@/components/auth/sign-out-to-sign-in-button";
 import { Button } from "@/components/ui/button";
-import {
-  AUTH_INTENT_COOKIE,
-  authContinueSignupPath,
-  parseSessionAuthIntent,
-  pathForUnregisteredSession,
-} from "@/lib/auth-intent";
-import {
-  getExistingUserAccount,
-  getMeaningfulUserAccount,
-} from "@/lib/auth-user";
+import { authContinueSignupPath } from "@/lib/auth-intent";
+import { getMeaningfulUserAccount } from "@/lib/auth-user";
 
 export const dynamic = "force-dynamic";
 
@@ -27,25 +18,14 @@ export default async function NoMaximeAccountPage() {
     redirect("/sign-in");
   }
 
-  const meaningful = await getMeaningfulUserAccount();
+  let meaningful = null;
+  try {
+    meaningful = await getMeaningfulUserAccount();
+  } catch (error) {
+    console.error("[no-maxime-account] could not load account", error);
+  }
   if (meaningful) {
     redirect("/auth/continue?intent=sign-in");
-  }
-
-  const cookieStore = await cookies();
-  const sessionIntent = parseSessionAuthIntent(
-    cookieStore.get(AUTH_INTENT_COOKIE)?.value,
-  );
-  const existing = await getExistingUserAccount();
-
-  // Sign-up flows and in-progress registrations never see this page.
-  if (sessionIntent === "sign-up" || existing) {
-    redirect(
-      pathForUnregisteredSession({
-        sessionIntent,
-        hasPlatformShell: !!existing,
-      }),
-    );
   }
 
   return (
