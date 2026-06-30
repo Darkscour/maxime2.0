@@ -99,7 +99,22 @@ export default async function AuthContinuePage({
     const synced = await syncOnboardingCompleteFlag(account);
     postAuthRedirect("sign-in", synced, hadPlatformAccount);
   } catch (error) {
+    // redirect()/notFound() signal navigation by throwing — never swallow them,
+    // or the page gets stuck in a reload loop.
+    if (isNextControlFlowError(error)) throw error;
     console.error("[auth/continue]", error);
     redirect("/sign-in");
   }
+}
+
+/** True for Next.js redirect()/notFound() control-flow throws, which must propagate. */
+function isNextControlFlowError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const digest = (error as { digest?: unknown }).digest;
+  return (
+    typeof digest === "string" &&
+    (digest.startsWith("NEXT_REDIRECT") ||
+      digest === "NEXT_NOT_FOUND" ||
+      digest.startsWith("NEXT_HTTP_ERROR_FALLBACK"))
+  );
 }
