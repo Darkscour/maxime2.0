@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 export function RouteErrorRecovery({
   title = "Something went wrong",
   description = "We couldn't load this page. Try again, or return home.",
+  secondaryHref = "/?browse=1",
+  secondaryLabel = "View homepage",
   reset,
 }: {
   title?: string;
   description?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
   reset: () => void;
 }) {
   return (
@@ -20,8 +24,12 @@ export function RouteErrorRecovery({
           <Button type="button" onClick={reset}>
             Try again
           </Button>
-          <Button type="button" variant="outline" onClick={() => window.location.assign("/")}>
-            Go home
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => window.location.assign(secondaryHref)}
+          >
+            {secondaryLabel}
           </Button>
         </div>
       </div>

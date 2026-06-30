@@ -161,8 +161,6 @@ export default clerkMiddleware(async (auth, req) => {
 
   const isOAuthCallback = isClerkOAuthCallback(pathname);
 
-  const browsing = req.nextUrl.searchParams.get("browse") === "1";
-
   if (isOAuthCallback) {
     const response = NextResponse.next({
       request: { headers: withRequestHeaders(req) },
@@ -201,16 +199,6 @@ export default clerkMiddleware(async (auth, req) => {
     ) {
       return authContinueRedirect(req, "sign-in");
     }
-
-
-
-    if (pathname === "/" && !browsing) {
-
-      return authContinueRedirect(req, "sign-in");
-
-    }
-
-
 
     if (pathname === "/auth/continue") {
 

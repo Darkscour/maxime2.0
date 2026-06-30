@@ -25,19 +25,28 @@ function postAuthRedirect(
   synced: Awaited<ReturnType<typeof syncOnboardingCompleteFlag>>,
   hadPlatformAccount: boolean,
 ) {
+  const target = resolvePostAuthPath({
+    intent,
+    hadPlatformAccount,
+    accountType: synced.accountType,
+    accountTier: synced.accountTier,
+    onboardingComplete: synced.onboardingComplete,
+    hasTeam: !!synced.membership,
+    hasPlayerProfile: !!synced.playerProfile,
+    membershipRole: synced.membership?.role ?? null,
+    teamId: synced.membership?.teamId,
+    playerProfileId: synced.playerProfile?.id,
+  });
+  console.info("[auth/continue] resolved", {
+    intent,
+    target,
+    accountType: synced.accountType,
+    onboardingComplete: synced.onboardingComplete,
+    hasTeam: !!synced.membership,
+    hasPlayerProfile: !!synced.playerProfile,
+  });
   redirect(
-    resolvePostAuthPath({
-      intent,
-      hadPlatformAccount,
-      accountType: synced.accountType,
-      accountTier: synced.accountTier,
-      onboardingComplete: synced.onboardingComplete,
-      hasTeam: !!synced.membership,
-      hasPlayerProfile: !!synced.playerProfile,
-      membershipRole: synced.membership?.role ?? null,
-      teamId: synced.membership?.teamId,
-      playerProfileId: synced.playerProfile?.id,
-    }),
+    target,
   );
 }
 
@@ -88,11 +97,16 @@ export default async function AuthContinuePage({
     });
 
     if (!account || !isMeaningfulMaximeAccount(account)) {
+      const target = pathForUnregisteredSession({
+        sessionIntent: "sign-in",
+        hasPlatformShell: !!account,
+      });
+      console.info("[auth/continue] unregistered sign-in", {
+        target,
+        hasPlatformShell: !!account,
+      });
       redirect(
-        pathForUnregisteredSession({
-          sessionIntent: "sign-in",
-          hasPlatformShell: !!account,
-        }),
+        target,
       );
     }
 
@@ -102,8 +116,8 @@ export default async function AuthContinuePage({
     // redirect()/notFound() signal navigation by throwing — never swallow them,
     // or the page gets stuck in a reload loop.
     if (isNextControlFlowError(error)) throw error;
-    console.error("[auth/continue]", error);
-    redirect("/sign-in");
+    console.error("[auth/continue] failed to resolve post-auth route", error);
+    throw error;
   }
 }
 
