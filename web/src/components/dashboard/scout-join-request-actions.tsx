@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Mail } from "lucide-react";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function ScoutJoinRequestActions({
   playerProfileId,
@@ -42,9 +43,9 @@ export function ScoutJoinRequestActions({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId, message }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not send invite.");
+        setError(data?.error || "Could not send invite.");
         return;
       }
       setInvited(true);

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormError, TextInput } from "@/components/onboarding/form-fields";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function PlayTimeReport({
   game,
@@ -44,9 +45,9 @@ export function PlayTimeReport({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hoursPerWeek: value }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not save.");
+        setError(data?.error || "Could not save.");
         return;
       }
       setSaved(true);

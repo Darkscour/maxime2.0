@@ -31,6 +31,7 @@ import {
 import type { InstitutionListItem } from "@/lib/institutions";
 import { SchoolCombobox } from "@/components/onboarding/school-combobox";
 import { useClientMounted } from "@/hooks/use-client-mounted";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 type TeamDraft = {
   displayName: string;
@@ -131,9 +132,12 @@ export function TeamOnboardingForm({
         }),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse<{
+        error?: string;
+        team?: { inviteCode?: string };
+      }>(res);
       if (!res.ok) {
-        setError(data.error || "Something went wrong.");
+        setError(data?.error || "Something went wrong.");
         return;
       }
 
@@ -142,7 +146,7 @@ export function TeamOnboardingForm({
         buildOnboardingHref("/onboarding/done", {
           ...onboardingQuery,
           tier,
-          extra: { invite: data.team.inviteCode },
+          extra: { invite: data?.team?.inviteCode },
         }),
       );
     } catch {

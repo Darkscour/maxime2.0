@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Mail } from "lucide-react";
 import type { PendingInviteRow } from "@/lib/player-watchlist-db";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function TeamInvitesPanel({
   invites,
@@ -25,9 +26,9 @@ export function TeamInvitesPanel({
     setLeaving(true);
     try {
       const res = await fetch("/api/player/leave-team", { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not leave team.");
+        setError(data?.error || "Could not leave team.");
         return;
       }
       router.refresh();
@@ -43,13 +44,13 @@ export function TeamInvitesPanel({
     setLoadingId(inviteId);
     try {
       const res = await fetch(`/api/invites/${inviteId}/accept`, { method: "POST" });
-      const data = await res.json();
-      if (res.status === 409 && data.code === "ALREADY_ON_TEAM") {
+      const data = await parseJsonResponse<{ error?: string; code?: string }>(res);
+      if (res.status === 409 && data?.code === "ALREADY_ON_TEAM") {
         setError("Leave your current team first, then accept this invite.");
         return;
       }
       if (!res.ok) {
-        setError(data.error || "Could not accept invite.");
+        setError(data?.error || "Could not accept invite.");
         return;
       }
       router.refresh();
@@ -65,9 +66,9 @@ export function TeamInvitesPanel({
     setLoadingId(inviteId);
     try {
       const res = await fetch(`/api/invites/${inviteId}/decline`, { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not decline invite.");
+        setError(data?.error || "Could not decline invite.");
         return;
       }
       router.refresh();

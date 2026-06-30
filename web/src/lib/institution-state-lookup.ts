@@ -1,4 +1,5 @@
 import { normalizeUsStateCode } from "@/lib/us-states";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 const HIPOLABS_URL =
   "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
@@ -31,7 +32,10 @@ async function loadDomainStateMap(): Promise<Map<string, string>> {
         throw new Error(`Hipolabs fetch failed: ${res.status}`);
       }
 
-      const data = (await res.json()) as HipolabsUniversity[];
+      const data = await parseJsonResponse<HipolabsUniversity[]>(res);
+      if (!data) {
+        throw new Error("Hipolabs response invalid");
+      }
       const map = new Map<string, string>();
 
       for (const uni of data) {

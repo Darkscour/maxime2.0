@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function TeamJoinRequestButton({
   teamId,
@@ -31,9 +32,9 @@ export function TeamJoinRequestButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamId }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not send request.");
+        setError(data?.error || "Could not send request.");
         return;
       }
       setPending(true);

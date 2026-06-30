@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, TextInput, FormError } from "@/components/onboarding/form-fields";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function DashboardJoinTeamPanel({
   hasTeam,
@@ -31,9 +32,9 @@ export function DashboardJoinTeamPanel({
     setLeaving(true);
     try {
       const res = await fetch("/api/player/leave-team", { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not leave team.");
+        setError(data?.error || "Could not leave team.");
         return;
       }
       setLeftTeam(true);
@@ -116,12 +117,12 @@ export function DashboardJoinTeamPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inviteCode: inviteCode.trim() }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string; team?: { name?: string } }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not join team.");
+        setError(data?.error || "Could not join team.");
         return;
       }
-      setSuccess(data.team?.name ? `Joined ${data.team.name}!` : "Team joined!");
+      setSuccess(data?.team?.name ? `Joined ${data.team.name}!` : "Team joined!");
       router.refresh();
     } catch {
       setError("Network error. Try again.");

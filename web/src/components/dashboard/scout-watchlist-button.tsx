@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function ScoutWatchlistButton({
   playerProfileId,
@@ -36,9 +37,9 @@ export function ScoutWatchlistButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not update watchlist.");
+        setError(data?.error || "Could not update watchlist.");
         return;
       }
       setOnWatchlist(!onWatchlist);

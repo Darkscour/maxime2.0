@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 type TeamOption = { id: string; name: string };
 type DuelRow = {
@@ -48,8 +49,8 @@ export function DuelsPanel({
 
   async function refresh() {
     const res = await fetch("/api/duels/challenges");
-    const data = (await res.json()) as { duels?: DuelRow[]; error?: string };
-    if (res.ok) setDuels(data.duels ?? []);
+    const data = await parseJsonResponse<{ duels?: DuelRow[]; error?: string }>(res);
+    if (res.ok && data) setDuels(data.duels ?? []);
   }
 
   async function createChallenge(e: React.FormEvent) {
@@ -63,9 +64,9 @@ export function DuelsPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetTeamId, game, message }),
       });
-      const data = (await res.json()) as { error?: string };
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error ?? "Could not create duel challenge.");
+        setError(data?.error ?? "Could not create duel challenge.");
         return;
       }
       setTargetTeamId("");

@@ -8,6 +8,7 @@ import type { RosterMember } from "@/lib/team-roster";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 function memberLabel(member: RosterMember) {
   return member.handle ?? member.displayName ?? member.email ?? "Member";
@@ -47,9 +48,9 @@ export function RosterHubPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not remove player.");
+        setError(data?.error || "Could not remove player.");
         return;
       }
       router.refresh();

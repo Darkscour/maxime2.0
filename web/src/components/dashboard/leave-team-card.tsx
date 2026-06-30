@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function LeaveTeamCard({
   teamName,
@@ -24,9 +25,9 @@ export function LeaveTeamCard({
     setLoading(true);
     try {
       const res = await fetch("/api/player/leave-team", { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not leave team.");
+        setError(data?.error || "Could not leave team.");
         return;
       }
       setConfirming(false);

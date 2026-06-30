@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Globe, Users } from "lucide-react";
 import { ONBOARDING_GAMES, ONBOARDING_REGIONS } from "@/lib/onboarding-options";
+import { parseJsonResponse } from "@/lib/safe-json";
 import {
   SettingsAlert,
   SettingsChip,
@@ -60,9 +61,9 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
         }),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Something went wrong.");
+        setError(data?.error || "Something went wrong.");
         return;
       }
 

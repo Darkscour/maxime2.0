@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { parseJsonResponse } from "@/lib/safe-json";
+import { useAbortableIntervalFetch } from "@/hooks/use-abortable-interval-fetch";
 
 type NotificationItem = {
   id: string;
@@ -50,11 +52,8 @@ export function DashboardNotifications() {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/notifications");
-      if (!res.ok) return;
-      const data = await res.json();
+  const onNotifications = useCallback(
+    (data: { items?: NotificationItem[]; unread?: number }) => {
       setItems(
         (data.items ?? []).map((n: NotificationItem & { createdAt: string }) => ({
           ...n,
@@ -65,22 +64,18 @@ export function DashboardNotifications() {
         })),
       );
       setUnread(data.unread ?? 0);
-    } catch {
-      // ignore
-    } finally {
       setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
+
+  useAbortableIntervalFetch("/api/notifications", 60_000, onNotifications, {
+    initialDelayMs: 500,
+  });
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    load();
-    const interval = setInterval(load, 60_000);
-    return () => clearInterval(interval);
-  }, [load]);
 
   useEffect(() => {
     if (!open || !buttonRef.current) {
@@ -129,8 +124,8 @@ export function DashboardNotifications() {
       body: JSON.stringify({}),
     });
     if (res.ok) {
-      const data = await res.json();
-      setUnread(data.unread ?? 0);
+      const data = await parseJsonResponse<{ unread?: number }>(res);
+      setUnread(data?.unread ?? 0);
       setItems((prev) => prev.map((n) => ({ ...n, read: true })));
     }
   }

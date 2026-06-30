@@ -8,6 +8,7 @@ import type { WatchlistListing } from "@/lib/player-watchlist-db";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { Button } from "@/components/ui/button";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function WatchlistPanel({
   items,
@@ -35,9 +36,9 @@ export function WatchlistPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId }),
       });
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Could not remove player.");
+        setError(data?.error || "Could not remove player.");
         return;
       }
       router.refresh();
@@ -57,9 +58,9 @@ export function WatchlistPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId, message }),
       });
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Could not send invite.");
+        setError(data?.error || "Could not send invite.");
         return;
       }
       setInviteTarget(null);

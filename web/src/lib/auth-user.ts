@@ -401,18 +401,17 @@ export async function getOnboardingStatusReadOnly() {
     };
   }
 
-  const synced = await syncOnboardingCompleteFlag(account);
   return {
-    accountType: synced.accountType,
-    accountTier: synced.accountTier,
-    onboardingComplete: synced.onboardingComplete,
-    hasTeam: !!synced.membership,
-    hasPlayerProfile: !!synced.playerProfile,
-    team: synced.membership?.team ?? null,
-    membershipRole: synced.membership?.role ?? null,
-    playerProfile: synced.playerProfile,
-    displayName: synced.displayName,
-    email: synced.email,
+    accountType: account.accountType,
+    accountTier: account.accountTier,
+    onboardingComplete: deriveOnboardingComplete(account),
+    hasTeam: !!account.membership,
+    hasPlayerProfile: !!account.playerProfile,
+    team: account.membership?.team ?? null,
+    membershipRole: account.membership?.role ?? null,
+    playerProfile: account.playerProfile,
+    displayName: account.displayName,
+    email: account.email,
   };
 }
 
@@ -446,7 +445,7 @@ export async function getAccountSettings() {
 export const getDashboardContext = cache(async function getDashboardContext() {
   const account = await syncOnboardingCompleteFlag(await getOrCreateUserAccount());
   const team = account.membership?.team ?? null;
-  const hasWelcomedToDashboard = await getHasWelcomedToDashboard(account.id);
+  const hasWelcomedToDashboard = account.hasWelcomedToDashboard;
 
   let teamWithMeta = null;
   if (team) {

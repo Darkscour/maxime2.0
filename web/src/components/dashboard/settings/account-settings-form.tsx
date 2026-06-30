@@ -11,6 +11,7 @@ import {
   SettingsInput,
   SettingsSection,
 } from "@/components/dashboard/settings/settings-ui";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function AccountSettingsForm({
   initialDisplayName,
@@ -67,9 +68,9 @@ export function AccountSettingsForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ displayName: displayName.trim() }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not save settings.");
+        setError(data?.error || "Could not save settings.");
         return;
       }
 

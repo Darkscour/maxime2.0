@@ -13,6 +13,7 @@ import {
   PLAYER_BIO_MAX_LENGTH,
   PLAYER_STATUSES,
 } from "@/lib/onboarding-options";
+import { parseJsonResponse } from "@/lib/safe-json";
 import {
   SettingsAlert,
   SettingsChip,
@@ -92,9 +93,9 @@ export function PlayerProfileEditForm({
         }),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Something went wrong.");
+        setError(data?.error || "Something went wrong.");
         return;
       }
 

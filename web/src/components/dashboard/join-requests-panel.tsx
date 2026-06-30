@@ -9,6 +9,7 @@ import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 function formatRequestedAt(date: Date | string) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -43,9 +44,9 @@ export function JoinRequestsPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId }),
       });
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Could not dismiss request.");
+        setError(data?.error || "Could not dismiss request.");
         return;
       }
       router.refresh();
@@ -65,9 +66,9 @@ export function JoinRequestsPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId, message }),
       });
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Could not send invite.");
+        setError(data?.error || "Could not send invite.");
         return;
       }
       setInviteTarget(null);

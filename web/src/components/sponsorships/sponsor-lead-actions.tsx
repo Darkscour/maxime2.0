@@ -12,6 +12,7 @@ import {
 import type { SponsorLeadRecord } from "@/lib/sponsor-pipeline";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 import { cn } from "@/lib/utils";
 
 function statusTone(status: SponsorLeadStatus) {
@@ -51,12 +52,12 @@ export function SponsorLeadActions({
           sponsorLink: sponsor.sponsorLink,
         }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string; lead?: SponsorLeadRecord }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not save.");
+        setError(data?.error || "Could not save.");
         return;
       }
-      setLocalLead(data.lead);
+      if (data?.lead) setLocalLead(data.lead);
       router.refresh();
     } catch {
       setError("Network error.");
@@ -75,12 +76,12 @@ export function SponsorLeadActions({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ leadId: localLead.id, status }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string; lead?: SponsorLeadRecord }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not update.");
+        setError(data?.error || "Could not update.");
         return;
       }
-      setLocalLead(data.lead);
+      if (data?.lead) setLocalLead(data.lead);
       router.refresh();
     } catch {
       setError("Network error.");

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Mail } from "lucide-react";
 import type { PendingInviteRow } from "@/lib/player-watchlist-db";
 import { Button } from "@/components/ui/button";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 /** Small stat-style team invites widget for the player overview row. */
 export function TeamInvitesWidget({
@@ -27,9 +28,9 @@ export function TeamInvitesWidget({
     setLeaving(true);
     try {
       const res = await fetch("/api/player/leave-team", { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not leave.");
+        setError(data?.error || "Could not leave.");
         return;
       }
       router.refresh();
@@ -45,9 +46,9 @@ export function TeamInvitesWidget({
     setError("");
     try {
       const res = await fetch(`/api/invites/${inviteId}/accept`, { method: "POST" });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not accept.");
+        setError(data?.error || "Could not accept.");
         return;
       }
       router.refresh();
@@ -63,9 +64,9 @@ export function TeamInvitesWidget({
     setError("");
     try {
       const res = await fetch(`/api/invites/${inviteId}/decline`, { method: "POST" });
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Could not decline.");
+        setError(data?.error || "Could not decline.");
         return;
       }
       router.refresh();

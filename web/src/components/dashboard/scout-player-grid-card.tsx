@@ -8,6 +8,7 @@ import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export type ScoutGridPlayer = {
   id: string;
@@ -60,9 +61,9 @@ export function ScoutPlayerGridCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId: player.id }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not save player.");
+        setError(data?.error || "Could not save player.");
         return;
       }
       setSaved(true);
@@ -83,9 +84,9 @@ export function ScoutPlayerGridCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerProfileId: player.id, message }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not send invite.");
+        setError(data?.error || "Could not send invite.");
         return;
       }
       setInvited(true);

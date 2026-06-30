@@ -1,11 +1,10 @@
-export function AuthRedirectShell({
-  message = "Taking you to your account…",
-}: {
-  message?: string;
-}) {
+/** Silent placeholder while auth/session routing completes — no user-facing copy. */
+export function AuthRedirectShell() {
   return (
-    <div className="flex flex-1 items-center justify-center py-24">
-      <p className="text-sm text-zinc-500">{message}</p>
-    </div>
+    <div
+      className="flex flex-1"
+      aria-busy="true"
+      aria-label="Loading"
+    />
   );
 }

@@ -1,10 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { HomePageGate } from "@/components/home/home-page-gate";
 import { HomePageContent } from "@/components/home/home-page-content";
 import { HomeResumeOnboardingBanner } from "@/components/home/home-resume-onboarding-banner";
-import { authContinuePath } from "@/lib/auth-intent";
 import { MARKETING_BROWSE_PARAM } from "@/lib/onboarding-path";
 
 export default async function Home({
@@ -14,12 +11,9 @@ export default async function Home({
 }) {
   const params = await searchParams;
   const browsing = params[MARKETING_BROWSE_PARAM] === "1";
-  const { userId } = await auth();
 
-  if (userId && !browsing) {
-    redirect(authContinuePath("sign-in"));
-  }
-
+  // Signed-in users on `/` are routed by middleware to `/auth/continue` unless
+  // `?browse=1`. HomePageGate handles the brief client-side OAuth lag case.
   return (
     <HomePageGate browsing={browsing}>
       <Suspense fallback={null}>

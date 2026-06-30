@@ -15,6 +15,7 @@ import {
   buildOnboardingHref,
   onboardingQueryFromSearchParams,
 } from "@/lib/onboarding-path";
+import { parseJsonResponse } from "@/lib/safe-json";
 
 export function JoinTeamForm() {
   const router = useRouter();
@@ -35,9 +36,9 @@ export function JoinTeamForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inviteCode: inviteCode.trim() }),
       });
-      const data = await res.json();
+      const data = await parseJsonResponse<{ error?: string }>(res);
       if (!res.ok) {
-        setError(data.error || "Could not join team.");
+        setError(data?.error || "Could not join team.");
         return;
       }
       router.push(buildOnboardingHref("/onboarding/done", onboardingQuery));
