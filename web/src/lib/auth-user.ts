@@ -94,7 +94,19 @@ async function resolveLinkedAccount(
   }
 
   if (!createIfMissing) {
-    await db.userAccount.deleteMany({ where: { id: account.id } });
+    // Only delete rows that are provably empty shells (never started onboarding at all).
+    // Never delete if there's any sign of real data — better to leave the row than
+    // silently wipe a real account due to a transient include failure.
+    const isEmptyShell =
+      !account.onboardingComplete &&
+      !account.accountType &&
+      !account.accountTier &&
+      !account.membership &&
+      !account.playerProfile;
+
+    if (isEmptyShell) {
+      await db.userAccount.deleteMany({ where: { id: account.id } });
+    }
     return { account: null, hadPlatformAccount: false };
   }
 

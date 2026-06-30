@@ -131,8 +131,11 @@ async function resolveAuthContinueTarget(
     return target;
   } catch (error) {
     if (isNextControlFlowError(error)) throw error;
+    // Re-throw so the error.tsx boundary can show a retry UI.
+    // Do NOT redirect to /auth/no-maxime-account — that misleads existing users
+    // into thinking they have no account when really the DB failed.
     console.error("[auth/continue] failed to resolve post-auth route", error);
-    return "/auth/no-maxime-account";
+    throw error;
   }
 }
 
