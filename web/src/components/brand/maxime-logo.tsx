@@ -1,11 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-/** Full stacked lockup: emblem above the MAXIME wordmark (transparent, 1.18 zoom). */
+/** Full stacked lockup: emblem above the MAXIME wordmark (transparent). */
 const STACKED_SRC = "/maxime-logo-stacked.png";
-const STACKED_W = 379;
-const STACKED_H = 347;
+const STACKED_W = 387;
+const STACKED_H = 355;
 
 /** Emblem-only crop for compact mark contexts. */
 const MARK_SRC = "/maxime-mark.png";
@@ -43,13 +42,16 @@ export function MaximeLogo({
   if (variant === "mark") {
     const side = markSize[size];
     content = (
-      <Image
+      // Native img — avoids Vercel/Next image optimizer clipping transparent PNG lockups.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
         src={MARK_SRC}
         alt="Maxime"
         width={side}
         height={side}
-        priority={priority}
-        className={cn("block object-contain", className)}
+        decoding="async"
+        fetchPriority={priority ? "high" : undefined}
+        className={cn("block shrink-0 object-contain", className)}
         style={{ width: side, height: side }}
       />
     );
@@ -57,13 +59,15 @@ export function MaximeLogo({
     const h = stackedHeight[size];
     const w = Math.round(h * (STACKED_W / STACKED_H));
     content = (
-      <Image
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
         src={STACKED_SRC}
         alt="Maxime"
         width={w}
         height={h}
-        priority={priority}
-        className={cn("block object-contain", className)}
+        decoding="async"
+        fetchPriority={priority ? "high" : undefined}
+        className={cn("block shrink-0 object-contain", className)}
         style={{ width: w, height: h }}
       />
     );
@@ -72,7 +76,10 @@ export function MaximeLogo({
   if (href === null) return <>{content}</>;
 
   return (
-    <Link href={href} className="inline-flex items-center leading-none">
+    <Link
+      href={href}
+      className="inline-flex shrink-0 items-center overflow-visible leading-none"
+    >
       {content}
     </Link>
   );

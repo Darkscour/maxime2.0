@@ -20,9 +20,6 @@ DEFAULT_SOURCE = ASSETS / (
     "9e701fe274fc148353b61f9_images_Maxime_Logo-4db63cf1-cfa1-4e4f-b888-cf73300bc487.png"
 )
 
-# Stacked lockup content zoom (center-crop; same canvas size).
-STACKED_ZOOM = 1.18
-
 
 def resolve_source() -> Path:
     if len(sys.argv) > 1:
@@ -59,22 +56,6 @@ def trim_transparent(img: Image.Image, padding: int = 4) -> Image.Image:
     return img.crop((left, top, right, bottom))
 
 
-def zoom_content(img: Image.Image, scale: float, padding: int = 2) -> Image.Image:
-    """Scale artwork up, then center-crop back to the original canvas so icons read larger."""
-    trimmed = trim_transparent(img, padding=padding)
-    ow, oh = trimmed.size
-    if scale <= 1.0:
-        return trimmed
-    scaled = trimmed.resize(
-        (max(1, int(ow * scale)), max(1, int(oh * scale))),
-        Image.Resampling.LANCZOS,
-    )
-    sw, sh = scaled.size
-    left = max(0, (sw - ow) // 2)
-    top = max(0, (sh - oh) // 2)
-    return scaled.crop((left, top, left + ow, top + oh))
-
-
 def crop_emblem(stacked: Image.Image) -> Image.Image:
     """Crop emblem-only region from stacked lockup (top ~62% of height)."""
     w, h = stacked.size
@@ -97,16 +78,13 @@ def main() -> None:
     print(f"Source: {source}")
 
     raw = Image.open(source)
-    base = trim_transparent(make_transparent(raw), padding=2)
-
-    stacked = zoom_content(base, STACKED_ZOOM, padding=0)
+    # Transparent + trim only — no center-crop zoom (zoom clips trophy + wordmark).
+    stacked = trim_transparent(make_transparent(raw), padding=4)
     stacked_path = PUBLIC / "maxime-logo-stacked.png"
     stacked.save(stacked_path, optimize=True)
-    stacked_dims = (stacked.width, stacked.height)
-    print(f"Wrote {stacked_path} ({stacked.width}x{stacked.height}, zoom={STACKED_ZOOM})")
+    print(f"Wrote {stacked_path} ({stacked.width}x{stacked.height})")
 
-    emblem = crop_emblem(base)
-    emblem = zoom_content(emblem, 1.18, padding=0)
+    emblem = crop_emblem(stacked)
     mark_path = PUBLIC / "maxime-mark.png"
     square_fit(emblem, 256).save(mark_path, optimize=True)
     print(f"Wrote {mark_path}")
@@ -119,8 +97,7 @@ def main() -> None:
     square_fit(emblem, 256).save(icon_path, optimize=True)
     print(f"Wrote {icon_path}")
 
-    if stacked_dims:
-        print(f"STACK_W={stacked_dims[0]} STACK_H={stacked_dims[1]}")
+    print(f"STACK_W={stacked.width} STACK_H={stacked.height}")
 
 
 if __name__ == "__main__":

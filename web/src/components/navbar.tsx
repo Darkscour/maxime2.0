@@ -38,9 +38,9 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-xl">
-      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
-        <div className="justify-self-start">
+    <header className="sticky top-0 z-50 overflow-visible border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-xl">
+      <Container className="grid min-h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 py-2">
+        <div className="shrink-0 justify-self-start overflow-visible">
           <MaximeLogo size="md" priority />
         </div>
 
