@@ -8,6 +8,7 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
+  ClerkLoading,
 } from "@clerk/nextjs";
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { MaximeLogo } from "@/components/brand/maxime-logo";
@@ -38,10 +39,12 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-xl">
-      <Container className="flex h-16 items-center justify-between">
-        <MaximeLogo size="md" priority />
+      <Container className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
+        <div className="justify-self-start">
+          <MaximeLogo size="md" priority />
+        </div>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center justify-center gap-1 md:flex">
           {links.map((link) => {
             const active =
               pathname === link.href ||
@@ -65,42 +68,54 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <SignedOut>
-            <SignInButton
-              mode="modal"
-              forceRedirectUrl="/auth/continue?intent=sign-in"
-              appearance={clerkAuthAppearance}
-            >
-              <Button variant="ghost" size="sm" className="text-white">
-                Sign in
-              </Button>
-            </SignInButton>
-            <Button href="/sign-up" variant="primary" size="sm">
-              Get started
-            </Button>
-          </SignedOut>
-          <SignedIn>
-            {showDashboard ? (
-              <Link
-                href="/dashboard"
-                prefetch={false}
-                className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
+        <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 justify-self-end md:min-w-[11.5rem]">
+          <div className="hidden min-h-8 min-w-[13rem] items-center justify-end gap-2 md:flex">
+            <ClerkLoading>
+              <span className="block h-8 w-[13rem] shrink-0" aria-hidden />
+            </ClerkLoading>
+            <SignedOut>
+              <SignInButton
+                mode="modal"
+                forceRedirectUrl="/auth/continue?intent=sign-in"
+                appearance={clerkAuthAppearance}
               >
-                Dashboard
-              </Link>
-            ) : null}
-            <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
-          </SignedIn>
-        </div>
+                <Button variant="ghost" size="sm" className="text-white">
+                  Sign in
+                </Button>
+              </SignInButton>
+              <Button href="/sign-up" variant="primary" size="sm">
+                Get started
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <div className="flex min-h-8 min-w-[13rem] items-center justify-end gap-2">
+                {showDashboard ? (
+                  <Link
+                    href="/dashboard"
+                    prefetch={false}
+                    className="hidden rounded-full px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white sm:inline"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <span
+                    className="hidden min-w-[5.5rem] sm:inline"
+                    aria-hidden
+                  />
+                )}
+                <ClerkUserButton avatarClassName="h-8 w-8 shrink-0 ring-1 ring-cyan-400/30" />
+              </div>
+            </SignedIn>
+          </div>
 
-        <button
-          aria-label="Toggle menu"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/5 md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          <button
+            aria-label="Toggle menu"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/5 md:hidden"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </Container>
 
       {open && (

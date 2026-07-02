@@ -39,8 +39,11 @@ export const metadata: Metadata = {
     "team management",
   ],
   icons: {
-    icon: "/maxime-mark.png",
-    apple: "/maxime-mark.png",
+    icon: [
+      { url: "/maxime-mark.png", sizes: "32x32", type: "image/png" },
+      { url: "/maxime-mark.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
 };
 

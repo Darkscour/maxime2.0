@@ -84,7 +84,7 @@ export function DashboardShell({
             <Menu className="h-5 w-5" />
           </button>
           <div className="lg:hidden">
-          <MaximeLogo size="sm" href="/dashboard" />
+            <MaximeLogo size="sm" href="/dashboard" />
           </div>
           <div className="ml-auto flex items-center gap-1">
             <DashboardNotifications />
@@ -108,22 +108,27 @@ function SidebarHeader({
   accountTier: string | null;
   compact?: boolean;
 }) {
+  const roleLabel =
+    accountType === "team_manager"
+      ? accountTier === "grassroots"
+        ? "Grassroots manager"
+        : "Collegiate manager"
+      : accountTier === "grassroots"
+        ? "Grassroots player"
+        : "Collegiate player";
+
   return (
     <div className={cn("border-b border-white/5", compact ? "" : "px-4 py-5")}>
-      <Link href="/dashboard" className="group flex flex-col gap-1">
+      <Link href="/dashboard" className="inline-block">
         <MaximeLogo size="md" href={null} />
-        {!compact && (
-          <p className="pl-0.5 text-xs text-zinc-500">
-            {accountType === "team_manager"
-              ? accountTier === "grassroots"
-                ? "Grassroots manager"
-                : "Collegiate manager"
-              : accountTier === "grassroots"
-                ? "Grassroots player"
-                : "Collegiate player"}
-          </p>
-        )}
       </Link>
+      {!compact && (
+        <div className="mt-4 border-t border-white/5 pt-3">
+          <span className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium tracking-wide text-zinc-400">
+            {roleLabel}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

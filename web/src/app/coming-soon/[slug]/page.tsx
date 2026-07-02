@@ -31,7 +31,7 @@ export default async function ComingSoonPage({ params }: PageProps) {
       <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
       <Container className="relative">
         <div className="mx-auto max-w-xl text-center">
-          <MaximeLogo variant="stacked" size="lg" className="mx-auto" />
+          <MaximeLogo size="lg" className="mx-auto" />
           <Badge tone="amber" className="mt-8">
             <Clock className="h-3.5 w-3.5" />
             Coming soon
