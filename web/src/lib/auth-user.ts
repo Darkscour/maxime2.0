@@ -1,10 +1,16 @@
 import { cache } from "react";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { withDbRetry } from "@/lib/db-retry";
 import { deriveOnboardingComplete } from "@/lib/onboarding-complete";
 import { hasOnboardingProgress } from "@/lib/onboarding-resume";
+import {
+  accountRichness,
+  isEmptyShellAccount,
+  orphanPlaceholderClerkId,
+  pickMergeTargets,
+} from "@/lib/auth-user-reconcile";
 
 export async function requireClerkId(): Promise<string> {
   const { userId } = await auth();
@@ -28,8 +34,9 @@ async function loadUserAccountWithRelations(id: string) {
   });
 }
 
-async function clerkIdentity() {
-  const clerkUser = await currentUser();
+function identityFromClerkUser(
+  clerkUser: Awaited<ReturnType<typeof currentUser>>,
+) {
   const email =
     clerkUser?.emailAddresses.find((e) => e.id === clerkUser.primaryEmailAddressId)
       ?.emailAddress ?? clerkUser?.emailAddresses[0]?.emailAddress;
@@ -42,25 +49,34 @@ async function clerkIdentity() {
   return { email, displayName };
 }
 
-type AccountWithRelations = UserAccountWithRelations;
+async function clerkIdentity() {
+  const { userId } = await auth();
+  if (!userId) {
+    return { email: undefined, displayName: undefined };
+  }
 
-type AccountRichnessInput = {
-  onboardingComplete: boolean;
-  accountType: string | null;
-  accountTier: string | null;
-  membership: unknown;
-  playerProfile: unknown;
-};
+  let clerkUser = await currentUser();
+  if (!clerkUser) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    clerkUser = await currentUser();
+  }
 
-function accountRichness(account: AccountRichnessInput) {
-  let score = 0;
-  if (account.onboardingComplete) score += 8;
-  if (account.membership) score += 4;
-  if (account.playerProfile) score += 4;
-  if (account.accountType) score += 2;
-  if (account.accountTier) score += 1;
-  return score;
+  if (!clerkUser) {
+    try {
+      const client = await clerkClient();
+      clerkUser = await client.users.getUser(userId);
+    } catch (error) {
+      console.warn("[clerkIdentity] Clerk getUser fallback failed", {
+        userId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return identityFromClerkUser(clerkUser);
 }
+
+type AccountWithRelations = UserAccountWithRelations;
 
 /** True once the user has started or finished Maxime onboarding — not a blank shell row. */
 export function isMeaningfulMaximeAccount(account: {
@@ -97,14 +113,7 @@ async function resolveLinkedAccount(
     // Only delete rows that are provably empty shells (never started onboarding at all).
     // Never delete if there's any sign of real data — better to leave the row than
     // silently wipe a real account due to a transient include failure.
-    const isEmptyShell =
-      !account.onboardingComplete &&
-      !account.accountType &&
-      !account.accountTier &&
-      !account.membership &&
-      !account.playerProfile;
-
-    if (isEmptyShell) {
+    if (isEmptyShellAccount(account)) {
       await db.userAccount.deleteMany({ where: { id: account.id } });
     }
     return { account: null, hadPlatformAccount: false };
@@ -130,17 +139,120 @@ async function findUserAccountByEmail(email: string | undefined | null) {
   );
 }
 
-async function deleteEmptyDuplicateIfNeeded(orphanId: string, keepId: string) {
-  if (orphanId === keepId) return;
+type AccountDbClient = Pick<typeof db, "userAccount">;
 
-  const orphan = await db.userAccount.findUnique({
-    where: { id: orphanId },
+async function clearClerkIdHolder(
+  tx: AccountDbClient,
+  clerkId: string,
+  keepId: string,
+) {
+  const holder = await tx.userAccount.findUnique({
+    where: { clerkId },
     include: accountInclude,
   });
+  if (!holder || holder.id === keepId) return;
 
-  if (!orphan || accountRichness(orphan) > 0) return;
+  if (isEmptyShellAccount(holder)) {
+    await tx.userAccount.deleteMany({ where: { id: holder.id } });
+    return;
+  }
 
-  await db.userAccount.deleteMany({ where: { id: orphanId } });
+  await tx.userAccount.update({
+    where: { id: holder.id },
+    data: { clerkId: orphanPlaceholderClerkId(holder.id) },
+  });
+}
+
+async function relinkAccountToClerkId(
+  canonical: UserAccountWithRelations,
+  clerkId: string,
+  email: string | undefined,
+  displayName: string | undefined,
+): Promise<UserAccountWithRelations> {
+  const nextDisplayName =
+    canonical.displayName?.trim() || displayName?.trim() || null;
+  const nextEmail = email ?? canonical.email ?? null;
+
+  return db.$transaction(async (tx) => {
+    await clearClerkIdHolder(tx, clerkId, canonical.id);
+
+    try {
+      return await tx.userAccount.update({
+        where: { id: canonical.id },
+        data: {
+          clerkId,
+          email: nextEmail,
+          displayName: nextDisplayName,
+        },
+        include: accountInclude,
+      });
+    } catch (error) {
+      if (!isClerkIdUniqueViolation(error)) throw error;
+
+      await clearClerkIdHolder(tx, clerkId, canonical.id);
+      return tx.userAccount.update({
+        where: { id: canonical.id },
+        data: {
+          clerkId,
+          email: nextEmail,
+          displayName: nextDisplayName,
+        },
+        include: accountInclude,
+      });
+    }
+  });
+}
+
+async function mergeDuplicateAccounts(
+  clerkId: string,
+  byClerkId: UserAccountWithRelations,
+  byEmail: UserAccountWithRelations,
+  email: string | undefined,
+  displayName: string | undefined,
+): Promise<UserAccountWithRelations> {
+  const { canonical, orphan } = pickMergeTargets(byClerkId, byEmail);
+
+  return db.$transaction(async (tx) => {
+    if (orphan.clerkId === clerkId && orphan.id !== canonical.id) {
+      if (isEmptyShellAccount(orphan)) {
+        await tx.userAccount.deleteMany({ where: { id: orphan.id } });
+      } else {
+        await tx.userAccount.update({
+          where: { id: orphan.id },
+          data: { clerkId: orphanPlaceholderClerkId(orphan.id) },
+        });
+      }
+    }
+
+    const nextDisplayName =
+      canonical.displayName?.trim() || displayName?.trim() || null;
+    const nextEmail = email ?? canonical.email ?? null;
+
+    try {
+      return await tx.userAccount.update({
+        where: { id: canonical.id },
+        data: {
+          clerkId,
+          email: nextEmail,
+          displayName: nextDisplayName,
+        },
+        include: accountInclude,
+      });
+    } catch (error) {
+      if (!isClerkIdUniqueViolation(error)) throw error;
+
+      await clearClerkIdHolder(tx, clerkId, canonical.id);
+      return tx.userAccount.update({
+        where: { id: canonical.id },
+        data: {
+          clerkId,
+          email: nextEmail,
+          displayName: nextDisplayName,
+        },
+        include: accountInclude,
+      });
+    }
+  });
 }
 
 async function syncIdentityFields(
@@ -232,21 +344,13 @@ async function reconcileUserAccount(
   const byEmail = await findUserAccountByEmail(email);
 
   if (byClerkId && byEmail && byClerkId.id !== byEmail.id) {
-    const canonical =
-      accountRichness(byEmail) > accountRichness(byClerkId) ? byEmail : byClerkId;
-    const orphan = canonical.id === byClerkId.id ? byEmail : byClerkId;
-
-    const account = await db.userAccount.update({
-      where: { id: canonical.id },
-      data: {
-        clerkId,
-        email: email ?? null,
-        displayName: canonical.displayName?.trim() || displayName?.trim() || null,
-      },
-      include: accountInclude,
-    });
-
-    await deleteEmptyDuplicateIfNeeded(orphan.id, canonical.id);
+    const account = await mergeDuplicateAccounts(
+      clerkId,
+      byClerkId,
+      byEmail,
+      email,
+      displayName,
+    );
     return resolveLinkedAccount(account, email, displayName, createIfMissing);
   }
 
@@ -255,15 +359,12 @@ async function reconcileUserAccount(
   }
 
   if (byEmail) {
-    const account = await db.userAccount.update({
-      where: { id: byEmail.id },
-      data: {
-        clerkId,
-        email: email ?? null,
-        displayName: byEmail.displayName?.trim() || displayName?.trim() || null,
-      },
-      include: accountInclude,
-    });
+    const account = await relinkAccountToClerkId(
+      byEmail,
+      clerkId,
+      email,
+      displayName,
+    );
     return resolveLinkedAccount(account, email, displayName, createIfMissing);
   }
 
@@ -316,14 +417,46 @@ export const getOrCreateUserAccount = cache(async function getOrCreateUserAccoun
 
   // Slow path: blank shell or no row — fetch Clerk identity to create/link.
   const { email, displayName } = await clerkIdentity();
-  const { account } = await reconcileUserAccount(clerkId, email, displayName, {
-    preloadedByClerkId: existing,
-  });
+  const { account } = await withDbRetry(() =>
+    reconcileUserAccount(clerkId, email, displayName, {
+      preloadedByClerkId: existing,
+    }),
+  );
   if (!account) {
     throw new Error("NO_PLATFORM_ACCOUNT");
   }
   return account;
 });
+
+export type ReconcileLogContext = {
+  clerkId: string;
+  hasByClerkId: boolean;
+  hasByEmail: boolean;
+  byClerkIdRichness?: number;
+  byEmailRichness?: number;
+  createIfMissing: boolean;
+};
+
+/** Structured context for auth/continue failure logs. */
+export async function getReconcileLogContext(
+  clerkId: string,
+  email: string | undefined,
+  createIfMissing: boolean,
+): Promise<ReconcileLogContext> {
+  const [byClerkId, byEmail] = await Promise.all([
+    db.userAccount.findUnique({ where: { clerkId }, include: accountInclude }),
+    findUserAccountByEmail(email),
+  ]);
+
+  return {
+    clerkId,
+    hasByClerkId: !!byClerkId,
+    hasByEmail: !!byEmail,
+    byClerkIdRichness: byClerkId ? accountRichness(byClerkId) : undefined,
+    byEmailRichness: byEmail ? accountRichness(byEmail) : undefined,
+    createIfMissing,
+  };
+}
 
 /** Used after Clerk auth to detect first-time platform users vs returning ones. */
 export async function resolveUserAccountOnAuth(options?: {
@@ -331,7 +464,9 @@ export async function resolveUserAccountOnAuth(options?: {
 }) {
   const clerkId = await requireClerkId();
   const { email, displayName } = await clerkIdentity();
-  return reconcileUserAccount(clerkId, email, displayName, options);
+  return withDbRetry(() =>
+    reconcileUserAccount(clerkId, email, displayName, options),
+  );
 }
 
 /** Ensures a UserAccount exists before onboarding API writes (creates if missing). */

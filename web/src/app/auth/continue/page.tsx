@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   getMeaningfulUserAccount,
+  getReconcileLogContext,
   isMeaningfulMaximeAccount,
   resolveUserAccountOnAuth,
   syncOnboardingCompleteFlag,
@@ -16,6 +17,7 @@ import {
   pathForUnregisteredSession,
   resolveEffectiveAuthIntent,
 } from "@/lib/auth-intent";
+import { isTransientDbError } from "@/lib/db-retry";
 import { isNextControlFlowError } from "@/lib/next-control-flow";
 import { resolvePostAuthPath } from "@/lib/post-auth";
 
@@ -131,10 +133,29 @@ async function resolveAuthContinueTarget(
     return target;
   } catch (error) {
     if (isNextControlFlowError(error)) throw error;
-    // Re-throw so the error.tsx boundary can show a retry UI.
-    // Do NOT redirect to /auth/no-maxime-account — that misleads existing users
-    // into thinking they have no account when really the DB failed.
-    console.error("[auth/continue] failed to resolve post-auth route", error);
+
+    const { userId } = await auth();
+    let reconcileContext: Awaited<ReturnType<typeof getReconcileLogContext>> | null =
+      null;
+    if (userId) {
+      try {
+        reconcileContext = await getReconcileLogContext(userId, undefined, false);
+      } catch (contextError) {
+        console.warn("[auth/continue] could not load reconcile context", contextError);
+      }
+    }
+
+    const prismaCode =
+      error instanceof Error && "code" in error
+        ? String((error as { code?: unknown }).code)
+        : undefined;
+
+    console.error("[auth/continue] failed to resolve post-auth route", {
+      error: error instanceof Error ? error.message : String(error),
+      prismaCode,
+      transient: isTransientDbError(error),
+      reconcileContext,
+    });
     throw error;
   }
 }

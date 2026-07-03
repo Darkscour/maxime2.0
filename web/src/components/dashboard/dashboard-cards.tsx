@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-/** Shared rectangular footprint for the four overview stat cards. */
+/** Shared footprint for the four overview stat cards — grows with content. */
 export const dashboardStatCardClassName =
-  "flex min-h-[7.5rem] flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5";
+  "flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5";
 
 export function DashboardStatCard({
   label,
@@ -21,11 +21,11 @@ export function DashboardStatCard({
       <div className="flex flex-1 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wider text-zinc-500">{label}</p>
-          <p className="font-heading mt-2 truncate text-2xl font-semibold text-white">
+          <p className="font-heading mt-2 break-words text-2xl font-semibold leading-tight text-white">
             {value}
           </p>
           {hint && (
-            <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{hint}</p>
+            <p className="mt-1 break-words text-xs leading-5 text-zinc-500">{hint}</p>
           )}
         </div>
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">

@@ -57,10 +57,10 @@ export function ManagerTeamSnapshotCard({
           <p className="text-xs uppercase tracking-wider text-zinc-500">
             Team snapshot
           </p>
-          <p className="font-heading mt-2 truncate text-2xl font-semibold text-white">
+          <p className="font-heading mt-2 break-words text-2xl font-semibold leading-tight text-white">
             {headline}
           </p>
-          <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{hint}</p>
+          <p className="mt-1 break-words text-xs leading-5 text-zinc-500">{hint}</p>
           {pendingJoinRequests > 0 && (
             <Link
               href="/dashboard/join-requests"

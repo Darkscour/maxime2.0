@@ -104,6 +104,32 @@ async function main() {
     console.error(" ", e instanceof Error ? e.message : e);
   }
 
+  console.log("\n=== Duplicate UserAccount rows (email + shell clerkId) ===");
+  try {
+    const duplicates = await db.$queryRaw<
+      Array<{ email: string; row_count: bigint }>
+    >`
+      SELECT LOWER(TRIM(email)) AS email, COUNT(*)::bigint AS row_count
+      FROM "UserAccount"
+      WHERE email IS NOT NULL AND TRIM(email) <> ''
+      GROUP BY LOWER(TRIM(email))
+      HAVING COUNT(*) > 1
+      LIMIT 10
+    `;
+    if (duplicates.length === 0) {
+      console.log("  No duplicate emails detected.");
+    } else {
+      for (const row of duplicates) {
+        console.log(`  · ${row.email}: ${row.row_count} rows`);
+      }
+      console.log(
+        "  Tip: rich email row + empty shell with current clerkId can break sign-in until reconciled.",
+      );
+    }
+  } catch (e) {
+    console.log("  Duplicate check skipped:", e instanceof Error ? e.message : e);
+  }
+
   console.log("\n=== How auth + user data work in Maxime ===");
   console.log("  1. Clerk handles sign-in/sign-up (identity, sessions, OAuth).");
   console.log("  2. Supabase stores app data in UserAccount (linked by clerkId).");
