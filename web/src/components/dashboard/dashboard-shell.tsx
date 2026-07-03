@@ -84,7 +84,7 @@ export function DashboardShell({
             <Menu className="h-5 w-5" />
           </button>
           <div className="lg:hidden">
-            <MaximeLogo size="sm" href="/dashboard" />
+            <MaximeLogo size="nav" href="/dashboard" />
           </div>
           <div className="ml-auto flex items-center gap-1">
             <DashboardNotifications />
@@ -120,7 +120,7 @@ function SidebarHeader({
   return (
     <div className={cn("border-b border-white/5", compact ? "" : "px-4 py-5")}>
       <Link href="/dashboard" className="inline-block">
-        <MaximeLogo size="md" href={null} />
+        <MaximeLogo size="nav" href={null} />
       </Link>
       {!compact && (
         <div className="mt-4 border-t border-white/5 pt-3">

@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { MaximeLogo } from "@/components/brand/maxime-logo";
 import { Container } from "@/components/ui/container";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
 import { OnboardingProgressBar } from "@/components/onboarding/onboarding-progress-bar";
@@ -104,7 +105,13 @@ export default async function OnboardingLayout({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-0px)] flex-1 flex-col border-b border-white/5 bg-spotlight py-10 sm:py-14">
+    <>
+      <header className="border-b border-white/5 bg-[var(--background)]/80 backdrop-blur-xl">
+        <div className="mx-auto flex min-h-14 max-w-7xl items-center px-6 py-2 lg:px-8">
+          <MaximeLogo size="nav" priority />
+        </div>
+      </header>
+      <div className="flex min-h-[calc(100vh-0px)] flex-1 flex-col border-b border-white/5 bg-spotlight py-10 sm:py-14">
       <Container className="max-w-2xl">
         <OnboardingResumeBanner show={showResumeBanner} />
         {!showResumeBanner ? (
@@ -116,5 +123,6 @@ export default async function OnboardingLayout({
         <Suspense fallback={null}>{children}</Suspense>
       </Container>
     </div>
+    </>
   );
 }

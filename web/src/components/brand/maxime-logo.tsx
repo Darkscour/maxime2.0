@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 
 /** Full stacked lockup: emblem above the MAXIME wordmark (transparent). */
 const STACKED_SRC = "/maxime-logo-stacked.png";
-const STACKED_W = 387;
-const STACKED_H = 355;
+const STACKED_W = 411;
+const STACKED_H = 301;
 
 /** Emblem-only crop for compact mark contexts. */
 const MARK_SRC = "/maxime-mark.png";
@@ -12,12 +12,14 @@ const MARK_SRC = "/maxime-mark.png";
 const stackedHeight = {
   sm: 32,
   md: 40,
+  nav: 48,
   lg: 72,
 } as const;
 
 const markSize = {
   sm: 28,
   md: 32,
+  nav: 36,
   lg: 48,
 } as const;
 
