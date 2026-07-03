@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { MaximeLogo } from "@/components/brand/maxime-logo";
 import { Container } from "@/components/ui/container";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getComingSoonPage } from "@/lib/coming-soon-pages";
 
@@ -14,9 +13,9 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const page = getComingSoonPage(slug);
-  if (!page) return { title: "Coming soon — Maxime" };
+  if (!page) return { title: "Maxime" };
   return {
-    title: `${page.title} — Coming soon — Maxime`,
+    title: `${page.title} — Maxime`,
     description: page.description,
   };
 }
@@ -32,11 +31,7 @@ export default async function ComingSoonPage({ params }: PageProps) {
       <Container className="relative">
         <div className="mx-auto max-w-xl text-center">
           <MaximeLogo size="lg" className="mx-auto" />
-          <Badge tone="amber" className="mt-8">
-            <Clock className="h-3.5 w-3.5" />
-            Coming soon
-          </Badge>
-          <h1 className="font-heading mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h1 className="font-heading mt-8 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             {page.title}
           </h1>
           <p className="mt-4 text-base leading-7 text-zinc-400">{page.description}</p>

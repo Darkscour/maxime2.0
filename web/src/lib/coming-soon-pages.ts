@@ -5,42 +5,42 @@ export const COMING_SOON_PAGES: Record<
   documentation: {
     title: "Documentation",
     description:
-      "Guides for managers, players, and org admins are on the way. Check back soon for onboarding walkthroughs and feature docs.",
+      "Step-by-step guides for managers, players, and org admins — onboarding walkthroughs, feature references, and best practices for running your program on Maxime.",
   },
   discord: {
     title: "Discord",
     description:
-      "Our community Discord is launching soon. You'll be able to connect with other orgs, get support, and share feedback there.",
+      "Join the Maxime community to connect with other collegiate orgs, get support, and share feedback with the team.",
   },
   changelog: {
     title: "Changelog",
     description:
-      "A public record of platform updates is coming soon. We'll publish release notes here as new features ship.",
+      "Release notes and platform updates as we ship new features for recruitment, team ops, and sponsorships.",
   },
   roadmap: {
     title: "Roadmap",
     description:
-      "A dedicated roadmap page is on the way. For now, see what's in development on the homepage Features section.",
+      "See what's planned and in development across Maxime's product areas. For current capabilities, visit the Features section on our homepage.",
   },
   about: {
     title: "About",
     description:
-      "Our story, mission, and team page are still being built. More about Maxime and the founders is coming soon.",
+      "Maxime is the AI operating system for collegiate and grassroots esports, built by ex team founders for the next generation of programs.",
   },
   pricing: {
     title: "Pricing",
     description:
-      "Pricing tiers and plan details are coming soon. Sign up today to get started while we finalize our plans.",
+      "Simple pricing for teams of every size. Start free and upgrade as your organization grows.",
   },
   careers: {
     title: "Careers",
     description:
-      "Open roles and hiring information will be posted here soon. We're not actively hiring yet, but check back.",
+      "We're building the tools collegiate esports has been missing. Check back for open roles as we scale.",
   },
   contact: {
     title: "Contact",
     description:
-      "A contact form and support channels are on the way. We'll share the best way to reach the Maxime team here soon.",
+      "Reach the Maxime team for support, partnerships, or general inquiries.",
   },
 };
 
