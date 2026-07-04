@@ -20,14 +20,19 @@ const clerkSharedAuthProps = {
   oidcPrompt: clerkOidcPrompt,
 };
 
+const authContinueSignInPath = "/auth/continue?intent=sign-in";
+
 export const clerkSignInPageProps = {
   ...clerkSharedAuthProps,
   path: "/sign-in",
   routing: "path" as const,
-  forceRedirectUrl: "/auth/continue?intent=sign-in",
-  fallbackRedirectUrl: "/auth/continue?intent=sign-in",
-  signUpForceRedirectUrl: authContinueSignupPath(),
-  signUpFallbackRedirectUrl: authContinueSignupPath(),
+  forceRedirectUrl: authContinueSignInPath,
+  fallbackRedirectUrl: authContinueSignInPath,
+  // Clerk sends new identities here when "Sign in" creates a Clerk user. Must NOT
+  // include maxime_signup — that would auto-register on Maxime instead of the
+  // no-account screen for deleted / unknown emails.
+  signUpForceRedirectUrl: authContinueSignInPath,
+  signUpFallbackRedirectUrl: authContinueSignInPath,
 };
 
 export const clerkSignUpPageProps = {

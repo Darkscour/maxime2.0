@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { MaximeLogo } from "@/components/brand/maxime-logo";
+import { AlertCircle, ArrowRight } from "lucide-react";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { AuthSignOutLink } from "@/components/auth/auth-sign-out-link";
 import { DbUnavailableRecovery } from "@/components/auth/db-unavailable-recovery";
@@ -46,8 +45,8 @@ export default async function NoMaximeAccountPage() {
   return (
     <AuthPageShell>
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[var(--surface)]/90 p-8 text-center shadow-2xl shadow-black/20">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.03] ring-1 ring-inset ring-white/10">
-          <MaximeLogo variant="mark" size="md" href={null} className="h-9 w-9" />
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400/10 ring-1 ring-inset ring-amber-400/25">
+          <AlertCircle className="h-7 w-7 text-amber-300" />
         </span>
         <h1 className="font-heading mt-5 text-2xl font-semibold text-white">
           No Maxime account yet
