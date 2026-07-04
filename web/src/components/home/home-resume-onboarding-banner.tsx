@@ -39,7 +39,17 @@ export function HomeResumeOnboardingBanner() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <p className="text-sm text-amber-100/90">
             You&apos;re signed in, but we couldn&apos;t verify your account right
-            now. The database may be temporarily unavailable.
+            now. The database may be temporarily unavailable — try again in about a
+            minute.{" "}
+            <Link
+              href="https://status.supabase.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 underline-offset-2 transition-colors hover:text-cyan-300 hover:underline"
+            >
+              Check Supabase status
+            </Link>
+            .
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <Button href="/dashboard" size="sm" className="gap-1.5" prefetch={false}>

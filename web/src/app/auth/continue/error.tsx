@@ -15,7 +15,7 @@ export default function AuthContinueError({
   return (
     <RouteErrorRecovery
       title="Couldn't finish sign-in"
-      description="We ran into an error routing your session. Click 'Go to dashboard' if you already have an account, or try again."
+      description="We couldn't complete your sign-in. This is usually caused by a temporary database issue. Wait a moment and try again — your account has not been affected."
       primaryHref="/dashboard"
       primaryLabel="Go to dashboard"
       retryHref="/auth/continue?intent=sign-in"

@@ -5,10 +5,12 @@ import { ArrowRight } from "lucide-react";
 import { MaximeLogo } from "@/components/brand/maxime-logo";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { AuthSignOutLink } from "@/components/auth/auth-sign-out-link";
+import { DbUnavailableRecovery } from "@/components/auth/db-unavailable-recovery";
 import { SignOutToSignInButton } from "@/components/auth/sign-out-to-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { authContinueSignupPath } from "@/lib/auth-intent";
 import { getMeaningfulUserAccount } from "@/lib/auth-user";
+import { isTransientDbError } from "@/lib/db-retry";
 
 export const dynamic = "force-dynamic";
 
@@ -20,13 +22,25 @@ export default async function NoMaximeAccountPage() {
   }
 
   let meaningful = null;
+  let dbUnavailable = false;
   try {
     meaningful = await getMeaningfulUserAccount();
   } catch (error) {
+    if (isTransientDbError(error)) {
+      dbUnavailable = true;
+    }
     console.error("[no-maxime-account] could not load account", error);
   }
   if (meaningful) {
     redirect("/auth/continue?intent=sign-in");
+  }
+
+  if (dbUnavailable) {
+    return (
+      <AuthPageShell>
+        <DbUnavailableRecovery retryHref="/auth/continue?intent=sign-in" />
+      </AuthPageShell>
+    );
   }
 
   return (

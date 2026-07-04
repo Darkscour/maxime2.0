@@ -1,6 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
+import { DbUnavailableRecovery } from "@/components/auth/db-unavailable-recovery";
 import {
   getMeaningfulUserAccount,
   getReconcileLogContext,
@@ -23,6 +25,8 @@ import { resolvePostAuthPath } from "@/lib/post-auth";
 
 export const dynamic = "force-dynamic";
 
+const DB_UNAVAILABLE_SENTINEL = "__db_unavailable__" as const;
+
 function logResolvedRoute(
   intent: "sign-in" | "sign-up",
   target: string,
@@ -40,7 +44,7 @@ function logResolvedRoute(
 
 async function resolveAuthContinueTarget(
   searchParams: Promise<{ intent?: string; maxime_signup?: string }>,
-): Promise<string> {
+): Promise<string | typeof DB_UNAVAILABLE_SENTINEL> {
   try {
     const params = await searchParams;
     const cookieStore = await cookies();
@@ -156,6 +160,11 @@ async function resolveAuthContinueTarget(
       transient: isTransientDbError(error),
       reconcileContext,
     });
+
+    if (isTransientDbError(error)) {
+      return DB_UNAVAILABLE_SENTINEL;
+    }
+
     throw error;
   }
 }
@@ -170,6 +179,18 @@ export default async function AuthContinuePage({
   if (!userId) redirect("/sign-in");
 
   const target = await resolveAuthContinueTarget(searchParams);
+
+  if (target === DB_UNAVAILABLE_SENTINEL) {
+    return (
+      <AuthPageShell>
+        <DbUnavailableRecovery
+          title="Couldn't finish sign-in"
+          description="We couldn't verify your account right now because the database is temporarily unavailable. Wait a minute and try again — your sign-in has not been affected."
+          retryHref="/auth/continue?intent=sign-in"
+        />
+      </AuthPageShell>
+    );
+  }
 
   // redirect() must run outside try/catch so Next.js control-flow throws propagate.
   redirect(target);

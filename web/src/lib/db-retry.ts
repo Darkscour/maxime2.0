@@ -1,18 +1,26 @@
 const TRANSIENT_DB_PATTERNS = [
   "can't reach database",
   "connection",
+  "connection refused",
   "timeout",
   "timed out",
   "econnreset",
   "econnrefused",
   "etimedout",
+  "echeckouttimeout",
+  "max client",
+  "server closed",
   "pool",
   "p1001",
   "p1002",
   "p1008",
+  "p1010",
+  "p1011",
+  "p1012",
   "p1017",
   "57p01",
   "53300",
+  "no pg_hba.conf entry",
 ];
 
 export function isTransientDbError(error: unknown): boolean {
