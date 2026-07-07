@@ -23,6 +23,7 @@ const demoSteps = [
     activeView: "overview" as MarketingDashboardView,
     region: null as string | null,
     sidebarNav: null as SidebarNavTarget | null,
+    durationMs: 5300,
   },
   {
     id: "analytics",
@@ -60,6 +61,10 @@ const demoSteps = [
 
 const SIDEBAR_CLICK_DELAY_MS = 850;
 const DEMO_STEP_INTERVAL_MS = 3800;
+
+function getStepDurationMs(stepIndex: number) {
+  return demoSteps[stepIndex]?.durationMs ?? DEMO_STEP_INTERVAL_MS;
+}
 
 /** Layout position of a region relative to the transformed canvas root. */
 function measureRegion(el: HTMLElement, root: HTMLElement) {
@@ -154,6 +159,7 @@ export function DashboardDemo() {
   });
 
   const step = demoSteps[activeStep];
+  const tourScheduleKey = playing ? activeStep : -1;
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -246,12 +252,13 @@ export function DashboardDemo() {
   }, [activeStep]);
 
   useEffect(() => {
-    if (!playing) return;
-    const timer = window.setInterval(() => {
+    if (tourScheduleKey < 0) return;
+    const durationMs = getStepDurationMs(tourScheduleKey);
+    const timer = window.setTimeout(() => {
       setActiveStep((current) => (current + 1) % demoSteps.length);
-    }, DEMO_STEP_INTERVAL_MS);
-    return () => window.clearInterval(timer);
-  }, [playing]);
+    }, durationMs);
+    return () => window.clearTimeout(timer);
+  }, [tourScheduleKey]);
 
   const isOverviewLike =
     displayView === "overview" || displayView === "analytics";
