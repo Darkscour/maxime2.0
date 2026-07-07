@@ -10,14 +10,16 @@ export function DashboardStatCard({
   value,
   hint,
   icon: Icon,
+  className,
 }: {
   label: string;
   value: string;
   hint?: string;
   icon: React.ComponentType<{ className?: string }>;
+  className?: string;
 }) {
   return (
-    <div className={dashboardStatCardClassName}>
+    <div className={cn(dashboardStatCardClassName, className)}>
       <div className="flex flex-1 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wider text-zinc-500">{label}</p>

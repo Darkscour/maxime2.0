@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { GraduationCap, Users } from "lucide-react";
 import {
   SOLUTIONS,
@@ -38,8 +40,18 @@ const revealItem = {
 };
 
 export function SolutionsPreview() {
-  const [audience, setAudience] = useState<SolutionAudience>("collegiate");
+  const searchParams = useSearchParams();
+  const solutionParam = searchParams.get("solution");
+  const queryAudience: SolutionAudience =
+    solutionParam === "grassroots" ? "grassroots" : "collegiate";
+  const [selectedAudience, setSelectedAudience] =
+    useState<SolutionAudience>(queryAudience);
+  const audience: SolutionAudience = selectedAudience;
   const content = SOLUTIONS[audience];
+
+  useEffect(() => {
+    setSelectedAudience(queryAudience);
+  }, [queryAudience]);
 
   return (
     <section
@@ -68,7 +80,7 @@ export function SolutionsPreview() {
               <button
                 key={option.id}
                 type="button"
-                onClick={() => setAudience(option.id)}
+                onClick={() => setSelectedAudience(option.id)}
                 aria-pressed={active}
                 className={cn(
                   "flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-colors",

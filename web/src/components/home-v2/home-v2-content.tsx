@@ -1,22 +1,22 @@
-import { Hero } from "@/components/home/hero";
+import { HeroV2 } from "@/components/home-v2/hero-v2";
+import { ImpactBand } from "@/components/home-v2/impact-band";
 import { Logos } from "@/components/home/logos";
-import { DashboardDemo } from "@/components/home/dashboard-demo";
-import { HowItWorks } from "@/components/home/how-it-works";
 import { SolutionsPreview } from "@/components/home/solutions-preview";
 import { PlatformFeatures } from "@/components/home/solution-features-panel";
+import { HowItWorks } from "@/components/home/how-it-works";
 import { Compare } from "@/components/home/compare";
 import { FAQ } from "@/components/home/faq";
 import { CTA } from "@/components/home/cta";
 
-export function HomePageContent() {
+export function HomeV2Content() {
   return (
     <>
-      <Hero />
+      <HeroV2 />
       <Logos />
-      <HowItWorks />
-      <DashboardDemo />
       <SolutionsPreview />
       <PlatformFeatures />
+      <HowItWorks />
+      <ImpactBand />
       <Compare />
       <FAQ />
       <CTA />

@@ -8,25 +8,25 @@ const steps = [
     number: "01",
     title: "Choose collegiate or grassroots",
     description:
-      "Pick the path that matches your org — campus programs get school verification and sponsor tools; grassroots teams get regional scouting and community roster management.",
+      "Pick your org type. Collegiate gets school verification and sponsor tools; grassroots gets regional scouting and roster management.",
   },
   {
     number: "02",
     title: "Build profiles that get discovered",
     description:
-      "Managers set up their team. Players create verified profiles with game, rank, and role — so recruitment happens through structured search, not random DMs.",
+      "Managers set up their team. Players add game, rank, and role so recruitment happens through search — not random DMs.",
   },
   {
     number: "03",
     title: "Scout, invite, and match sponsors",
     description:
-      "Managers browse players, save watchlists, send invites, and review join requests. Collegiate orgs also filter sponsors by fit and track outreach.",
+      "Browse players, save watchlists, send invites, and review join requests. Collegiate orgs can also track sponsor outreach.",
   },
   {
     number: "04",
     title: "Run the team from one dashboard",
     description:
-      "Roster hub, team invites, join requests, and sponsor pipeline — everything wired together so captains and players stay aligned.",
+      "Roster hub, invites, join requests, and sponsor pipeline in one place so managers and players stay aligned.",
   },
 ];
 
