@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HeroV2 } from "@/components/home-v2/hero-v2";
 import { ImpactBand } from "@/components/home-v2/impact-band";
 import { Logos } from "@/components/home/logos";
@@ -13,7 +14,9 @@ export function HomeV2Content() {
     <>
       <HeroV2 />
       <Logos />
-      <SolutionsPreview />
+      <Suspense fallback={null}>
+        <SolutionsPreview />
+      </Suspense>
       <PlatformFeatures />
       <HowItWorks />
       <ImpactBand />

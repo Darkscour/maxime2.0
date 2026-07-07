@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Hero } from "@/components/home/hero";
 import { Logos } from "@/components/home/logos";
 import { DashboardDemo } from "@/components/home/dashboard-demo";
@@ -15,7 +16,9 @@ export function HomePageContent() {
       <Logos />
       <HowItWorks />
       <DashboardDemo />
-      <SolutionsPreview />
+      <Suspense fallback={null}>
+        <SolutionsPreview />
+      </Suspense>
       <PlatformFeatures />
       <Compare />
       <FAQ />
