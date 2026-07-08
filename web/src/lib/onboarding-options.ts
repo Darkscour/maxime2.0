@@ -101,6 +101,7 @@ export function isPrimaryGame(game: string): game is PrimaryGame {
   return (PRIMARY_GAMES as readonly string[]).includes(game);
 }
 
+/** Canonical region list for all onboarding flows (player/team, collegiate/grassroots). */
 export const ONBOARDING_REGIONS: Region[] = [
   "NA East",
   "NA West",
@@ -108,10 +109,12 @@ export const ONBOARDING_REGIONS: Region[] = [
   "EU Nordic",
   "LATAM",
   "APAC",
+  "OCE",
 ];
 
-/** Player onboarding — limited region list for now. */
-export const PLAYER_ONBOARDING_REGIONS: Region[] = ["NA East", "NA West"];
+export function isOnboardingRegion(region: string): region is Region {
+  return (ONBOARDING_REGIONS as readonly string[]).includes(region);
+}
 
 /** U.S. states mapped to NA West for collegiate region auto-fill. */
 const NA_WEST_STATE_CODES = new Set([
@@ -133,7 +136,7 @@ const NA_WEST_STATE_CODES = new Set([
 /** Infer NA East / NA West from a U.S. collegiate institution's state. */
 export function derivePlayerRegionFromInstitutionState(
   state: string | null | undefined,
-): (typeof PLAYER_ONBOARDING_REGIONS)[number] | null {
+): Region | null {
   const code = normalizeUsStateCode(state);
   if (!code) return null;
   return NA_WEST_STATE_CODES.has(code) ? "NA West" : "NA East";

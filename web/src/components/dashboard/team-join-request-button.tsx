@@ -11,12 +11,14 @@ export function TeamJoinRequestButton({
   disabled,
   disabledReason,
   initialPending,
+  embedded = false,
 }: {
   teamId: string;
   teamName: string;
   disabled?: boolean;
   disabledReason?: string;
   initialPending?: boolean;
+  embedded?: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(initialPending ?? false);
@@ -48,25 +50,26 @@ export function TeamJoinRequestButton({
 
   if (disabled) {
     return (
-      <p className="mt-4 text-xs text-zinc-500">
+      <p className={embedded ? "text-xs text-zinc-500" : "mt-4 text-xs text-zinc-500"}>
         {disabledReason ?? "Unavailable"}
       </p>
     );
   }
 
   return (
-    <div className="mt-4">
+    <div className={embedded ? undefined : "mt-4"}>
       <Button
         type="button"
         size="sm"
         variant={pending ? "outline" : "primary"}
         disabled={loading || pending}
         onClick={requestJoin}
+        className={embedded ? "gap-1.5" : undefined}
       >
         {loading ? "Sending…" : pending ? "Request sent" : "Request to join"}
       </Button>
       {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
-      {pending && !error && (
+      {pending && !error && !embedded && (
         <p className="mt-2 text-xs text-zinc-500">
           {teamName} will be notified. You can still accept a direct invite if they send one.
         </p>

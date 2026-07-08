@@ -166,7 +166,7 @@ export function TeamOnboardingForm({
       (isCollegiate
         ? !!draft.managerOrgEmail.trim() && !!draft.institution
         : !!signInEmail?.trim() && !!draft.displayName.trim()) &&
-      (isCollegiate || !!draft.region),
+      !!draft.region,
   );
   const submitDisabled = !profileReady || loading;
 
@@ -329,26 +329,24 @@ export function TeamOnboardingForm({
       </FormField>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        {!isCollegiate && (
-          <FormField
-            label="Primary region"
-            hint="Required — used for regional player discovery"
+        <FormField
+          label="Primary region"
+          hint="Required — used for regional player discovery"
+          required
+        >
+          <SelectInput
+            value={draft.region}
+            onChange={(e) => patchDraft("region", e.target.value)}
             required
           >
-            <SelectInput
-              value={draft.region}
-              onChange={(e) => patchDraft("region", e.target.value)}
-              required
-            >
-              <option value="">Select region</option>
-              {ONBOARDING_REGIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </SelectInput>
-          </FormField>
-        )}
+            <option value="">Select region</option>
+            {ONBOARDING_REGIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </SelectInput>
+        </FormField>
 
         {isCollegiate && (
           <FormField label="Target roster size" hint="Approximate players you plan to field">

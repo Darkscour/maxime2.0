@@ -17,7 +17,7 @@ import { OnboardingHomeLink } from "@/components/onboarding/onboarding-home-link
 import { BioCharacterCount } from "@/components/onboarding/bio-character-count";
 import {
   PLAYER_BIO_MAX_LENGTH,
-  PLAYER_ONBOARDING_REGIONS,
+  ONBOARDING_REGIONS,
   PLAYER_ROLES,
   derivePlayerRegionFromInstitutionState,
   getRanksForGame,
@@ -169,6 +169,13 @@ export function PlayerOnboardingForm({
     };
   }, [draftReady, draft.institution, setDraft]);
 
+  useEffect(() => {
+    if (!draftReady || !isCollegiate || !draft.institution) return;
+    const derived = derivePlayerRegionFromInstitutionState(draft.institution.state);
+    if (!derived) return;
+    setDraft((prev) => (prev.region ? prev : { ...prev, region: derived }));
+  }, [draftReady, isCollegiate, draft.institution, setDraft]);
+
   const tierBackHref = buildOnboardingHref("/onboarding/player/tier", onboardingQuery);
   const ranksForGame = getRanksForGame(draft.game);
 
@@ -220,10 +227,7 @@ export function PlayerOnboardingForm({
         return;
       }
 
-      const region = isCollegiate
-        ? derivePlayerRegionFromInstitutionState(resolvedInstitution?.state) ??
-          draft.region
-        : draft.region;
+      const region = draft.region.trim();
 
       const res = await fetch("/api/onboarding/player", {
         method: "POST",
@@ -276,7 +280,8 @@ export function PlayerOnboardingForm({
       draft.rank &&
       (isCollegiate
         ? !!draft.institution && draft.schoolEmail.trim().length > 0
-        : !!draft.region),
+        : true) &&
+      !!draft.region,
   );
 
   const submitDisabled = !mounted || !draftReady || loading || !profileReady;
@@ -412,26 +417,28 @@ export function PlayerOnboardingForm({
             </SelectInput>
           </FormField>
 
-          {!isCollegiate && (
-            <FormField
-              label="Region"
-              hint="Grassroots teams filter recruits by region"
+          <FormField
+            label="Region"
+            hint={
+              isCollegiate
+                ? "Teams filter recruits by region — auto-filled from your school when possible"
+                : "Grassroots teams filter recruits by region"
+            }
+            required
+          >
+            <SelectInput
+              value={draft.region}
+              onChange={(e) => patchDraft("region", e.target.value)}
               required
             >
-              <SelectInput
-                value={draft.region}
-                onChange={(e) => patchDraft("region", e.target.value)}
-                required
-              >
-                <option value="">Select region</option>
-                {PLAYER_ONBOARDING_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </SelectInput>
-            </FormField>
-          )}
+              <option value="">Select region</option>
+              {ONBOARDING_REGIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </SelectInput>
+          </FormField>
         </div>
       </div>
 

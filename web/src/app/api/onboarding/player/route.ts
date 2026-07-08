@@ -5,8 +5,8 @@ import {
   getRanksForGame,
   isPrimaryGame,
   PLAYER_BIO_MAX_LENGTH,
-  PLAYER_ONBOARDING_REGIONS,
-  derivePlayerRegionFromInstitutionState,
+  ONBOARDING_REGIONS,
+  isOnboardingRegion,
   isPlayerRole,
 } from "@/lib/onboarding-options";
 import { isAccountTier } from "@/lib/account-tier";
@@ -77,9 +77,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!isCollegiate && !body.region) {
+    if (!body.region?.trim()) {
       return NextResponse.json(
-        { error: "Region is required for grassroots players." },
+        { error: "Region is required." },
         { status: 400 },
       );
     }
@@ -98,15 +98,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (
-      !isCollegiate &&
-      body.region &&
-      !PLAYER_ONBOARDING_REGIONS.includes(
-        body.region as (typeof PLAYER_ONBOARDING_REGIONS)[number],
-      )
-    ) {
+    if (body.region && !isOnboardingRegion(body.region)) {
       return NextResponse.json(
-        { error: "Select NA East or NA West as your region." },
+        { error: `Select ${ONBOARDING_REGIONS.join(", ")} as your region.` },
         { status: 400 },
       );
     }
@@ -137,17 +131,6 @@ export async function POST(req: Request) {
       institutionId = institution.id;
       school = institution.name;
 
-      const derivedRegion = derivePlayerRegionFromInstitutionState(
-        institution.state,
-      );
-      resolvedRegion = derivedRegion ?? body.region?.trim() ?? "";
-      if (!resolvedRegion) {
-        return NextResponse.json(
-          { error: "Could not determine region from the selected school." },
-          { status: 400 },
-        );
-      }
-
       const schoolEmail = body.schoolEmail?.trim();
       if (!schoolEmail) {
         return NextResponse.json(
@@ -170,13 +153,9 @@ export async function POST(req: Request) {
       playerVerificationStatus = verification.status;
     }
 
-    if (
-      !PLAYER_ONBOARDING_REGIONS.includes(
-        resolvedRegion as (typeof PLAYER_ONBOARDING_REGIONS)[number],
-      )
-    ) {
+    if (!isOnboardingRegion(resolvedRegion)) {
       return NextResponse.json(
-        { error: "Select NA East or NA West as your region." },
+        { error: `Select ${ONBOARDING_REGIONS.join(", ")} as your region.` },
         { status: 400 },
       );
     }

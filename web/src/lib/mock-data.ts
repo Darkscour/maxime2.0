@@ -16,7 +16,7 @@ export type Game =
   | "Apex Legends"
   | "Dota 2";
 
-export type Region = "NA East" | "NA West" | "EU West" | "EU Nordic" | "LATAM" | "APAC";
+export type Region = "NA East" | "NA West" | "EU West" | "EU Nordic" | "LATAM" | "APAC" | "OCE";
 
 export type Rank =
   | "Iron"
@@ -502,6 +502,7 @@ export const REGIONS: Region[] = [
   "EU Nordic",
   "LATAM",
   "APAC",
+  "OCE",
 ];
 
 export const RANKS: Rank[] = [

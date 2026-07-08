@@ -247,7 +247,6 @@ export default async function DashboardPage() {
 
         <DashboardAnalyticsCard
           accountType={ctx.accountType}
-          accountTier={ctx.accountTier}
           playerAnalytics={playerAnalytics}
           managerAnalytics={managerAnalytics}
         />

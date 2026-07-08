@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getExistingUserAccount } from "@/lib/auth-user";
-import { slugifyTeamName } from "@/lib/onboarding-options";
+import {
+  slugifyTeamName,
+  ONBOARDING_REGIONS,
+  isOnboardingRegion,
+} from "@/lib/onboarding-options";
 import { evaluateGrassrootsManagerVerification } from "@/lib/manager-verification";
 import { isAccountTier } from "@/lib/account-tier";
 import { evaluateInstitutionEmailVerification } from "@/lib/institution-verification";
@@ -104,15 +108,22 @@ export async function POST(req: Request) {
       schoolName = institution.name;
     }
 
-    if (!isCollegiate) {
-      const region = body.region?.trim();
-      if (!region) {
-        return NextResponse.json(
-          { error: "Primary region is required for grassroots teams." },
-          { status: 400 },
-        );
-      }
+    const region = body.region?.trim();
+    if (!region) {
+      return NextResponse.json(
+        { error: "Primary region is required." },
+        { status: 400 },
+      );
+    }
 
+    if (!isOnboardingRegion(region)) {
+      return NextResponse.json(
+        { error: "Select a valid region." },
+        { status: 400 },
+      );
+    }
+
+    if (!isCollegiate) {
       const displayName = body.displayName?.trim();
       if (!displayName || displayName.length < 2) {
         return NextResponse.json(
@@ -185,7 +196,7 @@ export async function POST(req: Request) {
           institutionId,
           accountTier,
           games: body.games,
-          region: body.region?.trim() || null,
+          region,
           rosterSize: body.rosterSize ?? null,
           discordUrl: body.discordUrl?.trim() || null,
           onboardingComplete: true,
