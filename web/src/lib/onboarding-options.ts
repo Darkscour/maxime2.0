@@ -7,6 +7,7 @@ export const PRIMARY_GAMES = [
   "League of Legends",
   "Rocket League",
   "Overwatch",
+  "Fortnite",
 ] as const;
 
 export type PrimaryGame = (typeof PRIMARY_GAMES)[number];
@@ -18,6 +19,7 @@ export const GAME_LOGO_PATHS: Record<PrimaryGame, string> = {
   "League of Legends": "/games/league-of-legends.svg",
   "Rocket League": "/games/rocket-league.svg",
   Overwatch: "/games/overwatch.svg",
+  Fortnite: "/games/fortnite.png",
 };
 
 export function getGameLogoPath(game: string): string | null {
@@ -88,13 +90,21 @@ export const RANKS_BY_GAME: Record<PrimaryGame, readonly string[]> = {
     "Grandmaster",
     "Top 500",
   ],
+  Fortnite: [
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Platinum",
+    "Diamond",
+    "Elite",
+    "Champion",
+    "Unreal",
+  ],
 };
 
 export function getRanksForGame(game: string): string[] {
-  if (game in RANKS_BY_GAME) {
-    return [...RANKS_BY_GAME[game as PrimaryGame]];
-  }
-  return [];
+  if (!isPrimaryGame(game)) return [];
+  return [...RANKS_BY_GAME[game]];
 }
 
 export function isPrimaryGame(game: string): game is PrimaryGame {

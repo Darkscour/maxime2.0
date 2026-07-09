@@ -59,6 +59,12 @@ function areaPath(points: Point[], height: number): string {
   return `${line} L ${last.x} ${height} L ${first.x} ${height} Z`;
 }
 
+function normalizePointsForLine(points: Point[], rightEdge: number): Point[] {
+  if (points.length !== 1) return points;
+  const only = points[0]!;
+  return [only, { x: rightEdge, y: only.y }];
+}
+
 function shouldShowLabel(index: number, total: number): boolean {
   if (total <= 8) return true;
   if (index === 0 || index === total - 1) return true;
@@ -92,8 +98,9 @@ export function InteractiveAreaChart({
   const values = points.map((p) => p.value);
   const hasActivity = values.some((v) => v > 0);
   const linePoints = buildPoints(values, width, height, padding);
-  const line = smoothPath(linePoints);
-  const area = areaPath(linePoints, height);
+  const chartLinePoints = normalizePointsForLine(linePoints, width - padding);
+  const line = smoothPath(chartLinePoints);
+  const area = areaPath(chartLinePoints, height);
 
   const onPointerMove = useCallback(
     (clientX: number) => {
@@ -239,8 +246,13 @@ export function InteractiveAreaChart({
         )}
       </div>
 
-      {!hasActivity && emptyHint && (
-        <p className="mt-2 text-center text-[11px] leading-4 text-zinc-600">
+      {emptyHint && (
+        <p
+          className={`mt-2 min-h-8 text-center text-[11px] leading-4 ${
+            hasActivity ? "invisible" : "text-zinc-600"
+          }`}
+          aria-hidden={hasActivity}
+        >
           {emptyHint}
         </p>
       )}

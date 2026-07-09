@@ -622,6 +622,7 @@ export const getDashboardContext = cache(async function getDashboardContext() {
       games: team.games,
       region: team.region,
       rosterSize: team.rosterSize,
+      profileImageUrl: team.profileImageUrl,
       discordUrl: team.discordUrl,
       inviteCode: team.inviteCode,
       createdAt: team.createdAt,

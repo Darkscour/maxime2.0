@@ -29,6 +29,7 @@ const statements = [
     "region" TEXT,
     "rosterSize" INTEGER,
     "avgViewers" INTEGER,
+    "profileImageUrl" TEXT,
     "discordUrl" TEXT,
     "inviteCode" TEXT NOT NULL,
     "onboardingComplete" BOOLEAN NOT NULL DEFAULT false,
@@ -76,6 +77,16 @@ const statements = [
   `CREATE UNIQUE INDEX IF NOT EXISTS "PlayerProfile_handle_key" ON "PlayerProfile"("handle")`,
   `CREATE INDEX IF NOT EXISTS "PlayerProfile_game_idx" ON "PlayerProfile"("game")`,
   `CREATE INDEX IF NOT EXISTS "PlayerProfile_region_idx" ON "PlayerProfile"("region")`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "accountTier" TEXT`,
+  `ALTER TABLE "Team" ADD COLUMN IF NOT EXISTS "accountTier" TEXT`,
+  `ALTER TABLE "PlayerProfile" ADD COLUMN IF NOT EXISTS "accountTier" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "managerTitle" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "managerOrgEmail" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "managerVerificationStatus" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "playerSchoolEmail" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "playerVerificationStatus" TEXT`,
+  `ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "hasWelcomedToDashboard" BOOLEAN NOT NULL DEFAULT false`,
+  `ALTER TABLE "Team" ADD COLUMN IF NOT EXISTS "profileImageUrl" TEXT`,
 ];
 
 async function main() {

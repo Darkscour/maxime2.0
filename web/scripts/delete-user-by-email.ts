@@ -8,6 +8,11 @@ import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
+type ClerkUser = {
+  id: string;
+  email_addresses?: { email_address?: string }[];
+};
+
 async function deleteClerkUserByEmail(email: string): Promise<void> {
   const secret = process.env.CLERK_SECRET_KEY;
   if (!secret) {
@@ -24,12 +29,13 @@ async function deleteClerkUserByEmail(email: string): Promise<void> {
     throw new Error(`Clerk list users failed: ${listRes.status} ${await listRes.text()}`);
   }
 
-  const users = (await listRes.json()) as { id: string; email_addresses: { email_address: string }[] }[];
+  const users = (await listRes.json()) as ClerkUser[];
   if (!Array.isArray(users) || users.length === 0) {
     console.log("  No Clerk user found for this email.");
     return;
   }
 
+  console.log(`  Found ${users.length} Clerk user(s) for ${email}.`);
   for (const user of users) {
     const delRes = await fetch(`https://api.clerk.com/v1/users/${user.id}`, {
       method: "DELETE",
@@ -40,6 +46,25 @@ async function deleteClerkUserByEmail(email: string): Promise<void> {
     }
     console.log(`  Clerk user deleted: ${user.id}`);
   }
+
+  // Verify deletion with one follow-up list call so test resets are deterministic.
+  const verifyRes = await fetch(
+    `https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email)}`,
+    { headers: { Authorization: `Bearer ${secret}` } },
+  );
+  if (!verifyRes.ok) {
+    throw new Error(
+      `Clerk delete verification failed: ${verifyRes.status} ${await verifyRes.text()}`,
+    );
+  }
+
+  const remaining = (await verifyRes.json()) as ClerkUser[];
+  if (Array.isArray(remaining) && remaining.length > 0) {
+    const ids = remaining.map((u) => u.id).join(", ");
+    throw new Error(`Clerk user still exists after delete for ${email}. Remaining ids: ${ids}`);
+  }
+
+  console.log("  Clerk deletion verified: no users remain for this email.");
 }
 
 async function deleteSponsorLeadsForTeam(teamId: string): Promise<number> {

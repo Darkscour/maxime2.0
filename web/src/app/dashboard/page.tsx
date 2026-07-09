@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { Clock, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2, Clock, Pencil } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { isDeveloperEmail } from "@/lib/developer";
 import { DeveloperMarketingPreview } from "@/components/dashboard/developer-marketing-preview";
@@ -82,7 +83,12 @@ function rosterStatHint(pendingInvites: number) {
   return "View roster hub";
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
   const ctx = await getDashboardContext();
   const isFirstDashboardVisit = !ctx.hasWelcomedToDashboard;
 
@@ -129,6 +135,7 @@ export default async function DashboardPage() {
     : ctx.membershipRole && ctx.team
       ? `${formatMembershipRole(ctx.membershipRole)} · ${ctx.team.name}`
       : "Individual account";
+  const showTeamProfileSaved = params.saved === "team-profile";
 
   return (
     <div className="mx-auto max-w-6xl space-y-10">
@@ -136,35 +143,66 @@ export default async function DashboardPage() {
       <Suspense fallback={null}>
         <AuthNoticeBanner />
       </Suspense>
+      {showTeamProfileSaved && (
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.08] px-4 py-3 text-sm text-emerald-200">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          Team profile saved. Your updated picture and details are now live.
+        </div>
+      )}
       {showDevPreview && <DeveloperMarketingPreview />}
 
       <header className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-cyan-400/[0.08] via-[var(--surface)] to-violet-500/[0.06] p-8 sm:p-10">
-        <div className="relative z-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-            Your workspace
-          </p>
-          <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            {isFirstDashboardVisit
-              ? `Welcome, ${welcomeName}`
-              : `Welcome back, ${welcomeName}`}
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-            {isManager
-              ? isGrassroots
-                ? "Run grassroots recruiting, challenge teams in Duels, and manage your roster."
-                : "Manage sponsorship outreach, scout campus players, and keep your org profile in one place."
-              : isGrassroots
-                ? "Your grassroots player profile is live. Browse grassroots teams and join a roster when you're ready."
-                : "Your collegiate player profile is live. Browse teams at your school and keep your scout card up to date."}
-          </p>
-          {ctx.email && (
-            <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
-          )}
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+              Your workspace
+            </p>
+            <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              {isFirstDashboardVisit
+                ? `Welcome, ${welcomeName}`
+                : `Welcome back, ${welcomeName}`}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+              {isManager
+                ? isGrassroots
+                  ? "Run grassroots recruiting, challenge teams in Duels, and manage your roster."
+                  : "Manage sponsorship outreach, scout campus players, and keep your org profile in one place."
+                : isGrassroots
+                  ? "Your grassroots player profile is live. Browse grassroots teams and join a roster when you're ready."
+                  : "Your collegiate player profile is live. Browse teams at your school and keep your scout card up to date."}
+            </p>
+            {ctx.email && (
+              <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
+            )}
+            {isManager && ctx.team && (
+              <WorkspaceInviteCode inviteCode={ctx.team.inviteCode} />
+            )}
+          </div>
           {isManager && ctx.team && (
-            <WorkspaceInviteCode inviteCode={ctx.team.inviteCode} />
+            <div className="relative inline-flex rounded-2xl border border-white/10 bg-black/20 p-2 backdrop-blur-sm">
+              {ctx.team.profileImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={ctx.team.profileImageUrl}
+                  alt={`${ctx.team.name} profile`}
+                  className="h-14 w-14 rounded-xl border border-white/10 object-cover"
+                />
+              ) : (
+                <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                  <Building2 className="h-6 w-6 text-zinc-400" />
+                </span>
+              )}
+              <Link
+                href="/dashboard/settings/team"
+                className="absolute -bottom-1 -right-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-zinc-900 text-zinc-300 transition-colors hover:text-white"
+                aria-label="Edit team profile picture"
+                title="Edit team profile picture"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           )}
         </div>
-        <Sparkles className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 text-cyan-400/10" />
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -247,6 +285,7 @@ export default async function DashboardPage() {
 
         <DashboardAnalyticsCard
           accountType={ctx.accountType}
+          accountTier={ctx.accountTier}
           playerAnalytics={playerAnalytics}
           managerAnalytics={managerAnalytics}
         />

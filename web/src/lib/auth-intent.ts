@@ -65,14 +65,18 @@ export function pathForUnregisteredSession(options: {
   signupPending?: boolean;
   hasPlatformShell?: boolean;
 }): string {
-  const signingUp =
-    options.signupPending ||
+  const hasExplicitSignup =
+    options.signupPending === true;
+  const hasSignupSession =
     options.sessionIntent === "sign-up";
 
-  if (options.hasPlatformShell && signingUp) {
+  if (options.hasPlatformShell && (hasExplicitSignup || hasSignupSession)) {
     return appendMaximeSignupPending("/onboarding");
   }
-  if (signingUp) {
+  // Never auto-register from cookie intent alone when there is no platform row.
+  // This keeps unknown/deleted sign-ins on the no-account screen unless sign-up
+  // was explicitly confirmed in the URL.
+  if (hasExplicitSignup) {
     return authContinueSignupPath();
   }
   return "/auth/no-maxime-account";

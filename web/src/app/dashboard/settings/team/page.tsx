@@ -22,6 +22,7 @@ function toFormData(
     region: team.region ?? "",
     rosterSize: team.rosterSize != null ? String(team.rosterSize) : "",
     discordUrl: team.discordUrl ?? "",
+    profileImageUrl: team.profileImageUrl ?? "",
   };
 }
 

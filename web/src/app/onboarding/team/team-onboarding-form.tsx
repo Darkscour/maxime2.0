@@ -15,6 +15,7 @@ import { OnboardingHomeLink } from "@/components/onboarding/onboarding-home-link
 import {
   ONBOARDING_GAMES,
   ONBOARDING_REGIONS,
+  getGameLogoPath,
 } from "@/lib/onboarding-options";
 import { MANAGER_TITLES } from "@/lib/manager-verification";
 import type { AccountTier } from "@/lib/account-tier";
@@ -310,6 +311,7 @@ export function TeamOnboardingForm({
         <div className="flex flex-wrap gap-2">
           {ONBOARDING_GAMES.map((game) => {
             const active = draft.games.includes(game);
+            const logoPath = getGameLogoPath(game);
             return (
               <button
                 key={game}
@@ -321,7 +323,17 @@ export function TeamOnboardingForm({
                     : "rounded-full bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400 ring-1 ring-inset ring-white/10 hover:text-white"
                 }
               >
-                {game}
+                <span className="inline-flex items-center gap-1.5">
+                  {logoPath ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoPath}
+                      alt=""
+                      className="h-4 w-4 rounded object-contain"
+                    />
+                  ) : null}
+                  {game}
+                </span>
               </button>
             );
           })}

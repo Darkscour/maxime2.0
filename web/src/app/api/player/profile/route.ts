@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { PLAYER_BIO_MAX_LENGTH } from "@/lib/onboarding-options";
+import { PLAYER_BIO_MAX_LENGTH, getRanksForGame, isPrimaryGame } from "@/lib/onboarding-options";
 import {
   permissionErrorResponse,
   requirePlayerProfile,
@@ -37,6 +37,20 @@ export async function PATCH(req: Request) {
     if (!body.game || !body.role || !body.rank || !body.region) {
       return NextResponse.json(
         { error: "Game, role, rank, and region are required." },
+        { status: 400 },
+      );
+    }
+
+    if (!isPrimaryGame(body.game)) {
+      return NextResponse.json(
+        { error: "Select a supported primary game." },
+        { status: 400 },
+      );
+    }
+
+    if (!getRanksForGame(body.game).includes(body.rank)) {
+      return NextResponse.json(
+        { error: "Select a rank that matches your primary game." },
         { status: 400 },
       );
     }

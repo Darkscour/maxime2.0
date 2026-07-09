@@ -142,6 +142,7 @@ model Team {
   region             String?
   rosterSize         Int?
   avgViewers         Int?
+  profileImageUrl    String?
   discordUrl         String?
   inviteCode         String   @unique @default(cuid())
   onboardingComplete Boolean  @default(false)

@@ -84,7 +84,7 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
         <AnalyticsChartPanel
           title="Roster size"
           chartMetric="Active members at end of week"
-          subtitle="Line tracks total headcount — summary cards below use the selected period"
+          subtitle="Line tracks total headcount — summary cards use the selected period"
           series={data.rosterSize}
           chartId="roster"
           stroke="#34d399"
@@ -96,7 +96,6 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
           renderMetrics={(mode) => (
             <RosterMetrics
               rosterCount={data.rosterCount}
-              playerCount={data.playerCount}
               summary={data.rosterSummary[mode]}
               mode={mode}
             />
@@ -105,7 +104,7 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
         <AnalyticsChartPanel
           title="Scouting activity"
           chartMetric="Profile views per week"
-          subtitle="Line tracks scout profile opens — summary cards cover views, requests, and invites"
+          subtitle="Line tracks scout profile opens — summary cards cover key actions"
           series={data.scoutViews}
           chartId="scout"
           stroke="#22d3ee"
@@ -185,12 +184,10 @@ function AnalyticsChartPanel({
 
 function RosterMetrics({
   rosterCount,
-  playerCount,
   summary,
   mode,
 }: {
   rosterCount: number;
-  playerCount: number;
   summary: ManagerAnalyticsSummary;
   mode: RangeMode;
 }) {
@@ -201,9 +198,8 @@ function RosterMetrics({
       <p className="mb-2 text-[10px] uppercase tracking-wider text-zinc-600">
         Summary · {periodLabel}
       </p>
-      <dl className="grid grid-cols-3 gap-3">
+      <dl className="grid grid-cols-2 gap-3">
         <Metric icon={Users} label="On roster" value={String(rosterCount)} tone="emerald" hint="Current total" />
-        <Metric icon={Users} label="Players" value={String(playerCount)} tone="emerald" hint="Current total" />
         <Metric
           icon={UserPlus}
           label="New joins"
@@ -230,7 +226,7 @@ function ScoutMetrics({
       <p className="mb-2 text-[10px] uppercase tracking-wider text-zinc-600">
         Summary · {periodLabel}
       </p>
-      <dl className="grid grid-cols-3 gap-3">
+      <dl className="grid grid-cols-2 gap-3">
         <Metric
           icon={Eye}
           label="Profile views"
@@ -243,13 +239,6 @@ function ScoutMetrics({
           label="Join requests"
           value={String(summary.joinRequests)}
           tone="cyan"
-          hint={periodLabel}
-        />
-        <Metric
-          icon={Mail}
-          label="Invites sent"
-          value={String(summary.invitesSent)}
-          tone="violet"
           hint={periodLabel}
         />
       </dl>
@@ -278,14 +267,14 @@ function Metric({
         : "text-emerald-400";
 
   return (
-    <div className="rounded-lg border border-white/5 bg-black/20 px-3 py-2.5">
-      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-600">
+    <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-black/30 px-3.5 py-3 shadow-[0_10px_30px_-20px_rgba(34,211,238,0.55)]">
+      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
         <Icon className={`h-3 w-3 shrink-0 ${toneClass}`} />
         <span className="truncate">{label}</span>
       </dt>
-      <dd className="font-heading mt-1 text-sm font-semibold text-zinc-200">{value}</dd>
+      <dd className="font-heading mt-1.5 text-base font-semibold text-zinc-100">{value}</dd>
       {hint && (
-        <p className="mt-0.5 text-[9px] text-zinc-600">{hint}</p>
+        <p className="mt-0.5 text-[9px] text-zinc-500">{hint}</p>
       )}
     </div>
   );

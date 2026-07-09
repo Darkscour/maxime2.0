@@ -75,6 +75,11 @@ export function PlayerProfileEditForm({
       .slice(0, 6);
 
     try {
+      if (!getRanksForGame(game).includes(rank)) {
+        setError("Select a rank that matches your primary game.");
+        return;
+      }
+
       const res = await fetch("/api/player/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -201,11 +206,13 @@ export function PlayerProfileEditForm({
               />
             </SettingsField>
             <SettingsField label="Rank">
-              <SettingsSelect
-                value={rank}
-                onChange={(e) => setRank(e.target.value)}
-                required
-              >
+            <SettingsSelect
+              key={game || "no-game"}
+              value={rank}
+              onChange={(e) => setRank(e.target.value)}
+              required
+              disabled={!game}
+            >
                 <option value="">
                   {game ? "Select rank" : "Select a game first"}
                 </option>

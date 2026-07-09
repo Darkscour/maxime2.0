@@ -401,6 +401,7 @@ export function PlayerOnboardingForm({
             required
           >
             <SelectInput
+              key={draft.game || "no-game"}
               value={draft.rank}
               onChange={(e) => patchDraft("rank", e.target.value)}
               required

@@ -1,4 +1,6 @@
--- Add account tier (collegiate | grassroots) for onboarding split
+-- Baseline onboarding tables required by later migrations.
+-- This migration is intentionally idempotent to support existing environments
+-- that were bootstrapped by scripts outside Prisma Migrate.
 
 CREATE TABLE IF NOT EXISTS "UserAccount" (
   "id" TEXT NOT NULL,
@@ -86,7 +88,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS "PlayerProfile_handle_key"
   ON "PlayerProfile"("handle");
 CREATE INDEX IF NOT EXISTS "PlayerProfile_game_idx" ON "PlayerProfile"("game");
 CREATE INDEX IF NOT EXISTS "PlayerProfile_region_idx" ON "PlayerProfile"("region");
-
-ALTER TABLE "UserAccount" ADD COLUMN IF NOT EXISTS "accountTier" TEXT;
-ALTER TABLE "Team" ADD COLUMN IF NOT EXISTS "accountTier" TEXT;
-ALTER TABLE "PlayerProfile" ADD COLUMN IF NOT EXISTS "accountTier" TEXT;

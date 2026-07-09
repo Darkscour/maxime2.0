@@ -1,4 +1,4 @@
-import { BarChart3, Eye, Flame, Users } from "lucide-react";
+import { BarChart3, Eye, Users } from "lucide-react";
 import type { PlayerAnalyticsSnapshot } from "@/lib/player-analytics";
 import { AbstractAreaChart, AbstractWaveChart } from "@/components/dashboard/abstract-charts";
 
@@ -73,7 +73,7 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
         </ChartPanel>
       </div>
 
-      <dl className="mt-4 grid grid-cols-3 gap-3">
+      <dl className="mt-4 grid grid-cols-2 gap-3">
         <Metric
           icon={Eye}
           label="Profile views"
@@ -85,12 +85,6 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
           label="Unique scouts"
           value={String(data.uniqueScoutTeams)}
           tone="violet"
-        />
-        <Metric
-          icon={Flame}
-          label="Active weeks"
-          value={String(data.activeWeeks)}
-          tone="emerald"
         />
       </dl>
     </div>
@@ -158,12 +152,12 @@ function Metric({
         : "text-emerald-400";
 
   return (
-    <div className="rounded-lg border border-white/5 bg-black/20 px-3 py-2.5">
-      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-600">
+    <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-black/30 px-3.5 py-3 shadow-[0_10px_30px_-20px_rgba(34,211,238,0.55)]">
+      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
         <Icon className={`h-3 w-3 ${toneClass}`} />
         {label}
       </dt>
-      <dd className="font-heading mt-1 text-sm font-semibold text-zinc-200">{value}</dd>
+      <dd className="font-heading mt-1.5 text-base font-semibold text-zinc-100">{value}</dd>
     </div>
   );
 }

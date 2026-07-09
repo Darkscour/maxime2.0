@@ -40,15 +40,12 @@ import {
 
 
 
-const isProtectedRoute = createRouteMatcher([
-
+const isProtectedPageRoute = createRouteMatcher([
   "/dashboard(.*)",
-
   "/onboarding(.*)",
+]);
 
-  "/auth/continue",
-  "/auth/no-maxime-account",
-
+const isProtectedApiRoute = createRouteMatcher([
   "/api/onboarding/team",
 
   "/api/onboarding/player",
@@ -82,7 +79,6 @@ const isProtectedRoute = createRouteMatcher([
   "/api/account/profile",
 
   "/api/dashboard(.*)",
-
 ]);
 
 
@@ -254,10 +250,17 @@ export default clerkMiddleware(async (auth, req) => {
 
 
 
-  if (isProtectedRoute(req)) {
+  if (isProtectedPageRoute(req) && !userId) {
+    const signInUrl = req.nextUrl.clone();
+    signInUrl.pathname = "/sign-in";
+    signInUrl.search = `redirect_url=${encodeURIComponent(
+      `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    )}`;
+    return NextResponse.redirect(signInUrl);
+  }
 
+  if (isProtectedApiRoute(req)) {
     await auth.protect();
-
   }
 
 

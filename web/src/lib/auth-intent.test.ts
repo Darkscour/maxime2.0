@@ -44,4 +44,26 @@ describe("pathForUnregisteredSession", () => {
       "/auth/no-maxime-account",
     );
   });
+
+  it("does not auto-sign-up users from a stale sign-up cookie alone", () => {
+    assert.equal(
+      pathForUnregisteredSession({
+        sessionIntent: "sign-up",
+        signupPending: false,
+        hasPlatformShell: false,
+      }),
+      "/auth/no-maxime-account",
+    );
+  });
+
+  it("keeps explicit sign-up confirmation behavior for unregistered users", () => {
+    assert.equal(
+      pathForUnregisteredSession({
+        sessionIntent: "sign-in",
+        signupPending: true,
+        hasPlatformShell: false,
+      }),
+      "/auth/continue?intent=sign-up&maxime_signup=1",
+    );
+  });
 });
