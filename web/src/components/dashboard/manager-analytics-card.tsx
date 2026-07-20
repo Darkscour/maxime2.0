@@ -34,11 +34,11 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
     data.pendingJoinRequests + data.pendingInvites + data.watchlistCount;
 
   return (
-    <div className="pb-panel p-6">
+    <div className="desk-panel p-6">
       <div className="flex items-start gap-3">
         <div>
-          <p className="pb-kicker !text-[var(--foreground-muted)]">Analytics</p>
-          <h2 className="font-board mt-1 text-2xl font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+          <p className="desk-kicker !text-[var(--foreground-muted)]">Activity</p>
+          <h2 className="mt-1 font-heading text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
             Recruitment & scouting
           </h2>
           <p className="mt-1 text-sm text-[var(--foreground-muted)]">

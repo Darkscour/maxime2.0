@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Invite code row for the Program Board masthead / ID plate. */
+/** Invite code row for the org plate. */
 export function WorkspaceInviteCode({
   inviteCode,
   className,
@@ -24,11 +24,19 @@ export function WorkspaceInviteCode({
   }
 
   return (
-    <div className={cn("pb-invite-row", dark && "!border-[color-mix(in_srgb,#f6f7f9_28%,transparent)]", className)}>
+    <div
+      className={cn(
+        "desk-invite-row",
+        dark && "!border-[color-mix(in_srgb,#f7f7f8_28%,transparent)]",
+        className,
+      )}
+    >
       <span
         className={cn(
-          "pb-kicker",
-          dark ? "!text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]" : "!text-[var(--foreground-muted)]",
+          "desk-kicker",
+          dark
+            ? "!text-[color-mix(in_srgb,#f7f7f8_55%,transparent)]"
+            : "!text-[var(--foreground-muted)]",
         )}
       >
         Invite code
@@ -39,12 +47,14 @@ export function WorkspaceInviteCode({
         className={cn(
           "inline-flex max-w-full items-center gap-2 text-left transition-colors",
           dark
-            ? "text-[#f6f7f9] hover:text-[color-mix(in_srgb,#f6f7f9_80%,var(--accent))]"
+            ? "text-[#f7f7f8] hover:text-[color-mix(in_srgb,#f7f7f8_80%,var(--accent))]"
             : "hover:text-[var(--accent)]",
         )}
         title="Copy invite code"
       >
-        <span className={cn("pb-invite-code", dark && "!text-[#f6f7f9]")}>{inviteCode}</span>
+        <span className={cn("desk-invite-code", dark && "!text-[#f7f7f8]")}>
+          {inviteCode}
+        </span>
         {copied ? (
           <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
         ) : (
@@ -55,7 +65,7 @@ export function WorkspaceInviteCode({
         className={cn(
           "text-xs",
           dark
-            ? "text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]"
+            ? "text-[color-mix(in_srgb,#f7f7f8_55%,transparent)]"
             : "text-[var(--foreground-muted)]",
         )}
       >

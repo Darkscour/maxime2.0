@@ -15,7 +15,6 @@ export const clerkOAuthFlow = "redirect" as const;
 export const clerkOidcPrompt = "select_account" as const;
 
 const clerkSharedAuthProps = {
-  appearance: clerkAuthAppearance as Appearance,
   oauthFlow: clerkOAuthFlow,
   oidcPrompt: clerkOidcPrompt,
 };
@@ -24,8 +23,10 @@ const authContinueSignInPath = "/auth/continue?intent=sign-in";
 
 export const clerkSignInPageProps = {
   ...clerkSharedAuthProps,
+  appearance: clerkAuthAppearance as Appearance,
   path: "/sign-in",
   routing: "path" as const,
+  withSignUp: false,
   forceRedirectUrl: authContinueSignInPath,
   fallbackRedirectUrl: authContinueSignInPath,
   // Clerk sends new identities here when "Sign in" creates a Clerk user. Must NOT
@@ -37,6 +38,7 @@ export const clerkSignInPageProps = {
 
 export const clerkSignUpPageProps = {
   ...clerkSharedAuthProps,
+  appearance: clerkAuthAppearance as Appearance,
   path: "/sign-up",
   routing: "path" as const,
   forceRedirectUrl: authContinueSignupPath(),

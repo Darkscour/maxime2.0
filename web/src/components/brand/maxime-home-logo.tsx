@@ -51,7 +51,7 @@ export function MaximeHomeLogo({
     <Link
       href={href}
       className="inline-flex shrink-0 items-center overflow-visible leading-none transition-opacity hover:opacity-75"
-      aria-label="Maxime home"
+      aria-label={href === "/dashboard" ? "Maxime desk" : "Maxime home"}
     >
       {content}
     </Link>

@@ -29,9 +29,9 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-const overview: NavItem = {
+const desk: NavItem = {
   href: "/dashboard",
-  label: "Overview",
+  label: "Desk",
   icon: LayoutDashboard,
   isActive: (pathname) => pathname === "/dashboard",
 };
@@ -45,9 +45,9 @@ const account: NavItem = {
     pathname.startsWith("/dashboard/settings/account/"),
 };
 
-const scoutPlayers: NavItem = {
+const scout: NavItem = {
   href: "/dashboard/scout",
-  label: "Scout players",
+  label: "Scout",
   icon: Search,
   isActive: (pathname) =>
     pathname === "/dashboard/scout" || pathname.startsWith("/dashboard/scout/"),
@@ -65,7 +65,7 @@ const joinRequests: NavItem = {
 
 const teamInvites: NavItem = {
   href: "/dashboard/invites",
-  label: "Team invites",
+  label: "Invites",
   icon: Mail,
   badgeKey: "teamInvites",
   isActive: (pathname) =>
@@ -73,9 +73,9 @@ const teamInvites: NavItem = {
     pathname.startsWith("/dashboard/invites/"),
 };
 
-const rosterHub: NavItem = {
+const roster: NavItem = {
   href: "/dashboard/roster",
-  label: "Roster hub",
+  label: "Roster",
   icon: Users,
   isActive: (pathname) =>
     pathname === "/dashboard/roster" || pathname.startsWith("/dashboard/roster/"),
@@ -92,7 +92,7 @@ const watchlist: NavItem = {
 
 const teamProfile: NavItem = {
   href: "/dashboard/settings/team",
-  label: "Team profile",
+  label: "Team",
   icon: Building2,
   isActive: (pathname) =>
     pathname === "/dashboard/settings/team" ||
@@ -101,7 +101,7 @@ const teamProfile: NavItem = {
 
 const sponsorships: NavItem = {
   href: "/dashboard/sponsorships",
-  label: "Sponsorships",
+  label: "Sponsors",
   icon: Handshake,
   isActive: (pathname) =>
     pathname === "/dashboard/sponsorships" ||
@@ -123,88 +123,51 @@ export function getDashboardNavGroups(
   if (accountType === "team_manager") {
     if (accountTier === "collegiate") {
       return [
-        { items: [overview] },
-        {
-          label: "Recruitment",
-          accent: "violet",
-          items: [scoutPlayers, watchlist, joinRequests],
-        },
-        {
-          label: "Team",
-          accent: "cyan",
-          items: [rosterHub, teamProfile],
-        },
-        {
-          label: "Partnerships",
-          accent: "emerald",
-          items: [sponsorships],
-        },
-        {
-          label: "Account",
-          accent: "muted",
-          items: [account],
-        },
+        { items: [desk, scout, watchlist, joinRequests, roster, teamProfile, sponsorships, account] },
       ];
     }
 
-    const teamItems: NavItem[] =
+    const items: NavItem[] =
       accountTier === "grassroots"
-        ? [rosterHub, teamProfile, duels]
-        : [rosterHub, teamProfile];
+        ? [desk, scout, watchlist, joinRequests, roster, teamProfile, duels, account]
+        : [desk, scout, watchlist, joinRequests, roster, teamProfile, account];
 
-    return [
-      { items: [overview] },
-      {
-        label: "Recruitment",
-        accent: "violet",
-        items: [scoutPlayers, watchlist, joinRequests],
-      },
-      {
-        label: "Team",
-        accent: "cyan",
-        items: teamItems,
-      },
-      {
-        label: "Account",
-        accent: "muted",
-        items: [account],
-      },
-    ];
+    return [{ items }];
   }
 
   return [
-    { items: [overview] },
     {
-      label: "Explore",
-      accent: "cyan",
       items: [
+        desk,
         {
           href: "/dashboard/teams",
-          label: "Browse teams",
+          label: "Teams",
           icon: Building2,
           isActive: (pathname) =>
             pathname === "/dashboard/teams" ||
             pathname.startsWith("/dashboard/teams/"),
         },
         teamInvites,
-      ],
-    },
-    {
-      label: "Account",
-      accent: "violet",
-      items: [
-        account,
         {
           href: "/dashboard/settings/profile",
-          label: "Player profile",
+          label: "Profile",
           icon: UserRound,
           isActive: (pathname) =>
             pathname === "/dashboard/settings/profile" ||
             pathname.startsWith("/dashboard/settings/profile/"),
         },
+        account,
       ],
     },
   ];
+}
+
+/** Flat rail items for the desk masthead navigation. */
+export function getDashboardNavItems(
+  accountType: string | null,
+  accountTier: string | null,
+): NavItem[] {
+  return getDashboardNavGroups(accountType, accountTier).flatMap((g) => g.items);
 }
 
 function formatMembershipRole(role: string | null | undefined): string {
@@ -216,14 +179,14 @@ export { formatMembershipRole };
 
 export const navGroupAccentEyebrowClasses: Record<NavGroupAccent, string> = {
   cyan: "text-[var(--accent)]",
-  violet: "text-[var(--accent-2)]",
+  violet: "text-[var(--accent)]",
   emerald: "text-[var(--success)]",
   muted: "text-[var(--foreground-muted)]",
 };
 
 export const navGroupAccentBorderClasses: Record<NavGroupAccent, string> = {
   cyan: "border-[color-mix(in_srgb,var(--accent)_25%,var(--border))]",
-  violet: "border-[color-mix(in_srgb,var(--accent-2)_25%,var(--border))]",
+  violet: "border-[color-mix(in_srgb,var(--accent)_25%,var(--border))]",
   emerald: "border-[color-mix(in_srgb,var(--success)_25%,var(--border))]",
   muted: "border-[var(--border)]",
 };
@@ -239,8 +202,8 @@ export const navGroupAccentLinkClasses: Record<
   },
   violet: {
     active:
-      "bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]",
-    iconActive: "text-[var(--accent-2)]",
+      "bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))]",
+    iconActive: "text-[var(--accent)]",
   },
   emerald: {
     active:

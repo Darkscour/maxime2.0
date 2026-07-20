@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { TeamInvitesPanel } from "@/components/dashboard/team-invites-panel";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -28,24 +27,19 @@ export default async function TeamInvitesPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="cyan" className="mt-5">
-          Explore
-        </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">Team invites</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
-          {isGrassroots
-            ? "Accept or decline recruitment invites from grassroots teams. Managers can also invite you after you request to join."
-            : "Accept or decline recruitment invites from collegiate teams at your school. Managers can also invite you after you request to join."}
-        </p>
-      </header>
+      <DeskPageHeader
+        title="Invites"
+        job={
+          isGrassroots
+            ? "Accept or decline recruitment invites from grassroots teams."
+            : "Accept or decline recruitment invites from collegiate teams at your school."
+        }
+        action={
+          <Button href="/dashboard/teams" size="sm" variant="outline">
+            Browse teams
+          </Button>
+        }
+      />
 
       <TeamInvitesPanel
         invites={invites}

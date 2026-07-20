@@ -47,8 +47,8 @@ export function MarketingFeaturePreviewShell({
         ) : null}
       </header>
 
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)]/40 p-4 sm:p-5">
-        <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+      <div className="desk-panel p-4 sm:p-5">
+        <p className="desk-kicker !text-[var(--foreground-muted)]">
           {previewLabel}
         </p>
         <div className="mt-4">{children}</div>

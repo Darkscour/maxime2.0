@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, UserPlus, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import type { TeamJoinRequestListing } from "@/lib/team-join-request-db";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DeskEmpty } from "@/components/dashboard/desk-ui";
 import { parseJsonResponse } from "@/lib/safe-json";
 
 function formatRequestedAt(date: Date | string) {
@@ -82,21 +83,19 @@ export function JoinRequestsPanel({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
-        <UserPlus className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
-        <p className="mt-4 text-sm text-[var(--foreground-muted)]">
-          No pending join requests. When players tap{" "}
-          <strong className="font-medium text-[var(--foreground-muted)]">Request to join</strong> on
-          your team from Browse teams, they&apos;ll show up here.
-        </p>
-      </div>
+      <DeskEmpty
+        title="No join requests"
+        body="When a player requests to join your team, they show up here. You can also scout and invite directly."
+        actionLabel="Open scout"
+        actionHref="/dashboard/scout"
+      />
     );
   }
 
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-lg border border-red-400/20 bg-red-400/5 px-3 py-2 text-sm text-red-200">
+        <p className="border border-[color-mix(in_srgb,var(--danger)_40%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] px-3 py-2 text-sm text-[var(--danger)]">
           {error}
         </p>
       )}
@@ -105,7 +104,7 @@ export function JoinRequestsPanel({
         {items.map((player) => (
           <article
             key={player.id}
-            className="flex flex-col rounded-none border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[var(--surface)] p-5"
+            className="desk-panel flex flex-col border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] p-5"
           >
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge tone="cyan">Requested to join</Badge>

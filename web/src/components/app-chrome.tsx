@@ -33,7 +33,16 @@ export function AppShellOnly({ children }: { children: React.ReactNode }) {
 
 export function MarketingOnly({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (isAppShellRoute(pathname) || isHomeRoute(pathname)) return null;
+  if (isAppShellRoute(pathname) || isHomeRoute(pathname) || isAuthRoute(pathname)) {
+    return null;
+  }
+  return <>{children}</>;
+}
+
+/** Minimal chrome on sign-in, sign-up, and post-auth handoff routes. */
+export function AuthOnly({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (!isAuthRoute(pathname)) return null;
   return <>{children}</>;
 }
 

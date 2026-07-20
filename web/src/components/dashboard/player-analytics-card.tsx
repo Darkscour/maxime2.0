@@ -1,4 +1,4 @@
-import { BarChart3, Eye, Users } from "lucide-react";
+import { Eye, Users } from "lucide-react";
 import type { PlayerAnalyticsSnapshot } from "@/lib/player-analytics";
 import { AbstractAreaChart, AbstractWaveChart } from "@/components/dashboard/abstract-charts";
 
@@ -8,21 +8,16 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
   const trend = data.profileViewsTrend;
 
   return (
-    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
+    <div className="desk-panel p-6">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]">
-            <BarChart3 className="h-5 w-5 text-[var(--accent)]" />
-          </span>
-          <div>
-            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Analytics</p>
-            <h2 className="font-heading mt-1 text-lg font-semibold text-[var(--foreground)]">
-              Scout visibility
-            </h2>
-            <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">
-              How teams discover and engage with your profile
-            </p>
-          </div>
+        <div>
+          <p className="desk-kicker !text-[var(--foreground-muted)]">Activity</p>
+          <h2 className="mt-1 font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+            Scout visibility
+          </h2>
+          <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">
+            How teams discover and engage with your profile
+          </p>
         </div>
         {trend != null && (
           <span

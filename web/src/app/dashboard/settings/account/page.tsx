@@ -27,7 +27,7 @@ export default async function AccountSettingsPage() {
       />
 
       {account.onboardingComplete && (
-        <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5 sm:p-6">
+        <div className="desk-panel p-5 sm:p-6">
           <div className="flex items-start gap-3">
             <span className="oc-mark">
               <Shield className="h-4 w-4" />
@@ -54,7 +54,7 @@ export default async function AccountSettingsPage() {
         </div>
       )}
 
-      <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5 sm:p-6">
+      <div className="desk-panel p-5 sm:p-6">
         <h2 className="font-heading text-base font-semibold text-[var(--foreground)]">Sign-in & security</h2>
         <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
           Password, two-factor auth, and connected accounts are managed through Clerk.

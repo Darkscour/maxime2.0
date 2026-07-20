@@ -16,7 +16,7 @@ export function DashboardSectionEyebrow({
   return (
     <p
       className={cn(
-        "text-xs font-semibold uppercase tracking-[0.2em]",
+        "desk-kicker",
         navGroupAccentEyebrowClasses[accent],
         className,
       )}

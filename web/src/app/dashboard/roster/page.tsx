@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchTeamRosterWithAvatars } from "@/lib/team-roster";
 import { RosterHubPanel } from "@/components/dashboard/roster-hub-panel";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { Button } from "@/components/ui/button";
 import { canEditTeam } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
@@ -25,26 +24,17 @@ export default async function RosterHubPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="cyan" className="mt-5">
-          Team
-        </DashboardSectionEyebrow>
-        <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
-            {ctx.team.name}
-          </h1>
-          <span className="text-sm text-[var(--foreground-muted)]">
-            {members.length} on team
-          </span>
-        </div>
-      </header>
+      <DeskPageHeader
+        title={ctx.team.name}
+        job={`${members.length} on the roster. Accepted invites land here automatically.`}
+        action={
+          canManage ? (
+            <Button href="/dashboard/scout" size="sm" variant="outline">
+              Scout players
+            </Button>
+          ) : undefined
+        }
+      />
 
       <RosterHubPanel
         members={members}

@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchPendingJoinRequestsWithAvatars } from "@/lib/team-join-request-db";
 import { JoinRequestsPanel } from "@/components/dashboard/join-requests-panel";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { Button } from "@/components/ui/button";
 import { canEditTeam } from "@/lib/permissions";
 import { managerPoolContext } from "@/lib/audience-guards";
 
@@ -31,26 +30,19 @@ export default async function JoinRequestsPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="violet" className="mt-5">
-          Recruitment
-        </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
-          Join requests
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
-          {ctx.accountTier === "collegiate"
-            ? `Players at your school who requested to join ${ctx.team.name}. Only collegiate players from your campus appear here.`
-            : `Grassroots players who requested to join ${ctx.team.name}.`}
-        </p>
-      </header>
+      <DeskPageHeader
+        title="Join requests"
+        job={
+          ctx.accountTier === "collegiate"
+            ? `Players at your school who asked to join ${ctx.team.name}. Send an invite to approve.`
+            : `Players who asked to join ${ctx.team.name}. Send an invite to approve.`
+        }
+        action={
+          <Button href="/dashboard/scout" size="sm" variant="outline">
+            Scout instead
+          </Button>
+        }
+      />
 
       <JoinRequestsPanel items={items} teamName={ctx.team.name} />
     </div>

@@ -91,11 +91,10 @@ export function DuelsPanel({
 
   return (
     <div className="space-y-6">
-      <form
-        onSubmit={createChallenge}
-        className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5"
-      >
-        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Start a duel</h2>
+      <form onSubmit={createChallenge} className="desk-panel p-5">
+        <h2 className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+          Send a challenge
+        </h2>
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
           Challenge another grassroots team in any game.
         </p>
@@ -103,7 +102,7 @@ export function DuelsPanel({
           <select
             value={targetTeamId}
             onChange={(e) => setTargetTeamId(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+            className="border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
             required
           >
             <option value="">Select team</option>
@@ -117,7 +116,7 @@ export function DuelsPanel({
             value={game}
             onChange={(e) => setGame(e.target.value)}
             placeholder="Game title (e.g. Valorant)"
-            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+            className="border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
             required
           />
         </div>
@@ -125,31 +124,31 @@ export function DuelsPanel({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Optional challenge message"
-          className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
+          className="mt-3 w-full border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
           rows={3}
         />
-        {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
+        {error && <p className="mt-2 text-sm text-[var(--danger)]">{error}</p>}
         <Button type="submit" size="sm" className="mt-3" disabled={loading}>
           Send challenge
         </Button>
       </form>
 
       <DuelList
-        title="Incoming challenges"
-        empty="No incoming challenges."
+        title="Incoming"
+        empty="No incoming challenges. When another org challenges you, respond here."
         duels={incoming}
         teamId={teamId}
         onAction={changeStatus}
       />
       <DuelList
-        title="Sent challenges"
+        title="Outgoing"
         empty="No pending outgoing challenges."
         duels={sent}
         teamId={teamId}
         onAction={changeStatus}
       />
       <DuelList
-        title="Duel history"
+        title="History"
         empty="No duel history yet."
         duels={history}
         teamId={teamId}
@@ -173,8 +172,10 @@ function DuelList({
   onAction: (id: string, status: string) => Promise<void>;
 }) {
   return (
-    <section className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
-      <h3 className="font-heading text-base font-semibold text-[var(--foreground)]">{title}</h3>
+    <section className="desk-panel p-5">
+      <h3 className="font-heading text-base font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+        {title}
+      </h3>
       {duels.length === 0 ? (
         <p className="mt-2 text-sm text-[var(--foreground-muted)]">{empty}</p>
       ) : (
@@ -183,32 +184,51 @@ function DuelList({
             const opponent =
               duel.challengerTeamId === teamId ? duel.targetTeam.name : duel.challengerTeam.name;
             return (
-              <li key={duel.id} className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+              <li
+                key={duel.id}
+                className="border border-[var(--border)] bg-[var(--background)] p-3"
+              >
                 <p className="text-sm text-[var(--foreground)]">
                   {duel.game} vs {opponent}
                 </p>
-                {duel.message && <p className="mt-1 text-xs text-[var(--foreground-muted)]">{duel.message}</p>}
-                <p className="mt-1 text-xs uppercase tracking-wider text-[var(--accent)]">
-                  {duel.status}
-                </p>
+                {duel.message && (
+                  <p className="mt-1 text-xs text-[var(--foreground-muted)]">{duel.message}</p>
+                )}
+                <p className="desk-kicker mt-2 !tracking-[0.14em]">{duel.status}</p>
                 <div className="mt-2 flex gap-2">
                   {duel.status === "pending" && duel.targetTeamId === teamId && (
                     <>
-                      <Button size="sm" variant="outline" onClick={() => onAction(duel.id, "accepted")}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onAction(duel.id, "accepted")}
+                      >
                         Accept
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => onAction(duel.id, "declined")}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => onAction(duel.id, "declined")}
+                      >
                         Decline
                       </Button>
                     </>
                   )}
                   {duel.status === "pending" && duel.challengerTeamId === teamId && (
-                    <Button size="sm" variant="ghost" onClick={() => onAction(duel.id, "cancelled")}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onAction(duel.id, "cancelled")}
+                    >
                       Cancel
                     </Button>
                   )}
                   {duel.status === "accepted" && (
-                    <Button size="sm" variant="outline" onClick={() => onAction(duel.id, "completed")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onAction(duel.id, "completed")}
+                    >
                       Mark completed
                     </Button>
                   )}
@@ -221,4 +241,3 @@ function DuelList({
     </section>
   );
 }
-

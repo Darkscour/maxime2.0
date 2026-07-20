@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchTeamWatchlistWithAvatars } from "@/lib/player-watchlist-db";
 import { WatchlistPanel } from "@/components/dashboard/watchlist-panel";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { Button } from "@/components/ui/button";
 import { canEditTeam } from "@/lib/permissions";
 import { managerPoolContext } from "@/lib/audience-guards";
 
@@ -31,26 +30,19 @@ export default async function WatchlistPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="violet" className="mt-5">
-          Recruitment
-        </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
-          Watchlist
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
-          {ctx.accountTier === "collegiate"
-            ? `Shortlist collegiate players at your school, then send invites when you're ready to recruit them to ${ctx.team.name}.`
-            : `Shortlist grassroots players, then send invites when you're ready to recruit them to ${ctx.team.name}.`}
-        </p>
-      </header>
+      <DeskPageHeader
+        title="Watchlist"
+        job={
+          ctx.accountTier === "collegiate"
+            ? `Shortlisted campus players for ${ctx.team.name}. Invite when you're ready.`
+            : `Shortlisted players for ${ctx.team.name}. Invite when you're ready.`
+        }
+        action={
+          <Button href="/dashboard/scout" size="sm" variant="outline">
+            Scout players
+          </Button>
+        }
+      />
 
       <WatchlistPanel items={items} teamName={ctx.team.name} />
     </div>

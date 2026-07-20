@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Mail } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import type { PendingInviteRow } from "@/lib/player-watchlist-db";
 import { Button } from "@/components/ui/button";
+import { DeskEmpty } from "@/components/dashboard/desk-ui";
 import { parseJsonResponse } from "@/lib/safe-json";
 
 export function TeamInvitesPanel({
@@ -80,12 +81,12 @@ export function TeamInvitesPanel({
   }
 
   return (
-    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6 sm:p-8">
+    <div className="desk-panel p-6 sm:p-8">
       {onTeam && currentTeamName && invites.length > 0 && (
-        <div className="mb-6 flex items-start gap-3 rounded-none border border-amber-400/20 bg-amber-400/5 px-4 py-3">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+        <div className="mb-6 flex items-start gap-3 border border-[color-mix(in_srgb,var(--warning)_45%,var(--border))] bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] px-4 py-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--warning)]" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm text-amber-100">
+            <p className="text-sm text-[var(--foreground)]">
               You&apos;re on <span className="font-medium">{currentTeamName}</span>. Leave
               your current roster before accepting another invite.
             </p>
@@ -104,33 +105,29 @@ export function TeamInvitesPanel({
       )}
 
       {error && (
-        <p className="mb-4 rounded-lg border border-red-400/20 bg-red-400/5 px-3 py-2 text-sm text-red-200">
+        <p className="mb-4 border border-[color-mix(in_srgb,var(--danger)_40%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] px-3 py-2 text-sm text-[var(--danger)]">
           {error}
         </p>
       )}
 
       {invites.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-none bg-[var(--surface-2)] ring-1 ring-inset ring-[var(--border)]">
-            <Mail className="h-5 w-5 text-[var(--foreground-muted)]" />
-          </span>
-          <p className="mt-4 text-sm font-medium text-[var(--foreground-muted)]">No team invites yet</p>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--foreground-muted)]">
-            When a manager sends you a recruitment invite, it will show up here and in your
-            notification bell. You can also browse teams and request to join directly.
-          </p>
-          <Button href="/dashboard/teams" size="sm" variant="outline" className="mt-5">
-            Browse teams
-          </Button>
-        </div>
+        <DeskEmpty
+          className="border-0 bg-transparent p-0"
+          title="No invites yet"
+          body="When a manager sends a recruitment invite, it lands here. You can also browse teams and request to join."
+          actionLabel="Browse teams"
+          actionHref="/dashboard/teams"
+        />
       ) : (
         <ul className="space-y-3">
           {invites.map((invite) => (
             <li
               key={invite.id}
-              className="rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-4"
+              className="border border-[var(--border)] bg-[var(--background)] px-4 py-4"
             >
-              <p className="text-base font-medium text-[var(--foreground)]">{invite.teamName}</p>
+              <p className="font-heading text-base font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+                {invite.teamName}
+              </p>
               {invite.message && (
                 <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
                   &ldquo;{invite.message}&rdquo;
@@ -152,7 +149,7 @@ export function TeamInvitesPanel({
                   disabled={loadingId === invite.id || leaving}
                   onClick={() => accept(invite.id)}
                 >
-                  {loadingId === invite.id ? "Accepting…" : "Accept invite"}
+                  {loadingId === invite.id ? "Accepting…" : "Accept"}
                 </Button>
                 <Button
                   type="button"

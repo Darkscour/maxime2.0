@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
 import { parseTier } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
@@ -38,31 +36,19 @@ export default async function DashboardTeamsPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="cyan" className="mt-5">
-          Explore
-        </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
-          Browse registered teams
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
-          {playerTier === "collegiate"
-            ? "Explore collegiate orgs on Maxime and join one with an invite code from their captain or manager."
-            : "Explore grassroots orgs on Maxime and join one with an invite code from their captain or manager."}
-        </p>
-      </header>
+      <DeskPageHeader
+        title="Teams"
+        job={
+          playerTier === "collegiate"
+            ? "Explore collegiate orgs and join with an invite code from their captain."
+            : "Explore grassroots orgs and join with an invite code from their captain."
+        }
+      />
 
       <section>
-        <h2 className="font-heading mb-4 text-lg font-semibold text-[var(--foreground)]">
+        <p className="desk-kicker !text-[var(--foreground-muted)] mb-4">
           {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
-        </h2>
+        </p>
         <TeamsDirectory
           teams={teams}
           playerOnTeam={!!ctx.team}
@@ -71,12 +57,12 @@ export default async function DashboardTeamsPage() {
         />
       </section>
 
-      <section className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
-        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
+      <section className="desk-panel p-6">
+        <h2 className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
           Join with an invite code
         </h2>
         <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-          Found a team you like? Get their code and join your roster.
+          Found a team you like? Paste their code and join the roster.
         </p>
         <div className="mt-5">
           <DashboardJoinTeamPanel

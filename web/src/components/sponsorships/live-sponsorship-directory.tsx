@@ -12,7 +12,7 @@ import {
   type LiveSponsorFilters,
 } from "@/components/sponsorships/live-sponsor-filters";
 import { SponsorDirectoryCard } from "@/components/sponsorships/sponsor-directory-card";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
+import { DeskPageHeader } from "@/components/dashboard/desk-ui";
 
 export function LiveSponsorshipDirectory({
   liveSponsors,
@@ -62,23 +62,17 @@ export function LiveSponsorshipDirectory({
   return (
     <div className={embedded ? "mx-auto max-w-6xl" : ""}>
       {embedded ? (
-        <header className="mb-6">
-          <DashboardSectionEyebrow accent="emerald">
-            Partnerships
-          </DashboardSectionEyebrow>
-          <h1 className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
-            Sponsor directory
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">
-            Curated brands that sponsor collegiate esports orgs — save leads to
-            your pipeline and track outreach.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-none bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--accent-2)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_20%,transparent)]">
-              <Sparkles className="h-3 w-3" />
-              {liveSponsors.length} sponsors
-            </span>
-          </div>
+        <header className="mb-8">
+          <DeskPageHeader
+            title="Sponsors"
+            job="Curated brands for collegiate orgs — save leads and track outreach."
+            action={
+              <span className="inline-flex items-center gap-1.5 border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+                <Sparkles className="h-3 w-3" />
+                {liveSponsors.length} listed
+              </span>
+            }
+          />
         </header>
       ) : (
         <section className="relative overflow-hidden border-b border-[var(--border)] bg-spotlight">
@@ -141,16 +135,17 @@ export function LiveSponsorshipDirectory({
 
 function FilterEmptyState({ onReset }: { onReset: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)] py-14 text-center">
-      <Handshake className="h-8 w-8 text-[var(--foreground-muted)]" />
-      <h3 className="font-heading mt-3 text-base font-semibold text-[var(--foreground)]">
+    <div className="desk-sheet border-dashed px-6 py-14 text-center">
+      <h3 className="font-heading text-base font-semibold text-[var(--foreground)]">
         No sponsors match those filters
       </h3>
-      <p className="mt-1 text-sm text-[var(--foreground-muted)]">Try clearing a filter or searching again.</p>
+      <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+        Clear a filter or search again.
+      </p>
       <button
         type="button"
         onClick={onReset}
-        className="mt-4 rounded-none bg-[color-mix(in_srgb,var(--success)_10%,transparent)] px-4 py-2 text-xs font-medium text-[var(--success)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--success)_25%,transparent)] hover:bg-[color-mix(in_srgb,var(--success)_15%,transparent)]"
+        className="mt-4 border border-[var(--foreground)] bg-[var(--surface)] px-4 py-2 text-xs font-semibold text-[var(--foreground)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
       >
         Clear filters
       </button>
@@ -166,14 +161,13 @@ function DirectoryEmptyState({
   fetchError?: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
-      <Handshake className="h-8 w-8 text-[var(--foreground-muted)]" />
-      <h3 className="font-heading mt-3 text-base font-semibold text-[var(--foreground)]">
+    <div className="desk-sheet border-dashed px-6 py-16 text-center">
+      <h3 className="font-heading text-base font-semibold text-[var(--foreground)]">
         {dataSource === "unavailable"
           ? "Directory temporarily unavailable"
           : "No sponsors in the directory yet"}
       </h3>
-      <p className="mt-2 max-w-md text-sm leading-6 text-[var(--foreground-muted)]">
+      <p className="mt-2 max-w-md mx-auto text-sm leading-6 text-[var(--foreground-muted)]">
         {dataSource === "unavailable"
           ? fetchError ?? "Check your database connection and try again shortly."
           : "Curated sponsors will appear here as they are added to Maxime."}

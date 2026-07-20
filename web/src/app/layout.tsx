@@ -5,7 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 import { authContinueSignupPath } from "@/lib/auth-intent";
 import "./globals.css";
-import { MarketingFooterOnly, MarketingOnly } from "@/components/app-chrome";
+import { AuthOnly, MarketingFooterOnly, MarketingOnly } from "@/components/app-chrome";
+import { AuthPageHeader } from "@/components/auth/auth-page-header";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BenignNavigationErrors } from "@/components/providers/benign-navigation-errors";
@@ -73,6 +74,9 @@ export default function RootLayout({
           <MarketingOnly>
             <Navbar />
           </MarketingOnly>
+          <AuthOnly>
+            <AuthPageHeader />
+          </AuthOnly>
           <main className="flex min-h-0 flex-1 flex-col">{children}</main>
           <MarketingFooterOnly>
             <Footer />

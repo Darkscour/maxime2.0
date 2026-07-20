@@ -38,7 +38,7 @@ function pipelineHint(pendingJoinRequests: number, pendingInvites: number): stri
   return parts.length > 0 ? parts.join(" · ") : "No pending requests";
 }
 
-/** Compact recruiting health — scoreboard cell on the program board. */
+/** Compact recruiting health for activity strips. */
 export function ManagerTeamSnapshotCard({
   memberCount,
   rosterSize,
@@ -51,17 +51,17 @@ export function ManagerTeamSnapshotCard({
 
   return (
     <div className={cn(dashboardStatCardClassName, className)}>
-      <p className="pb-stat-label pb-kicker !text-[var(--foreground-muted)]">Team snapshot</p>
-      <p className="pb-stat-value font-board mt-2 break-words text-[2rem] font-semibold leading-[0.95] tracking-[0.01em] uppercase text-[var(--foreground)]">
+      <p className="desk-kicker !text-[var(--foreground-muted)]">Team snapshot</p>
+      <p className="mt-2 break-words font-heading text-[1.75rem] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--foreground)]">
         {headline}
       </p>
-      <p className="pb-stat-hint mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
+      <p className="mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
         {hint}
       </p>
       {pendingJoinRequests > 0 && (
         <Link
           href="/dashboard/join-requests"
-          className="pb-stat-link mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
         >
           Review join requests
         </Link>

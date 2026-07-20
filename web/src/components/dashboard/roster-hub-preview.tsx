@@ -14,11 +14,11 @@ export function RosterHubPreview({
   canManage: boolean;
 }) {
   return (
-    <div className="pb-panel p-6">
+    <div className="desk-panel p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="pb-kicker !text-[var(--foreground-muted)]">Roster sheet</p>
-          <h2 className="font-board mt-1 text-2xl font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+          <p className="desk-kicker !text-[var(--foreground-muted)]">Roster</p>
+          <h2 className="mt-1 font-heading text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
             {teamName}
           </h2>
         </div>

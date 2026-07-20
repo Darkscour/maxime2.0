@@ -1,13 +1,12 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Search } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import { listScoutablePlayers } from "@/lib/player-analytics";
 import { filterPlayersForScout } from "@/lib/player-scout-visibility";
 import { fetchTeamScoutCardContext } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestPlayerIdsForTeam } from "@/lib/team-join-request-db";
 import { ScoutPlayerGridCard } from "@/components/dashboard/scout-player-grid-card";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
+import { DeskEmpty, DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { Button } from "@/components/ui/button";
 import { canEditTeam } from "@/lib/permissions";
 import { parseTier, managerPoolContext } from "@/lib/audience-guards";
 
@@ -44,7 +43,6 @@ export default async function DashboardScoutPage() {
   ]);
 
   const joinRequestIds = new Set(joinRequestPlayerIds);
-
   const watchlistIds = new Set(scoutContext?.watchlistPlayerIds ?? []);
   const pendingInviteIds = new Set(scoutContext?.pendingInvitePlayerIds ?? []);
   const rosterIds = new Set(scoutContext?.rosterPlayerProfileIds ?? []);
@@ -52,35 +50,29 @@ export default async function DashboardScoutPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <header>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Dashboard
-        </Link>
-        <DashboardSectionEyebrow accent="violet" className="mt-5">
-          Recruitment
-        </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
-          Player profiles
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
-          {teamTier === "collegiate"
-            ? "Browse collegiate players at your school. Campus talent outside your institution is hidden. Save candidates to your watchlist or send an invite directly."
-            : "Browse grassroots players on Maxime. Save candidates to your watchlist or send an invite directly."}
-        </p>
-      </header>
+      <DeskPageHeader
+        title="Scout"
+        job={
+          teamTier === "collegiate"
+            ? "Browse collegiate players at your school. Save candidates or send an invite."
+            : "Browse grassroots players. Save candidates or send an invite."
+        }
+        action={
+          <Button href="/dashboard/watchlist" size="sm" variant="outline">
+            Open watchlist
+          </Button>
+        }
+      />
 
       {visiblePlayers.length === 0 ? (
-        <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
-          <Search className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
-          <p className="mt-4 text-sm text-[var(--foreground-muted)]">
-            No player profiles yet. They&apos;ll appear here as players complete
-            onboarding.
-          </p>
-        </div>
+        <DeskEmpty
+          title="No players to scout yet"
+          body={
+            teamTier === "collegiate"
+              ? "Campus players appear here when they finish their scout cards at your school."
+              : "Grassroots players appear here when they finish their scout cards."
+          }
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visiblePlayers.map((player) => (

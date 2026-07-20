@@ -1,7 +1,4 @@
-import { SignIn } from "@clerk/nextjs";
-import { AuthPageGate } from "@/components/auth/auth-page-gate";
-import { AuthPageShell } from "@/components/auth/auth-page-shell";
-import { clerkSignInPageProps } from "@/lib/clerk-auth-pages";
+import { AuthCredentialPage } from "@/components/auth/auth-credential-page";
 import { hasAuthPageAllow } from "@/lib/auth-intent";
 
 /**
@@ -16,17 +13,6 @@ export default async function SignInPage({
   const allowAuthPage = hasAuthPageAllow(params);
 
   return (
-    <AuthPageShell
-      kicker="Sign in"
-      title="Welcome back"
-      description="Sign in to continue to your Maxime workspace."
-      alternateHint="No Maxime account yet?"
-      alternateHref="/sign-up"
-      alternateLabel="Get started"
-    >
-      <AuthPageGate intent="sign-in" skipSignedInRedirect={allowAuthPage}>
-        <SignIn {...clerkSignInPageProps} />
-      </AuthPageGate>
-    </AuthPageShell>
+    <AuthCredentialPage intent="sign-in" skipSignedInRedirect={allowAuthPage} />
   );
 }

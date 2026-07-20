@@ -1,9 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { SignUp } from "@clerk/nextjs";
-import { AuthPageGate } from "@/components/auth/auth-page-gate";
-import { AuthPageShell } from "@/components/auth/auth-page-shell";
-import { clerkSignUpPageProps } from "@/lib/clerk-auth-pages";
+import { AuthCredentialPage } from "@/components/auth/auth-credential-page";
 import {
   authContinuePath,
   authContinueSignupPath,
@@ -32,17 +29,6 @@ export default async function SignUpPage({
   }
 
   return (
-    <AuthPageShell
-      kicker="Get started"
-      title="Create your Maxime account"
-      description="Register to set up your team or player profile."
-      alternateHint="Already have an account?"
-      alternateHref="/sign-in"
-      alternateLabel="Sign in"
-    >
-      <AuthPageGate intent="sign-up" skipSignedInRedirect={allowAuthPage}>
-        <SignUp {...clerkSignUpPageProps} />
-      </AuthPageGate>
-    </AuthPageShell>
+    <AuthCredentialPage intent="sign-up" skipSignedInRedirect={allowAuthPage} />
   );
 }

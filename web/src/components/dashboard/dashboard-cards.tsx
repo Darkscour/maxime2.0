@@ -1,9 +1,34 @@
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-/** Shared footprint for overview stats — scoreboard cell or standalone. */
+/** Compact activity cell — secondary, not hero KPIs. */
+export function DeskActivityStat({
+  label,
+  value,
+  hint,
+  className,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("min-w-0", className)}>
+      <p className="desk-kicker !text-[var(--foreground-muted)]">{label}</p>
+      <p className="mt-1 font-heading text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+        {value}
+      </p>
+      {hint ? (
+        <p className="mt-1 text-xs leading-5 text-[var(--foreground-muted)]">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
+/** @deprecated Prefer DeskActivityStat — kept for analytics cards during migration. */
 export const dashboardStatCardClassName =
-  "ops-status-cell pb-stat flex flex-col border-2 border-[var(--foreground)] bg-[var(--surface)] p-5";
+  "desk-panel flex flex-col p-5";
 
 export function DashboardStatCard({
   label,
@@ -22,12 +47,12 @@ export function DashboardStatCard({
 
   return (
     <div className={cn(dashboardStatCardClassName, className)}>
-      <p className="pb-stat-label pb-kicker !text-[var(--foreground-muted)]">{label}</p>
-      <p className="pb-stat-value font-board mt-2 break-words text-[2rem] font-semibold leading-[0.95] tracking-[0.01em] uppercase text-[var(--foreground)]">
+      <p className="desk-kicker !text-[var(--foreground-muted)]">{label}</p>
+      <p className="mt-2 break-words font-heading text-[1.75rem] font-semibold leading-[0.95] tracking-[-0.02em] text-[var(--foreground)]">
         {value}
       </p>
       {hint && (
-        <p className="pb-stat-hint mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
+        <p className="mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
           {hint}
         </p>
       )}
@@ -35,6 +60,7 @@ export function DashboardStatCard({
   );
 }
 
+/** Quiet link row for secondary destinations — not a numbered work list. */
 export function FeatureTile({
   href,
   title,
@@ -52,17 +78,20 @@ export function FeatureTile({
 }) {
   void Icon;
   void tone;
+  void index;
 
   return (
-    <Link href={href} className="pb-work-row group">
-      <span className="font-mono text-[11px] tracking-[0.14em] text-[var(--foreground-subtle)]">
-        {index != null ? String(index).padStart(2, "0") : "—"}
-      </span>
+    <Link
+      href={href}
+      className="group flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-4 last:border-b-0 hover:bg-[color-mix(in_srgb,var(--accent)_5%,var(--surface))]"
+    >
       <div className="min-w-0">
-        <h3 className="font-board text-lg font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+        <h3 className="font-heading text-base font-semibold tracking-[-0.01em] text-[var(--foreground)]">
           {title}
         </h3>
-        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">{description}</p>
+        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
+          {description}
+        </p>
       </div>
       <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--accent)] transition-transform group-hover:translate-x-0.5">
         Open

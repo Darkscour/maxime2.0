@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bookmark, Mail, Trash2 } from "lucide-react";
+import { Mail, Trash2 } from "lucide-react";
 import type { WatchlistListing } from "@/lib/player-watchlist-db";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { Button } from "@/components/ui/button";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
+import { DeskEmpty } from "@/components/dashboard/desk-ui";
 import { parseJsonResponse } from "@/lib/safe-json";
 
 export function WatchlistPanel({
@@ -74,23 +75,19 @@ export function WatchlistPanel({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
-        <Bookmark className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
-        <p className="mt-4 text-sm text-[var(--foreground-muted)]">
-          Your watchlist is empty. Browse{" "}
-          <Link href="/dashboard/scout" className="text-[var(--accent)] hover:text-[var(--accent)]">
-            scout players
-          </Link>{" "}
-          and save candidates to compare before recruiting.
-        </p>
-      </div>
+      <DeskEmpty
+        title="Watchlist is empty"
+        body="Scout players and save the ones worth comparing before you invite."
+        actionLabel="Open scout"
+        actionHref="/dashboard/scout"
+      />
     );
   }
 
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-lg border border-red-400/20 bg-red-400/5 px-3 py-2 text-sm text-red-200">
+        <p className="border border-[color-mix(in_srgb,var(--danger)_40%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] px-3 py-2 text-sm text-[var(--danger)]">
           {error}
         </p>
       )}
@@ -98,7 +95,7 @@ export function WatchlistPanel({
         {items.map((player) => (
           <div
             key={player.id}
-            className="flex h-full flex-col rounded-none border border-[var(--foreground)] bg-[var(--surface)] transition-colors hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]"
+            className="desk-panel flex h-full flex-col transition-colors hover:border-[var(--accent)]"
           >
             <Link
               href={`/dashboard/scout/${player.handle}`}

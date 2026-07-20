@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { PublicTeamListing } from "@/lib/teams-directory";
 import { TeamJoinRequestButton } from "@/components/dashboard/team-join-request-button";
+import { DeskEmpty } from "@/components/dashboard/desk-ui";
 import { cn } from "@/lib/utils";
 
 export function TeamsDirectory({
@@ -25,11 +26,10 @@ export function TeamsDirectory({
 }) {
   if (teams.length === 0) {
     return (
-      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
-        <p className="text-sm text-[var(--foreground-muted)]">
-          No teams have registered yet. Check back soon as orgs join Maxime.
-        </p>
-      </div>
+      <DeskEmpty
+        title="No teams yet"
+        body="Orgs appear here as they join Maxime. Check back soon, or wait for an invite code."
+      />
     );
   }
 

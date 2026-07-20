@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Clock, MapPin } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { getDashboardContext } from "@/lib/auth-user";
 import {
   getScoutPlayerProfile,
@@ -9,7 +9,6 @@ import {
 import { hasPendingRecruitmentInvite, isOnWatchlist, isPlayerOnTeam } from "@/lib/player-watchlist-db";
 import { hasPendingJoinRequest } from "@/lib/team-join-request-db";
 import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-button";
-import { DashboardSectionEyebrow } from "@/components/dashboard/dashboard-section-eyebrow";
 import { ScoutJoinRequestActions } from "@/components/dashboard/scout-join-request-actions";
 import { Badge } from "@/components/ui/badge";
 import { canEditTeam } from "@/lib/permissions";
@@ -76,19 +75,14 @@ export default async function ScoutPlayerProfilePage({
     <div className="mx-auto max-w-3xl space-y-8">
       <Link
         href="/dashboard/scout"
-        className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
+        className="text-sm font-medium text-[var(--foreground-muted)] transition-colors hover:text-[var(--accent)]"
       >
-        <ArrowLeft className="h-4 w-4" />
-        Scout
+        ← Scout
       </Link>
 
-      <DashboardSectionEyebrow accent="violet" className="mt-4">
-        Recruitment
-      </DashboardSectionEyebrow>
-
-      <article className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-8">
-        <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Player profile</p>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
+      <article className="desk-panel p-8">
+        <p className="desk-kicker !text-[var(--foreground-muted)]">Player</p>
+        <h1 className="mt-2 font-heading text-3xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
           {profile.handle}
         </h1>
         <p className="mt-2 text-sm text-[var(--foreground-muted)]">
