@@ -34,7 +34,7 @@ export default async function JoinRequestsPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -42,10 +42,10 @@ export default async function JoinRequestsPage() {
         <DashboardSectionEyebrow accent="violet" className="mt-5">
           Recruitment
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
           Join requests
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           {ctx.accountTier === "collegiate"
             ? `Players at your school who requested to join ${ctx.team.name}. Only collegiate players from your campus appear here.`
             : `Grassroots players who requested to join ${ctx.team.name}.`}

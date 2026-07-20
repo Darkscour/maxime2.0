@@ -36,26 +36,22 @@ export default async function NoMaximeAccountPage() {
 
   if (dbUnavailable) {
     return (
-      <AuthPageShell>
+      <AuthPageShell kicker="Account">
         <DbUnavailableRecovery retryHref="/auth/continue?intent=sign-in" />
       </AuthPageShell>
     );
   }
 
   return (
-    <AuthPageShell>
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[var(--surface)]/90 p-8 text-center shadow-2xl shadow-black/20">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400/10 ring-1 ring-inset ring-amber-400/25">
-          <AlertCircle className="h-7 w-7 text-amber-300" />
+    <AuthPageShell
+      kicker="Account"
+      title="No Maxime account yet"
+      description="You're signed in, but this email doesn't have a Maxime profile. Sign in only works for existing accounts — use sign up to register on Maxime first."
+    >
+      <div className="text-center">
+        <span className="oc-mark mx-auto">
+          <AlertCircle className="h-5 w-5" />
         </span>
-        <h1 className="font-heading mt-5 text-2xl font-semibold text-white">
-          No Maxime account yet
-        </h1>
-        <p className="mt-3 text-sm leading-7 text-zinc-400">
-          You&apos;re signed in, but this email doesn&apos;t have a Maxime profile.
-          Sign in only works for existing accounts — use sign up to register on
-          Maxime first.
-        </p>
         <div className="mt-8 flex flex-col gap-3">
           <Button href={authContinueSignupPath()} size="lg" className="w-full gap-2">
             Create Maxime account
@@ -63,18 +59,18 @@ export default async function NoMaximeAccountPage() {
           </Button>
           <SignOutToSignInButton />
         </div>
-        <p className="mt-6 text-xs text-zinc-500">
+        <p className="mt-6 text-xs text-[var(--foreground-muted)]">
           Wrong email?{" "}
           <AuthSignOutLink
             redirectUrl="/sign-in"
-            className="text-cyan-400 transition-colors hover:text-cyan-300"
+            className="text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
           >
             Sign out
           </AuthSignOutLink>{" "}
           and try again, or{" "}
           <Link
             href="/?browse=1"
-            className="text-cyan-400 transition-colors hover:text-cyan-300"
+            className="text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
           >
             return home
           </Link>

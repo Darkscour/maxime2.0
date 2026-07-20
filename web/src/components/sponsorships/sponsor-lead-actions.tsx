@@ -93,7 +93,7 @@ export function SponsorLeadActions({
   return (
     <div
       className={cn(
-        "border-t border-white/5 pt-4",
+        "border-t border-[var(--border)] pt-4",
         compact ? "mt-3" : "mt-5",
       )}
     >
@@ -123,7 +123,7 @@ export function SponsorLeadActions({
               value={localLead.status}
               disabled={loading}
               onChange={(e) => updateStatus(e.target.value as SponsorLeadStatus)}
-              className="rounded-lg border border-white/10 bg-[var(--background)] px-2 py-1 text-xs text-zinc-200 focus:border-violet-400/50 focus:outline-none"
+              className="rounded-none border border-[var(--border)] bg-[var(--background)] px-2 py-1 text-xs text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
             >
               {SPONSOR_LEAD_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -142,7 +142,7 @@ export function SponsorLeadActions({
                   void updateStatus("applied");
                 }
               }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-violet-400 px-3 py-1.5 text-xs font-medium text-zinc-950 hover:bg-violet-300"
+              className="inline-flex items-center gap-1.5 rounded-none bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-strong)]"
             >
               Open application
               <ExternalLink className="h-3 w-3" />

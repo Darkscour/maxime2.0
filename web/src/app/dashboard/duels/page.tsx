@@ -30,7 +30,7 @@ export default async function DuelsPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -38,8 +38,8 @@ export default async function DuelsPage() {
         <DashboardSectionEyebrow accent="cyan" className="mt-5">
           Team
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">Duels</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">Duels</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           Challenge other grassroots teams and track responses.
         </p>
       </header>

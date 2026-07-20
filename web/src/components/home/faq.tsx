@@ -36,24 +36,24 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/40 py-10 sm:py-12"
+      className="scroll-mt-24 border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--background-elevated)]/40 py-10 sm:py-12"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_20%,transparent)] bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[color-mix(in_srgb,var(--accent)_85%,white)]">
             <HelpCircle className="h-3.5 w-3.5" />
             FAQ
           </div>
-          <h2 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h2 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl">
             Answers before you sign up
           </h2>
-          <p className="mt-3 text-base leading-7 text-zinc-400">
+          <p className="mt-3 text-base leading-7 text-[var(--foreground-muted)]">
             The essentials on account types, recruitment, and what&apos;s live
             today.
           </p>
         </div>
 
-        <div className="mx-auto mt-8 max-w-3xl divide-y divide-white/5 overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] shadow-lg shadow-black/20">
+        <div className="mx-auto mt-8 max-w-3xl divide-y divide-[color-mix(in_srgb,var(--border)_50%,transparent)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-lg shadow-black/20">
           {faqs.map((f, i) => (
             <FAQItem key={i} q={f.q} a={f.a} />
           ))}
@@ -81,18 +81,18 @@ function FAQItem({
         className="flex w-full items-start justify-between gap-4 text-left"
         aria-expanded={open}
       >
-        <span className="font-heading text-base font-semibold text-white sm:text-lg">
+        <span className="font-heading text-base font-semibold text-[var(--foreground)] sm:text-lg">
           {q}
         </span>
         <ChevronDown
           className={cn(
-            "mt-1 h-5 w-5 shrink-0 text-cyan-400/70 transition-transform",
+            "mt-1 h-5 w-5 shrink-0 text-[color-mix(in_srgb,var(--accent)_70%,transparent)] transition-transform",
             open && "rotate-180",
           )}
         />
       </button>
       {open && (
-        <p className="mt-3 text-sm leading-7 text-zinc-400 sm:text-base">{a}</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--foreground-muted)] sm:text-base">{a}</p>
       )}
     </div>
   );

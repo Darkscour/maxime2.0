@@ -55,9 +55,11 @@ export function SettingsField({
 }) {
   return (
     <label className={cn("block", className)}>
-      <span className="text-sm font-medium text-zinc-200">{label}</span>
+      <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>
       {hint && (
-        <span className="mt-0.5 block text-xs leading-5 text-zinc-500">{hint}</span>
+        <span className="mt-0.5 block text-xs leading-5 text-[var(--foreground-muted)]">
+          {hint}
+        </span>
       )}
       <div className="mt-2.5">{children}</div>
     </label>
@@ -80,15 +82,19 @@ export function SettingsSection({
   return (
     <section
       id={id}
-      className="scroll-mt-8 overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--surface)]/90"
+      className="scroll-mt-8 overflow-hidden rounded-none border border-[var(--foreground)] bg-[var(--surface)]"
     >
-      <div className="flex items-start gap-4 border-b border-white/[0.05] bg-white/[0.02] px-5 py-4 sm:px-6">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/15 to-violet-500/10 ring-1 ring-inset ring-white/10">
-          <Icon className="h-4 w-4 text-cyan-300" />
+      <div className="flex items-start gap-4 border-b border-[var(--border)] bg-[var(--background)] px-5 py-4 sm:px-6">
+        <span className="oc-mark">
+          <Icon className="h-4 w-4" />
         </span>
         <div>
-          <h2 className="font-heading text-base font-semibold text-white">{title}</h2>
-          <p className="mt-0.5 text-sm leading-6 text-zinc-500">{description}</p>
+          <h2 className="font-heading text-base font-semibold text-[var(--foreground)]">
+            {title}
+          </h2>
+          <p className="mt-0.5 text-sm leading-6 text-[var(--foreground-muted)]">
+            {description}
+          </p>
         </div>
       </div>
       <div className="space-y-6 p-5 sm:p-6">{children}</div>
@@ -110,10 +116,10 @@ export function SettingsChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full px-3.5 py-2 text-xs font-medium transition-all",
+        "rounded-none px-3.5 py-2 text-xs font-medium transition-colors",
         active
-          ? "bg-cyan-400/15 text-cyan-100 ring-1 ring-inset ring-cyan-400/40 shadow-[0_0_20px_rgba(34,211,238,0.08)]"
-          : "bg-white/[0.03] text-zinc-400 ring-1 ring-inset ring-white/[0.08] hover:bg-white/[0.06] hover:text-zinc-200",
+          ? "border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)]"
+          : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground-muted)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]",
       )}
     >
       {children}
@@ -131,10 +137,10 @@ export function SettingsAlert({
   return (
     <p
       className={cn(
-        "rounded-xl border px-4 py-3 text-sm",
+        "rounded-none border px-4 py-3 text-sm",
         tone === "error"
-          ? "border-red-400/20 bg-red-400/[0.06] text-red-200"
-          : "border-emerald-400/20 bg-emerald-400/[0.06] text-emerald-200",
+          ? "border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] text-[var(--danger)]"
+          : "border-[color-mix(in_srgb,var(--success)_35%,var(--border))] bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-[var(--success)]",
       )}
     >
       {message}
@@ -154,18 +160,18 @@ export function SettingsFooter({
   submitLabel?: string;
 }) {
   return (
-    <div className="sticky bottom-0 z-10 -mx-4 mt-10 border-t border-white/[0.06] bg-[var(--background)]/85 px-4 py-4 backdrop-blur-xl sm:-mx-0 sm:rounded-2xl sm:border sm:px-5 lg:-mx-0">
+    <div className="sticky bottom-0 z-10 -mx-4 mt-10 border-t border-[var(--border)] bg-[var(--background)]/90 px-4 py-4 backdrop-blur-xl sm:-mx-0 sm:rounded-none sm:border sm:border-[var(--foreground)] sm:px-5 lg:-mx-0">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link
           href={cancelHref}
-          className="text-sm text-zinc-500 transition-colors hover:text-zinc-200"
+          className="text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
         >
           Discard changes
         </Link>
         <button
           type="submit"
           disabled={loading || disabled}
-          className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-500 px-6 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_0_24px_rgba(34,211,238,0.25)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex items-center justify-center rounded-none bg-[var(--foreground)] px-6 py-2.5 text-sm font-semibold text-[var(--background)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {loading ? "Saving…" : submitLabel}
         </button>
@@ -196,7 +202,7 @@ export function SettingsNav({
   if (tabs.length <= 1) return null;
 
   return (
-    <nav className="mb-8 flex gap-1 rounded-2xl border border-white/[0.06] bg-[var(--surface)]/60 p-1.5">
+    <nav className="mb-8 flex gap-1 rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-1.5">
       {tabs.map((tab) => {
         const active = pathname.startsWith(tab.href);
         return (
@@ -204,13 +210,15 @@ export function SettingsNav({
             key={tab.href}
             href={tab.href}
             className={cn(
-              "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
+              "flex flex-1 items-center justify-center gap-2 rounded-none px-4 py-2.5 text-sm font-medium transition-colors",
               active
-                ? "bg-white/[0.06] text-white ring-1 ring-inset ring-white/10"
-                : "text-zinc-500 hover:text-zinc-300",
+                ? "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)]"
+                : "text-[var(--foreground-muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)]",
             )}
           >
-            <tab.icon className={cn("h-4 w-4", active ? "text-cyan-400" : "")} />
+            <tab.icon
+              className={cn("h-4 w-4", active ? "text-[var(--accent)]" : "")}
+            />
             {tab.label}
           </Link>
         );
@@ -233,12 +241,12 @@ export function SettingsHero({
   accent?: NavGroupAccent;
 }) {
   return (
-    <header className="relative mb-8 overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-cyan-400/[0.06] via-[var(--surface)] to-violet-500/[0.05]">
+    <header className="relative mb-8 overflow-hidden rounded-none border border-[var(--foreground)] bg-[var(--surface)]">
       <div className="bg-grid bg-grid-fade absolute inset-0 opacity-30" aria-hidden />
       <div className="relative p-6 sm:p-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -251,10 +259,12 @@ export function SettingsHero({
         >
           {eyebrow}
         </p>
-        <h1 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h1 className="font-heading mt-2 text-2xl font-semibold tracking-tight text-[var(--foreground)] sm:text-3xl">
           {title}
         </h1>
-        <p className="mt-2 max-w-xl text-sm leading-7 text-zinc-400">{description}</p>
+        <p className="mt-2 max-w-xl text-sm leading-7 text-[var(--foreground-muted)]">
+          {description}
+        </p>
         {preview && <div className="mt-6">{preview}</div>}
       </div>
     </header>
@@ -275,15 +285,15 @@ export function ProfilePreview({
   const initial = handle.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="inline-flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 backdrop-blur-sm">
-      <span className="font-heading flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 text-lg font-bold text-zinc-950">
+    <div className="inline-flex items-center gap-3 rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-3">
+      <span className="font-heading flex h-11 w-11 items-center justify-center rounded-none bg-[var(--foreground)] text-lg font-bold text-[var(--background)]">
         {initial}
       </span>
       <div>
-        <p className="font-heading text-base font-semibold text-white">
+        <p className="font-heading text-base font-semibold text-[var(--foreground)]">
           {handle || "Your handle"}
         </p>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-[var(--foreground-muted)]">
           {[game, rank, region].filter(Boolean).join(" · ") || "Competitive details"}
         </p>
       </div>

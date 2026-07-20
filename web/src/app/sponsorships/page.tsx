@@ -29,7 +29,7 @@ export default async function SponsorshipsPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/5 bg-spotlight">
+      <section className="relative overflow-hidden border-b border-[var(--border)] bg-spotlight">
         <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
         <Container className="relative py-16 sm:py-20">
           <PreviewModeBanner />
@@ -47,13 +47,13 @@ export default async function SponsorshipsPage() {
         </Container>
       </section>
 
-      <section className="border-t border-white/5 py-20 sm:py-24">
+      <section className="border-t border-[var(--border)] py-20 sm:py-24">
         <Container>
-          <div className="mx-auto max-w-3xl rounded-2xl border border-white/5 bg-[var(--surface)] p-8 text-center sm:p-12">
-            <h2 className="font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center sm:p-12">
+            <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--foreground)] sm:text-3xl">
               Unlock the live sponsor directory
             </h2>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">
+            <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">
               Sponsorship discovery is available to collegiate team managers after
               onboarding.
             </p>
@@ -64,7 +64,7 @@ export default async function SponsorshipsPage() {
               </Button>
               <Link
                 href="/#solutions"
-                className="text-sm text-zinc-400 hover:text-white"
+                className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
               >
                 Explore solutions →
               </Link>

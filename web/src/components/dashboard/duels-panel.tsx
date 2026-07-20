@@ -93,17 +93,17 @@ export function DuelsPanel({
     <div className="space-y-6">
       <form
         onSubmit={createChallenge}
-        className="rounded-2xl border border-white/10 bg-[var(--surface)] p-5"
+        className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5"
       >
-        <h2 className="font-heading text-lg font-semibold text-white">Start a duel</h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Start a duel</h2>
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
           Challenge another grassroots team in any game.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <select
             value={targetTeamId}
             onChange={(e) => setTargetTeamId(e.target.value)}
-            className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100"
+            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
             required
           >
             <option value="">Select team</option>
@@ -117,7 +117,7 @@ export function DuelsPanel({
             value={game}
             onChange={(e) => setGame(e.target.value)}
             placeholder="Game title (e.g. Valorant)"
-            className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100"
+            className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
             required
           />
         </div>
@@ -125,7 +125,7 @@ export function DuelsPanel({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Optional challenge message"
-          className="mt-3 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100"
+          className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)]"
           rows={3}
         />
         {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
@@ -173,22 +173,22 @@ function DuelList({
   onAction: (id: string, status: string) => Promise<void>;
 }) {
   return (
-    <section className="rounded-2xl border border-white/10 bg-[var(--surface)] p-5">
-      <h3 className="font-heading text-base font-semibold text-white">{title}</h3>
+    <section className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
+      <h3 className="font-heading text-base font-semibold text-[var(--foreground)]">{title}</h3>
       {duels.length === 0 ? (
-        <p className="mt-2 text-sm text-zinc-500">{empty}</p>
+        <p className="mt-2 text-sm text-[var(--foreground-muted)]">{empty}</p>
       ) : (
         <ul className="mt-3 space-y-2">
           {duels.map((duel) => {
             const opponent =
               duel.challengerTeamId === teamId ? duel.targetTeam.name : duel.challengerTeam.name;
             return (
-              <li key={duel.id} className="rounded-lg border border-white/10 bg-black/20 p-3">
-                <p className="text-sm text-zinc-100">
+              <li key={duel.id} className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                <p className="text-sm text-[var(--foreground)]">
                   {duel.game} vs {opponent}
                 </p>
-                {duel.message && <p className="mt-1 text-xs text-zinc-500">{duel.message}</p>}
-                <p className="mt-1 text-xs uppercase tracking-wider text-cyan-300">
+                {duel.message && <p className="mt-1 text-xs text-[var(--foreground-muted)]">{duel.message}</p>}
+                <p className="mt-1 text-xs uppercase tracking-wider text-[var(--accent)]">
                   {duel.status}
                 </p>
                 <div className="mt-2 flex gap-2">

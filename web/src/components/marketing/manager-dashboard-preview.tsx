@@ -83,35 +83,35 @@ const navGroups: {
 ];
 
 const accentEyebrow = {
-  cyan: "text-cyan-400/90",
-  violet: "text-violet-400/90",
+  cyan: "text-[color-mix(in_srgb,var(--accent)_90%,transparent)]",
+  violet: "text-[color-mix(in_srgb,var(--accent-2)_90%,transparent)]",
   emerald: "text-emerald-400/90",
-  muted: "text-zinc-500",
+  muted: "text-[var(--foreground-subtle)]",
 };
 
 const accentBorder = {
-  cyan: "border-cyan-400/20",
-  violet: "border-violet-400/20",
+  cyan: "border-[color-mix(in_srgb,var(--accent)_20%,transparent)]",
+  violet: "border-[color-mix(in_srgb,var(--accent-2)_20%,transparent)]",
   emerald: "border-emerald-400/20",
-  muted: "border-white/8",
+  muted: "border-[color-mix(in_srgb,var(--border)_60%,transparent)]",
 };
 
 const accentLink = {
   cyan: {
-    active: "bg-cyan-400/10 text-white ring-1 ring-inset ring-cyan-400/25",
-    icon: "text-cyan-400",
+    active: "bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--foreground)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_25%,transparent)]",
+    icon: "text-[var(--accent)]",
   },
   violet: {
-    active: "bg-violet-400/10 text-white ring-1 ring-inset ring-violet-400/25",
-    icon: "text-violet-400",
+    active: "bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] text-[var(--foreground)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_25%,transparent)]",
+    icon: "text-[var(--accent-2)]",
   },
   emerald: {
-    active: "bg-emerald-400/10 text-white ring-1 ring-inset ring-emerald-400/25",
+    active: "bg-emerald-400/10 text-[var(--foreground)] ring-1 ring-inset ring-emerald-400/25",
     icon: "text-emerald-400",
   },
   muted: {
-    active: "bg-white/[0.06] text-white ring-1 ring-inset ring-white/10",
-    icon: "text-zinc-300",
+    active: "bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-[var(--foreground)] ring-1 ring-inset ring-[var(--border)]",
+    icon: "text-[var(--foreground)]",
   },
 };
 
@@ -148,16 +148,16 @@ export function ManagerDashboardPreview({
         "dashboard-shot flex overflow-hidden bg-[var(--background)]",
         isHero
           ? "min-h-0 rounded-none border-0"
-          : "min-h-[640px] rounded-2xl border border-white/10",
+          : "min-h-[640px] rounded-2xl border border-[var(--border)]",
         className,
       )}
     >
       {showSidebar ? (
-        <aside className="hidden w-56 shrink-0 border-r border-white/5 bg-[#0a0c10]/90 sm:flex sm:flex-col">
-          <div className="border-b border-white/5 px-4 py-4">
+        <aside className="hidden w-56 shrink-0 border-r border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[color-mix(in_srgb,var(--background)_90%,transparent)] sm:flex sm:flex-col">
+          <div className="border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-4">
             <MaximeLogo size="nav" href={null} />
-            <div className="mt-3 border-t border-white/5 pt-3">
-              <span className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] font-medium tracking-wide text-zinc-400">
+            <div className="mt-3 border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] pt-3">
+              <span className="inline-flex rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] px-2.5 py-1 text-[10px] font-medium tracking-wide text-[var(--foreground-muted)]">
                 Manager
               </span>
             </div>
@@ -194,18 +194,18 @@ export function ManagerDashboardPreview({
                           data-demo-nav={item.id}
                           className={cn(
                             "flex items-center gap-2 rounded-lg px-2 py-2 text-xs",
-                            active ? styles.active : "text-zinc-400",
+                            active ? styles.active : "text-[var(--foreground-muted)]",
                           )}
                         >
                           <Icon
                             className={cn(
                               "h-3.5 w-3.5 shrink-0",
-                              active ? styles.icon : "text-zinc-500",
+                              active ? styles.icon : "text-[var(--foreground-subtle)]",
                             )}
                           />
                           <span className="min-w-0 flex-1 truncate">{item.label}</span>
                           {item.badge ? (
-                            <span className="rounded-full bg-cyan-400/15 px-1.5 py-0.5 text-[9px] font-semibold text-cyan-200 ring-1 ring-inset ring-cyan-400/30">
+                            <span className="rounded-full bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] px-1.5 py-0.5 text-[9px] font-semibold text-[color-mix(in_srgb,var(--accent)_70%,white)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]">
                               {item.badge}
                             </span>
                           ) : null}
@@ -222,10 +222,10 @@ export function ManagerDashboardPreview({
 
       <div className="min-w-0 flex-1 overflow-hidden">
         {showTopBar ? (
-          <div className="border-b border-white/5 px-4 py-3 sm:px-5">
+          <div className="border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-3 sm:px-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs text-zinc-500">maxime.com/dashboard</p>
-              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-cyan-400/30 to-violet-500/30 ring-1 ring-cyan-400/30" />
+              <p className="text-xs text-[var(--foreground-subtle)]">maxime.com/dashboard</p>
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_30%,transparent)] to-[color-mix(in_srgb,var(--accent-2-strong)_30%,transparent)] ring-1 ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]" />
             </div>
           </div>
         ) : null}
@@ -238,13 +238,13 @@ export function ManagerDashboardPreview({
             <>
               <header
                 className={cn(
-                  "relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-cyan-400/[0.08] via-[var(--surface)] to-violet-500/[0.06]",
+                  "relative overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_8%,transparent)] via-[var(--surface)] to-[color-mix(in_srgb,var(--accent-2-strong)_6%,transparent)]",
                   isHero ? "p-4" : "p-5 sm:p-6",
                 )}
               >
                 <p
                   className={cn(
-                    "font-semibold uppercase tracking-[0.2em] text-cyan-400",
+                    "font-semibold uppercase tracking-[0.2em] text-[var(--accent)]",
                     isHero ? "text-[9px]" : "text-[10px]",
                   )}
                 >
@@ -252,7 +252,7 @@ export function ManagerDashboardPreview({
                 </p>
                 <h1
                   className={cn(
-                    "font-heading mt-2 font-semibold tracking-tight text-white",
+                    "font-heading mt-2 font-semibold tracking-tight text-[var(--foreground)]",
                     isHero ? "text-xl" : "text-2xl sm:text-3xl",
                   )}
                 >
@@ -260,7 +260,7 @@ export function ManagerDashboardPreview({
                 </h1>
                 <p
                   className={cn(
-                    "mt-2 max-w-xl text-zinc-400",
+                    "mt-2 max-w-xl text-[var(--foreground-muted)]",
                     isHero ? "text-xs leading-5" : "text-sm leading-6",
                   )}
                 >
@@ -269,7 +269,7 @@ export function ManagerDashboardPreview({
                 </p>
                 <Sparkles
                   className={cn(
-                    "pointer-events-none absolute -right-3 -top-3 text-cyan-400/10",
+                    "pointer-events-none absolute -right-3 -top-3 text-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
                     isHero ? "h-16 w-16" : "h-24 w-24",
                   )}
                 />
@@ -299,54 +299,54 @@ export function ManagerDashboardPreview({
                   <div className={cn(dashboardStatCardClassName, compactStatCardClassName)}>
                     <div className="flex flex-1 items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs uppercase tracking-wider text-zinc-500">
+                        <p className="text-xs uppercase tracking-wider text-[var(--foreground-subtle)]">
                           Roster
                         </p>
                         <p
                           className={cn(
-                            "font-heading font-semibold text-white",
+                            "font-heading font-semibold text-[var(--foreground)]",
                             isHero ? "mt-1.5 text-xl" : "mt-2 text-2xl",
                           )}
                         >
                           14
                         </p>
-                        <p className="mt-1 text-xs text-zinc-500">3 invites pending</p>
+                        <p className="mt-1 text-xs text-[var(--foreground-subtle)]">3 invites pending</p>
                       </div>
                       <span
                         className={cn(
-                          "flex shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10",
+                          "flex shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)] ring-1 ring-inset ring-[var(--border)]",
                           isHero ? "h-8 w-8" : "h-10 w-10",
                         )}
                       >
-                        <Users className="h-4 w-4 text-cyan-400" />
+                        <Users className="h-4 w-4 text-[var(--accent)]" />
                       </span>
                     </div>
                   </div>
                   <div className={cn(dashboardStatCardClassName, compactStatCardClassName)}>
                     <div className="flex flex-1 items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs uppercase tracking-wider text-zinc-500">
+                        <p className="text-xs uppercase tracking-wider text-[var(--foreground-subtle)]">
                           Watchlist
                         </p>
                         <p
                           className={cn(
-                            "font-heading font-semibold text-white",
+                            "font-heading font-semibold text-[var(--foreground)]",
                             isHero ? "mt-1.5 text-xl" : "mt-2 text-2xl",
                           )}
                         >
                           27
                         </p>
-                        <p className="mt-1 text-xs text-zinc-500">
+                        <p className="mt-1 text-xs text-[var(--foreground-subtle)]">
                           5 high-priority candidates
                         </p>
                       </div>
                       <span
                         className={cn(
-                          "flex shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10",
+                          "flex shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)] ring-1 ring-inset ring-[var(--border)]",
                           isHero ? "h-8 w-8" : "h-10 w-10",
                         )}
                       >
-                        <Bookmark className="h-4 w-4 text-cyan-400" />
+                        <Bookmark className="h-4 w-4 text-[var(--accent)]" />
                       </span>
                     </div>
                   </div>

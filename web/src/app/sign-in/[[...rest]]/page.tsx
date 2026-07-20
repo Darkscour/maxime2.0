@@ -16,7 +16,14 @@ export default async function SignInPage({
   const allowAuthPage = hasAuthPageAllow(params);
 
   return (
-    <AuthPageShell>
+    <AuthPageShell
+      kicker="Sign in"
+      title="Welcome back"
+      description="Sign in to continue to your Maxime workspace."
+      alternateHint="No Maxime account yet?"
+      alternateHref="/sign-up"
+      alternateLabel="Get started"
+    >
       <AuthPageGate intent="sign-in" skipSignedInRedirect={allowAuthPage}>
         <SignIn {...clerkSignInPageProps} />
       </AuthPageGate>

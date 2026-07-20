@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { RosterMember } from "@/lib/team-roster";
 import { RosterHubPanel } from "@/components/dashboard/roster-hub-panel";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,13 @@ export function RosterHubPreview({
   canManage: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
+    <div className="pb-panel p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 ring-1 ring-inset ring-cyan-400/25">
-            <Users className="h-5 w-5 text-cyan-400" />
-          </span>
-          <h2 className="font-heading text-lg font-semibold text-white">Roster hub</h2>
+        <div>
+          <p className="pb-kicker !text-[var(--foreground-muted)]">Roster sheet</p>
+          <h2 className="font-board mt-1 text-2xl font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+            {teamName}
+          </h2>
         </div>
         <Button href="/dashboard/roster" size="sm" variant="outline" className="gap-1.5">
           Manage roster
@@ -40,7 +40,7 @@ export function RosterHubPreview({
       {members.length > 4 && (
         <Link
           href="/dashboard/roster"
-          className="mt-4 inline-block text-sm text-cyan-400 hover:text-cyan-300"
+          className="mt-4 inline-block text-sm font-semibold text-[var(--accent)] hover:text-[var(--accent-strong)]"
         >
           View all {members.length} members →
         </Link>

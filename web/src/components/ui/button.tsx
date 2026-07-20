@@ -6,18 +6,20 @@ type Variant = "primary" | "secondary" | "ghost" | "outline";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-medium rounded-full transition-all " +
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 " +
-  "disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap";
+  "inline-flex items-center justify-center gap-2 font-medium rounded-none transition-all " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--accent)_50%,transparent)] " +
+  "disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap " +
+  "tracking-[-0.01em]";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-cyan-400 text-zinc-950 hover:bg-cyan-300 shadow-[0_0_0_1px_rgba(34,211,238,0.4),0_10px_40px_-10px_rgba(34,211,238,0.6)]",
+    "bg-[var(--foreground)] text-[var(--background)] hover:bg-[var(--accent)] hover:text-[var(--accent-ink)]",
   secondary:
-    "bg-zinc-800 text-zinc-100 hover:bg-zinc-700 border border-zinc-700",
-  ghost: "text-zinc-300 hover:text-white hover:bg-white/5",
+    "bg-[var(--surface-2)] text-[var(--foreground)] hover:bg-[var(--border)] border border-[var(--border)]",
+  ghost:
+    "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--foreground)_5%,transparent)]",
   outline:
-    "border border-zinc-700 text-zinc-200 hover:border-cyan-400/60 hover:text-white hover:bg-cyan-400/5",
+    "border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)] hover:bg-[var(--surface)]",
 };
 
 const sizes: Record<Size, string> = {

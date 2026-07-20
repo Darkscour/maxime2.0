@@ -14,7 +14,18 @@ import { DashboardAnalyticsCard } from "@/components/dashboard/dashboard-analyti
 import { getPlayerAnalytics } from "@/lib/player-analytics";
 import { getManagerOrgAnalytics } from "@/lib/manager-analytics";
 import { AuthNoticeBanner } from "@/components/auth/auth-notice-banner";
-import { Bookmark, Building2, Handshake, Mail, Search, Settings, Swords, UserPlus, UserRound, Users } from "lucide-react";
+import {
+  Bookmark,
+  Building2,
+  Handshake,
+  Mail,
+  Search,
+  Settings,
+  Swords,
+  UserPlus,
+  UserRound,
+  Users,
+} from "lucide-react";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { LeaveTeamCard } from "@/components/dashboard/leave-team-card";
 import { RosterHubPreview } from "@/components/dashboard/roster-hub-preview";
@@ -137,128 +148,185 @@ export default async function DashboardPage({
       : "Individual account";
   const showTeamProfileSaved = params.saved === "team-profile";
 
+  const deskKicker = isManager
+    ? isGrassroots
+      ? "Grassroots program"
+      : "Collegiate program"
+    : isGrassroots
+      ? "Grassroots player"
+      : "Collegiate player";
+
+  const welcomeLine = isFirstDashboardVisit
+    ? `Welcome, ${welcomeName}`
+    : `Welcome back, ${welcomeName}`;
+
+  const deskCopy = isManager
+    ? isGrassroots
+      ? "Recruit, run Duels, and keep the roster moving from this board."
+      : "Sponsor outreach, campus scouting, and org profile — your week starts here."
+    : isGrassroots
+      ? "Your player card is live. Browse grassroots teams and join a roster when you're ready."
+      : "Your scout card is live. Browse teams at your school and keep your profile current.";
+
+  const pendingJoinRequests = managerAnalytics?.pendingJoinRequests ?? 0;
+
+  let featureIndex = 0;
+  const nextIndex = () => {
+    featureIndex += 1;
+    return featureIndex;
+  };
+
   return (
-    <div className="mx-auto max-w-6xl space-y-10">
+    <div className="mx-auto max-w-6xl space-y-7">
       <DashboardWelcomeMarker isFirstVisit={isFirstDashboardVisit} />
       <Suspense fallback={null}>
         <AuthNoticeBanner />
       </Suspense>
       {showTeamProfileSaved && (
-        <div className="flex items-start gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.08] px-4 py-3 text-sm text-emerald-200">
+        <div className="flex items-start gap-2 border-2 border-[color-mix(in_srgb,var(--success)_45%,var(--border))] bg-[color-mix(in_srgb,var(--success)_8%,transparent)] px-4 py-3 text-sm text-[var(--success)]">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
           Team profile saved. Your updated picture and details are now live.
         </div>
       )}
       {showDevPreview && <DeveloperMarketingPreview />}
 
-      <header className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-cyan-400/[0.08] via-[var(--surface)] to-violet-500/[0.06] p-8 sm:p-10">
-        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-              Your workspace
+      {/* Program masthead */}
+      <header className="pb-masthead">
+        <div className="pb-masthead-rule" aria-hidden />
+        <div className="min-w-0 pt-2">
+          <p className="pb-kicker">{deskKicker}</p>
+          <h1 className="font-board mt-3 text-[clamp(2.6rem,7vw,4.25rem)] font-semibold leading-[0.9] tracking-[0.01em] uppercase text-[var(--foreground)]">
+            {welcomeLine}
+          </h1>
+          <p className="mt-4 max-w-xl text-[0.95rem] leading-7 text-[var(--foreground-muted)]">
+            {deskCopy}
+          </p>
+          {ctx.email && (
+            <p className="mt-3 font-mono text-[12px] tracking-[0.02em] text-[var(--foreground-subtle)]">
+              {ctx.email}
             </p>
-            <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              {isFirstDashboardVisit
-                ? `Welcome, ${welcomeName}`
-                : `Welcome back, ${welcomeName}`}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-              {isManager
-                ? isGrassroots
-                  ? "Run grassroots recruiting, challenge teams in Duels, and manage your roster."
-                  : "Manage sponsorship outreach, scout campus players, and keep your org profile in one place."
-                : isGrassroots
-                  ? "Your grassroots player profile is live. Browse grassroots teams and join a roster when you're ready."
-                  : "Your collegiate player profile is live. Browse teams at your school and keep your scout card up to date."}
-            </p>
-            {ctx.email && (
-              <p className="mt-2 text-sm text-zinc-500">{ctx.email}</p>
-            )}
-            {isManager && ctx.team && (
-              <WorkspaceInviteCode inviteCode={ctx.team.inviteCode} />
-            )}
-          </div>
-          {isManager && ctx.team && (
-            <div className="relative inline-flex rounded-2xl border border-white/10 bg-black/20 p-2 backdrop-blur-sm">
-              {ctx.team.profileImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={ctx.team.profileImageUrl}
-                  alt={`${ctx.team.name} profile`}
-                  className="h-14 w-14 rounded-xl border border-white/10 object-cover"
-                />
-              ) : (
-                <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                  <Building2 className="h-6 w-6 text-zinc-400" />
-                </span>
-              )}
-              <Link
-                href="/dashboard/settings/team"
-                className="absolute -bottom-1 -right-1 inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-zinc-900 text-zinc-300 transition-colors hover:text-white"
-                aria-label="Edit team profile picture"
-                title="Edit team profile picture"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Link>
-            </div>
           )}
         </div>
+
+        {isManager && ctx.team && (
+          <div className="pb-id-plate">
+            <p className="pb-kicker !text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]">
+              Org plate
+            </p>
+            <div className="relative flex items-start gap-3">
+              <div className="relative shrink-0 border border-[color-mix(in_srgb,#f6f7f9_35%,transparent)] bg-[var(--pb-board-muted)] p-1">
+                {ctx.team.profileImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={ctx.team.profileImageUrl}
+                    alt={`${ctx.team.name} profile`}
+                    className="h-14 w-14 object-cover"
+                  />
+                ) : (
+                  <span className="flex h-14 w-14 items-center justify-center">
+                    <Building2 className="h-6 w-6 text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]" />
+                  </span>
+                )}
+                <Link
+                  href="/dashboard/settings/team"
+                  className="absolute -bottom-2 -right-2 inline-flex h-7 w-7 items-center justify-center border border-[#f6f7f9] bg-[var(--accent)] text-[#f6f7f9] transition-colors hover:bg-[var(--accent-strong)]"
+                  aria-label="Edit team profile picture"
+                  title="Edit team profile picture"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="min-w-0">
+                <p className="font-board text-xl font-semibold uppercase leading-tight tracking-[0.02em] text-[#f6f7f9]">
+                  {ctx.team.name}
+                </p>
+                {ctx.team.school ? (
+                  <p className="mt-1 text-xs leading-5 text-[color-mix(in_srgb,#f6f7f9_62%,transparent)]">
+                    {ctx.team.school}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <WorkspaceInviteCode inviteCode={ctx.team.inviteCode} tone="dark" className="!mt-1" />
+          </div>
+        )}
       </header>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <DashboardStatCard
-          label="Account"
-          value={accountValue}
-          hint={accountHint}
-          icon={isManager ? Building2 : UserRound}
-        />
-        <DashboardStatCard
-          label="Team"
-          value={ctx.team?.name ?? "No team yet"}
-          hint={
-            ctx.team
-              ? isManager
-                ? managerTeamStatHint(ctx.team)
-                : playerTeamStatHint(ctx.team)
-              : "Join with an invite code anytime"
-          }
-          icon={Building2}
-        />
-        {isManager && ctx.team ? (
-          <ManagerTeamSnapshotCard
-            memberCount={ctx.team.memberCount}
-            rosterSize={ctx.team.rosterSize}
-            pendingJoinRequests={managerAnalytics?.pendingJoinRequests ?? 0}
-            pendingInvites={managerAnalytics?.pendingInvites ?? 0}
-          />
-        ) : (
+      {isManager && pendingJoinRequests > 0 && (
+        <div className="pb-ticket">
+          <div>
+            <p className="pb-kicker">Needs attention</p>
+            <p className="font-board mt-1 text-xl font-semibold uppercase tracking-[0.02em] text-[var(--foreground)]">
+              {pendingJoinRequests === 1
+                ? "1 join request waiting"
+                : `${pendingJoinRequests} join requests waiting`}
+            </p>
+          </div>
+          <Button href="/dashboard/join-requests" size="sm">
+            Review requests
+          </Button>
+        </div>
+      )}
+
+      {/* Scoreboard — program status */}
+      <section aria-label="Program status">
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <p className="pb-kicker">Scoreboard</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+            Live
+          </p>
+        </div>
+        <div className="pb-scoreboard">
           <DashboardStatCard
-            label={hasProfile ? "Your game" : "Profile"}
-            value={hasProfile ? ctx.playerProfile!.game : "—"}
-            hint={
-              hasProfile
-                ? `${ctx.playerProfile!.role} · ${ctx.playerProfile!.rank}`
-                : "Set up your player profile"
-            }
-            icon={UserRound}
+            label="Account"
+            value={accountValue}
+            hint={accountHint}
           />
-        )}
-        <DashboardStatCard
-          label={isManager ? "Roster" : hasProfile ? "Status" : "Region"}
-          value={
-            isManager && ctx.team
-              ? rosterStatValue(ctx.team)
-              : isManager
-                ? "0"
-                : ctx.playerProfile?.status ?? ctx.team?.region ?? "Active"
-          }
-          hint={
-            isManager
-              ? rosterStatHint(managerAnalytics?.pendingInvites ?? 0)
-              : ctx.team?.region ?? "Availability"
-          }
-          icon={isManager ? Users : hasProfile ? Clock : Users}
-        />
+          <DashboardStatCard
+            label="Team"
+            value={ctx.team?.name ?? "No team yet"}
+            hint={
+              ctx.team
+                ? isManager
+                  ? managerTeamStatHint(ctx.team)
+                  : playerTeamStatHint(ctx.team)
+                : "Join with an invite code anytime"
+            }
+          />
+          {isManager && ctx.team ? (
+            <ManagerTeamSnapshotCard
+              memberCount={ctx.team.memberCount}
+              rosterSize={ctx.team.rosterSize}
+              pendingJoinRequests={pendingJoinRequests}
+              pendingInvites={managerAnalytics?.pendingInvites ?? 0}
+            />
+          ) : (
+            <DashboardStatCard
+              label={hasProfile ? "Your game" : "Profile"}
+              value={hasProfile ? ctx.playerProfile!.game : "—"}
+              hint={
+                hasProfile
+                  ? `${ctx.playerProfile!.role} · ${ctx.playerProfile!.rank}`
+                  : "Set up your player profile"
+              }
+            />
+          )}
+          <DashboardStatCard
+            label={isManager ? "Roster" : hasProfile ? "Status" : "Region"}
+            value={
+              isManager && ctx.team
+                ? rosterStatValue(ctx.team)
+                : isManager
+                  ? "0"
+                  : ctx.playerProfile?.status ?? ctx.team?.region ?? "Active"
+            }
+            hint={
+              isManager
+                ? rosterStatHint(managerAnalytics?.pendingInvites ?? 0)
+                : ctx.team?.region ?? "Availability"
+            }
+          />
+        </div>
       </section>
 
       {!isManager && ctx.playerProfile && (
@@ -299,32 +367,24 @@ export default async function DashboardPage({
         )}
 
         {ctx.playerProfile && (
-          <div
-            className={
-              ctx.team
-                ? "rounded-2xl border border-white/5 bg-[var(--surface)] p-6"
-                : "rounded-2xl border border-white/5 bg-[var(--surface)] p-6 lg:col-span-2"
-            }
-          >
-            <p className="text-xs uppercase tracking-wider text-zinc-500">
-              Player profile
-            </p>
-            <h2 className="font-heading mt-2 text-xl font-semibold text-white">
+          <div className="pb-panel p-6">
+            <p className="pb-kicker !text-[var(--foreground-muted)]">Player profile</p>
+            <h2 className="font-board mt-3 text-3xl font-semibold uppercase tracking-[0.02em] text-[var(--foreground)]">
               {ctx.playerProfile.handle}
             </h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
               {ctx.playerProfile.game} · {ctx.playerProfile.role} ·{" "}
               {ctx.playerProfile.rank}
             </p>
             {ctx.playerProfile.hoursPerWeek != null && (
-              <p className="mt-3 text-sm text-zinc-400">
-                <Clock className="mr-1.5 inline h-3.5 w-3.5 text-cyan-400" />
+              <p className="mt-3 text-sm text-[var(--foreground-muted)]">
+                <Clock className="mr-1.5 inline h-3.5 w-3.5 text-[var(--accent)]" />
                 {ctx.playerProfile.hoursPerWeek} hrs/week on {ctx.playerProfile.game}{" "}
-                <span className="text-zinc-600">(self-reported)</span>
+                <span className="text-[var(--foreground-muted)]">(self-reported)</span>
               </p>
             )}
             {ctx.playerProfile.bio && (
-              <p className="mt-4 text-sm leading-6 text-zinc-400">
+              <p className="mt-4 text-sm leading-6 text-[var(--foreground-muted)]">
                 {ctx.playerProfile.bio}
               </p>
             )}
@@ -351,8 +411,8 @@ export default async function DashboardPage({
         )}
 
         {!ctx.team && !ctx.playerProfile && (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-6 lg:col-span-2">
-            <p className="text-sm text-zinc-400">
+          <div className="border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-6">
+            <p className="text-sm text-[var(--foreground-muted)]">
               Finish setting up your profile to see more details here.
             </p>
             <Button href="/onboarding" className="mt-4" size="sm">
@@ -363,19 +423,22 @@ export default async function DashboardPage({
       </section>
 
       <section>
-        <div className="mb-5">
-          <h2 className="font-heading text-xl font-semibold text-white">
-            Platform features
-          </h2>
-          <p className="mt-1 text-sm text-zinc-500">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b-2 border-[var(--foreground)] pb-3">
+          <div>
+            <p className="pb-kicker">Work list</p>
+            <h2 className="font-board mt-1 text-2xl font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+              On the board
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm text-[var(--foreground-muted)]">
             {isManager
               ? isGrassroots
-                ? "Jump into grassroots recruiting and duels."
-                : "Jump into the tools you set up during onboarding."
-              : "Find a team and manage your player profile."}
+                ? "Recruiting and duels for the week ahead."
+                : "Same tools from onboarding — lined up as today's work."
+              : "Find a team and keep your scout card honest."}
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="pb-work-list">
           {isManager ? (
             <>
               {!isGrassroots && (
@@ -385,6 +448,7 @@ export default async function DashboardPage({
                   description="Browse our curated selection of sponsors and jump to application pages."
                   icon={Handshake}
                   tone="cyan"
+                  index={nextIndex()}
                 />
               )}
               <FeatureTile
@@ -397,6 +461,7 @@ export default async function DashboardPage({
                 }
                 icon={Search}
                 tone="violet"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/roster"
@@ -404,6 +469,7 @@ export default async function DashboardPage({
                 description="View and manage everyone on your roster — accepted invites appear automatically."
                 icon={Users}
                 tone="cyan"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/join-requests"
@@ -411,6 +477,7 @@ export default async function DashboardPage({
                 description="See players who requested to join your org and send them a recruitment invite."
                 icon={UserPlus}
                 tone="cyan"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/watchlist"
@@ -418,6 +485,7 @@ export default async function DashboardPage({
                 description="Compare shortlisted players and send recruitment invites when you're ready."
                 icon={Bookmark}
                 tone="cyan"
+                index={nextIndex()}
               />
               {isGrassroots && (
                 <FeatureTile
@@ -426,6 +494,7 @@ export default async function DashboardPage({
                   description="Challenge other grassroots teams and track pending, accepted, and completed duels."
                   icon={Swords}
                   tone="violet"
+                  index={nextIndex()}
                 />
               )}
               <FeatureTile
@@ -434,6 +503,7 @@ export default async function DashboardPage({
                 description="Refine your org details, titles, and sponsorship signals."
                 icon={Settings}
                 tone="violet"
+                index={nextIndex()}
               />
             </>
           ) : (
@@ -448,6 +518,7 @@ export default async function DashboardPage({
                 }
                 icon={Building2}
                 tone="cyan"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/invites"
@@ -459,6 +530,7 @@ export default async function DashboardPage({
                 }
                 icon={Mail}
                 tone="violet"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/settings/profile"
@@ -466,6 +538,7 @@ export default async function DashboardPage({
                 description="Update your handle, competitive info, play time, and scout card."
                 icon={UserRound}
                 tone="violet"
+                index={nextIndex()}
               />
               <FeatureTile
                 href="/dashboard/settings/account"
@@ -473,6 +546,7 @@ export default async function DashboardPage({
                 description="Email, display name, sign-in, and account preferences."
                 icon={Settings}
                 tone="cyan"
+                index={nextIndex()}
               />
             </>
           )}

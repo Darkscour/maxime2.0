@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  BarChart3,
   Bookmark,
   Eye,
   Mail,
@@ -35,17 +34,14 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
     data.pendingJoinRequests + data.pendingInvites + data.watchlistCount;
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
+    <div className="pb-panel p-6">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 ring-1 ring-inset ring-cyan-400/25">
-          <BarChart3 className="h-5 w-5 text-cyan-300" />
-        </span>
         <div>
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Analytics</p>
-          <h2 className="font-heading mt-1 text-lg font-semibold text-white">
+          <p className="pb-kicker !text-[var(--foreground-muted)]">Analytics</p>
+          <h2 className="font-board mt-1 text-2xl font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
             Recruitment & scouting
           </h2>
-          <p className="mt-0.5 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
             Tracking since {teamJoinedLabel(data.teamJoinedAt)}
           </p>
         </div>
@@ -107,8 +103,8 @@ export function ManagerAnalyticsCard({ data }: { data: ManagerOrgAnalytics }) {
           subtitle="Line tracks scout profile opens — summary cards cover key actions"
           series={data.scoutViews}
           chartId="scout"
-          stroke="#22d3ee"
-          fill="#22d3ee"
+          stroke="#b84a1b"
+          fill="#b84a1b"
           valueLabel={(n) =>
             n === 1 ? "1 profile view" : `${n} profile views`
           }
@@ -154,15 +150,14 @@ function AnalyticsChartPanel({
   }));
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent px-4 pb-4 pt-4">
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-cyan-400/5 blur-2xl" />
+    <div className="relative overflow-hidden rounded-none border border-[var(--border)] bg-[var(--background)] px-4 pb-4 pt-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--foreground-muted)]">
             {title}
           </p>
-          <p className="mt-0.5 text-xs font-medium text-zinc-400">{chartMetric}</p>
-          <p className="mt-0.5 text-xs text-zinc-600">{subtitle}</p>
+          <p className="mt-0.5 text-xs font-medium text-[var(--foreground-muted)]">{chartMetric}</p>
+          <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">{subtitle}</p>
         </div>
         <RangeToggle mode={mode} onChange={setMode} />
       </div>
@@ -195,7 +190,7 @@ function RosterMetrics({
 
   return (
     <div>
-      <p className="mb-2 text-[10px] uppercase tracking-wider text-zinc-600">
+      <p className="mb-2 text-[10px] uppercase tracking-wider text-[var(--foreground-muted)]">
         Summary · {periodLabel}
       </p>
       <dl className="grid grid-cols-2 gap-3">
@@ -223,7 +218,7 @@ function ScoutMetrics({
 
   return (
     <div>
-      <p className="mb-2 text-[10px] uppercase tracking-wider text-zinc-600">
+      <p className="mb-2 text-[10px] uppercase tracking-wider text-[var(--foreground-muted)]">
         Summary · {periodLabel}
       </p>
       <dl className="grid grid-cols-2 gap-3">
@@ -261,20 +256,20 @@ function Metric({
 }) {
   const toneClass =
     tone === "cyan"
-      ? "text-cyan-400"
+      ? "text-[var(--accent)]"
       : tone === "violet"
-        ? "text-violet-400"
-        : "text-emerald-400";
+        ? "text-[var(--accent-2)]"
+        : "text-[var(--success)]";
 
   return (
-    <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-black/30 px-3.5 py-3 shadow-[0_10px_30px_-20px_rgba(34,211,238,0.55)]">
-      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
+    <div className="rounded-none border border-[var(--border)] bg-[var(--background)] px-3.5 py-3">
+      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-[var(--foreground-muted)]">
         <Icon className={`h-3 w-3 shrink-0 ${toneClass}`} />
         <span className="truncate">{label}</span>
       </dt>
-      <dd className="font-heading mt-1.5 text-base font-semibold text-zinc-100">{value}</dd>
+      <dd className="font-heading mt-1.5 text-base font-semibold text-[var(--foreground)]">{value}</dd>
       {hint && (
-        <p className="mt-0.5 text-[9px] text-zinc-500">{hint}</p>
+        <p className="mt-0.5 text-[9px] text-[var(--foreground-muted)]">{hint}</p>
       )}
     </div>
   );
@@ -289,7 +284,7 @@ function RangeToggle({
 }) {
   return (
     <div
-      className="flex rounded-lg border border-white/10 bg-black/30 p-0.5"
+      className="flex rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5"
       role="tablist"
       aria-label="Chart time range"
     >
@@ -301,8 +296,8 @@ function RangeToggle({
         className={cn(
           "rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors",
           mode === "weekly"
-            ? "bg-white/10 text-white"
-            : "text-zinc-500 hover:text-zinc-300",
+            ? "bg-[var(--surface-2)] text-[var(--foreground)]"
+            : "text-[var(--foreground-muted)] hover:text-[var(--foreground)]",
         )}
       >
         Weekly
@@ -315,8 +310,8 @@ function RangeToggle({
         className={cn(
           "rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors",
           mode === "allTime"
-            ? "bg-white/10 text-white"
-            : "text-zinc-500 hover:text-zinc-300",
+            ? "bg-[var(--surface-2)] text-[var(--foreground)]"
+            : "text-[var(--foreground-muted)] hover:text-[var(--foreground)]",
         )}
       >
         All time
@@ -338,15 +333,15 @@ function PipelineChip({
 }) {
   const toneClass =
     tone === "cyan"
-      ? "border-cyan-400/25 bg-cyan-400/10 text-cyan-200 hover:border-cyan-400/40"
+      ? "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)] hover:border-[var(--foreground)]"
       : tone === "violet"
-        ? "border-violet-400/25 bg-violet-400/10 text-violet-200 hover:border-violet-400/40"
-        : "border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/20";
+        ? "border-[var(--accent-2)] bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] text-[var(--accent-2)] hover:border-[var(--foreground)]"
+        : "border-[var(--border)] bg-[var(--background)] text-[var(--foreground-muted)] hover:border-[var(--foreground)]";
 
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${toneClass}`}
+      className={`inline-flex items-center gap-1.5 rounded-none border px-3 py-1 text-xs font-medium transition-colors ${toneClass}`}
     >
       <Icon className="h-3.5 w-3.5 shrink-0 opacity-80" />
       {label}

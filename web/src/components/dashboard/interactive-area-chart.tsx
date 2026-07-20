@@ -119,7 +119,7 @@ export function InteractiveAreaChart({
 
   if (points.length === 0) {
     return (
-      <p className="py-10 text-center text-sm text-zinc-500">
+      <p className="py-10 text-center text-sm text-[var(--foreground-muted)]">
         {emptyHint ?? "No data yet."}
       </p>
     );
@@ -132,14 +132,14 @@ export function InteractiveAreaChart({
     <div className="relative">
       <div className="mb-2 flex min-h-10 items-center justify-center px-1">
         {active ? (
-          <div className="flex flex-col items-center rounded-lg border border-white/10 bg-[#161a24] px-4 py-2 text-center shadow-xl">
-            <p className="text-[10px] leading-tight text-zinc-500">{active.date}</p>
-            <p className="mt-0.5 text-sm font-semibold text-white">
+          <div className="flex flex-col items-center rounded-lg border border-[var(--border)] bg-[#161a24] px-4 py-2 text-center shadow-xl">
+            <p className="text-[10px] leading-tight text-[var(--foreground-muted)]">{active.date}</p>
+            <p className="mt-0.5 text-sm font-semibold text-[var(--foreground)]">
               {valueLabel(active.value)}
             </p>
           </div>
         ) : (
-          <p className="text-[10px] text-zinc-600">Hover a point for details</p>
+          <p className="text-[10px] text-[var(--foreground-muted)]">Hover a point for details</p>
         )}
       </div>
 
@@ -235,7 +235,7 @@ export function InteractiveAreaChart({
             <span
               key={`${gradientId}-${point.label}-${i}`}
               className={`flex-1 truncate text-center text-[9px] ${
-                hoverIndex === i ? "text-zinc-400" : "text-zinc-700"
+                hoverIndex === i ? "text-[var(--foreground-muted)]" : "text-[var(--foreground-subtle)]"
               }`}
             >
               {point.label}
@@ -249,7 +249,7 @@ export function InteractiveAreaChart({
       {emptyHint && (
         <p
           className={`mt-2 min-h-8 text-center text-[11px] leading-4 ${
-            hasActivity ? "invisible" : "text-zinc-600"
+            hasActivity ? "invisible" : "text-[var(--foreground-muted)]"
           }`}
           aria-hidden={hasActivity}
         >

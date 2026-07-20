@@ -40,15 +40,15 @@ export function LeaveTeamCard({
   }
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/5">
-          <LogOut className="h-5 w-5 text-zinc-400" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[var(--background)] ring-1 ring-inset ring-white/5">
+          <LogOut className="h-5 w-5 text-[var(--foreground-muted)]" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-lg font-semibold text-white">Leave team</h2>
-          <p className="mt-1 text-sm text-zinc-400">
-            You&apos;re on <span className="text-zinc-200">{teamName}</span>. Leaving
+          <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Leave team</h2>
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+            You&apos;re on <span className="text-[var(--foreground)]">{teamName}</span>. Leaving
             removes you from the roster but keeps your player profile.
           </p>
 

@@ -39,10 +39,10 @@ export default async function TeamSettingsPage() {
   if (!canEditTeam(ctx.membershipRole)) {
     return (
       <div className="space-y-6">
-        <header className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.06] via-[var(--surface)] to-cyan-400/[0.04] p-6 sm:p-8">
+        <header className="relative overflow-hidden rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6 sm:p-8">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Dashboard
@@ -50,13 +50,13 @@ export default async function TeamSettingsPage() {
           <DashboardSectionEyebrow accent="cyan" className="mt-5">
             Team
           </DashboardSectionEyebrow>
-          <h1 className="font-heading mt-2 text-2xl font-semibold text-white">
+          <h1 className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)]">
             Team settings
           </h1>
         </header>
-        <div className="rounded-2xl border border-white/[0.06] bg-[var(--surface)]/90 p-8 text-center">
-          <Building2 className="mx-auto h-8 w-8 text-zinc-600" />
-          <p className="mt-4 text-sm leading-6 text-zinc-400">
+        <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-8 text-center">
+          <Building2 className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
+          <p className="mt-4 text-sm leading-6 text-[var(--foreground-muted)]">
             Only captains and managers can edit org info. Ask your captain to update
             team details.
           </p>

@@ -87,30 +87,30 @@ export function PendingInvitesCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-2xl border border-violet-400/20 bg-violet-400/[0.06]",
+        "flex h-full flex-col rounded-none border border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent-2)_8%,transparent)]",
         compact ? "p-4" : "p-6",
       )}
     >
       <div className="flex items-start gap-3">
         <span
           className={cn(
-            "flex shrink-0 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-inset ring-violet-400/25",
+            "flex shrink-0 items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_30%,transparent)]",
             compact ? "h-9 w-9" : "h-10 w-10",
           )}
         >
-          <Mail className={compact ? "h-4 w-4 text-violet-300" : "h-5 w-5 text-violet-300"} />
+          <Mail className={compact ? "h-4 w-4 text-[var(--accent-2)]" : "h-5 w-5 text-[var(--accent-2)]"} />
         </span>
         <div className="min-w-0 flex-1">
           <h2
             className={cn(
-              "font-heading font-semibold text-white",
+              "font-heading font-semibold text-[var(--foreground)]",
               compact ? "text-base" : "text-lg",
             )}
           >
             Team invites
           </h2>
           {!compact && (
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
               Accept or decline recruitment invites directly from your dashboard.
             </p>
           )}
@@ -118,7 +118,7 @@ export function PendingInvitesCard({
           {onTeam && currentTeamName && (
             <div
               className={cn(
-                "rounded-xl border border-amber-400/20 bg-amber-400/5",
+                "rounded-none border border-amber-400/20 bg-amber-400/5",
                 compact ? "mt-3 px-3 py-2" : "mt-4 px-4 py-3",
               )}
             >
@@ -154,11 +154,11 @@ export function PendingInvitesCard({
             {invites.map((invite) => (
               <li
                 key={invite.id}
-                className="rounded-xl border border-white/5 bg-black/20 px-3 py-2.5"
+                className="rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2.5"
               >
-                <p className="text-sm font-medium text-white">{invite.teamName}</p>
+                <p className="text-sm font-medium text-[var(--foreground)]">{invite.teamName}</p>
                 {invite.message && !compact && (
-                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-400">
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--foreground-muted)]">
                     &ldquo;{invite.message}&rdquo;
                   </p>
                 )}

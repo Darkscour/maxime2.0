@@ -78,19 +78,19 @@ export function TeamInvitesWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Team invites</p>
-          <p className="font-heading mt-2 text-2xl font-semibold text-white">
+          <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Team invites</p>
+          <p className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)]">
             {invites.length}
-            <span className="ml-1 text-sm font-normal text-zinc-500">pending</span>
+            <span className="ml-1 text-sm font-normal text-[var(--foreground-muted)]">pending</span>
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-[var(--foreground-muted)]">
             {invites.length > 0 ? (
               <>
                 Accept or decline below ·{" "}
-                <Link href="/dashboard/invites" className="text-cyan-400 hover:text-cyan-300">
+                <Link href="/dashboard/invites" className="text-[var(--accent)] hover:text-[var(--accent)]">
                   View all
                 </Link>
               </>
@@ -99,8 +99,8 @@ export function TeamInvitesWidget({
             )}
           </p>
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-          <Mail className="h-4 w-4 text-cyan-400" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[var(--surface-2)] ring-1 ring-inset ring-[var(--border)]">
+          <Mail className="h-4 w-4 text-[var(--accent)]" />
         </span>
       </div>
 
@@ -128,9 +128,9 @@ export function TeamInvitesWidget({
           {invites.slice(0, 2).map((invite) => (
             <li
               key={invite.id}
-              className="rounded-lg border border-white/5 bg-black/20 px-2.5 py-2"
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-2.5 py-2"
             >
-              <p className="truncate text-sm font-medium text-white">{invite.teamName}</p>
+              <p className="truncate text-sm font-medium text-[var(--foreground)]">{invite.teamName}</p>
               <div className="mt-1.5 flex gap-1">
                 <Button
                   type="button"

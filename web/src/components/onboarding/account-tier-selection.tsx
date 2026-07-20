@@ -49,14 +49,12 @@ export function AccountTierSelection({
           icon={Globe2}
           tier="grassroots"
           role={role}
-          tone="cyan"
         />
         <TierCard
           href={collegiateHref}
           icon={GraduationCap}
           tier="collegiate"
           role={role}
-          tone="violet"
         />
       </div>
     </div>
@@ -68,21 +66,14 @@ function TierCard({
   icon: Icon,
   tier,
   role,
-  tone,
 }: {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   tier: AccountTier;
   role: "team_manager" | "player";
-  tone: "cyan" | "violet";
 }) {
   const router = useRouter();
   const { title, description } = getTierDescription(tier, role);
-  const ring =
-    tone === "cyan"
-      ? "hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]"
-      : "hover:border-violet-400/30 hover:bg-violet-400/[0.04]";
-  const iconColor = tone === "cyan" ? "text-cyan-400" : "text-violet-400";
 
   async function handleClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -98,14 +89,18 @@ function TierCard({
     <Link
       href={href}
       onClick={handleClick}
-      className={`group flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-6 transition-colors ${ring}`}
+      className="group flex flex-col border border-[var(--foreground)] bg-[var(--surface)] p-6 transition-colors hover:bg-[var(--background)]"
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-        <Icon className={`h-5 w-5 ${iconColor}`} />
+      <span className="oc-mark">
+        <Icon className="h-5 w-5" />
       </span>
-      <h2 className="font-heading mt-4 text-lg font-semibold text-white">{title}</h2>
-      <p className="mt-2 flex-1 text-sm leading-6 text-zinc-400">{description}</p>
-      <span className="mt-4 text-sm font-medium text-zinc-300 group-hover:text-white">
+      <h2 className="font-heading mt-4 text-lg font-medium tracking-tight text-[var(--foreground)]">
+        {title}
+      </h2>
+      <p className="mt-2 flex-1 text-sm leading-6 text-[var(--foreground-muted)]">
+        {description}
+      </p>
+      <span className="mt-4 text-sm font-medium text-[var(--foreground)] group-hover:text-[var(--accent)]">
         Continue →
       </span>
     </Link>

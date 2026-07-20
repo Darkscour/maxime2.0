@@ -28,7 +28,7 @@ export default async function RosterHubPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -37,10 +37,10 @@ export default async function RosterHubPage() {
           Team
         </DashboardSectionEyebrow>
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <h1 className="font-heading text-3xl font-semibold text-white">
+          <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
             {ctx.team.name}
           </h1>
-          <span className="text-sm text-zinc-500">
+          <span className="text-sm text-[var(--foreground-muted)]">
             {members.length} on team
           </span>
         </div>

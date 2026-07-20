@@ -50,7 +50,7 @@ export function TeamJoinRequestButton({
 
   if (disabled) {
     return (
-      <p className={embedded ? "text-xs text-zinc-500" : "mt-4 text-xs text-zinc-500"}>
+      <p className={embedded ? "text-xs text-[var(--foreground-muted)]" : "mt-4 text-xs text-[var(--foreground-muted)]"}>
         {disabledReason ?? "Unavailable"}
       </p>
     );
@@ -70,7 +70,7 @@ export function TeamJoinRequestButton({
       </Button>
       {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
       {pending && !error && !embedded && (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-[var(--foreground-muted)]">
           {teamName} will be notified. You can still accept a direct invite if they send one.
         </p>
       )}

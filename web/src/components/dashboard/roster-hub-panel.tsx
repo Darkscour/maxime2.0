@@ -63,8 +63,8 @@ export function RosterHubPanel({
 
   if (members.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-white/10 py-12 text-center">
-        <p className="text-sm text-zinc-500">No one on {teamName}&apos;s roster yet.</p>
+      <div className="rounded-none border border-dashed border-[var(--border)] py-12 text-center">
+        <p className="text-sm text-[var(--foreground-muted)]">No one on {teamName}&apos;s roster yet.</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export function RosterHubPanel({
       {staff.length > 0 && (
         <section className="space-y-2">
           {!compact && (
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
               Leadership
             </p>
           )}
@@ -99,7 +99,7 @@ export function RosterHubPanel({
       {players.length > 0 && (
         <section className="space-y-2">
           {!compact && (
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
               Players
             </p>
           )}
@@ -158,8 +158,8 @@ function MemberCard({
   return (
     <article
       className={cn(
-        "group flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors",
-        !compact && "hover:border-cyan-400/15",
+        "group flex flex-col rounded-none border border-[var(--foreground)] bg-[var(--surface)] transition-colors",
+        !compact && "hover:border-[var(--border)]",
       )}
     >
       {scoutHref ? (
@@ -174,14 +174,14 @@ function MemberCard({
       )}
 
       {canManage && member.role === "player" && onRemove && (
-        <div className="mt-auto border-t border-white/5 px-5 py-3">
+        <div className="mt-auto border-t border-[var(--border)] px-5 py-3">
           <Button
             type="button"
             size="sm"
             variant="ghost"
             disabled={loading}
             onClick={onRemove}
-            className="gap-1.5 text-zinc-400 hover:text-red-300"
+            className="gap-1.5 text-[var(--foreground-muted)] hover:text-red-300"
           >
             <Trash2 className="h-3.5 w-3.5" />
             {loading ? "Removing…" : "Remove from roster"}

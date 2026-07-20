@@ -1,19 +1,23 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "cyan" | "violet" | "zinc" | "green" | "amber";
+/** Legacy tone names kept for call-site compatibility; mapped to Overcast ink/copper. */
+type Tone = "cyan" | "violet" | "zinc" | "green" | "amber" | "copper" | "ink";
 
 const tones: Record<Tone, string> = {
-  cyan: "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400/30",
+  cyan: "bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
   violet:
-    "bg-violet-400/10 text-violet-300 ring-1 ring-inset ring-violet-400/30",
-  zinc: "bg-zinc-400/10 text-zinc-300 ring-1 ring-inset ring-zinc-400/20",
-  green: "bg-emerald-400/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/30",
-  amber: "bg-amber-400/10 text-amber-300 ring-1 ring-inset ring-amber-400/30",
+    "bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] text-[var(--accent-2)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_30%,transparent)]",
+  copper:
+    "bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
+  ink: "bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-[var(--foreground)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--foreground)_18%,transparent)]",
+  zinc: "bg-[color-mix(in_srgb,var(--foreground-muted)_10%,transparent)] text-[var(--foreground-muted)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--foreground-muted)_20%,transparent)]",
+  green: "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--success)_28%,transparent)]",
+  amber: "bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] text-[var(--warning)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--warning)_28%,transparent)]",
 };
 
 export function Badge({
   children,
-  tone = "cyan",
+  tone = "copper",
   className,
 }: {
   children: React.ReactNode;
@@ -23,7 +27,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-none px-2.5 py-0.5 text-xs font-medium",
         tones[tone],
         className,
       )}

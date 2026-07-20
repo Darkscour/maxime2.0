@@ -41,7 +41,7 @@ export default async function DashboardTeamsPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -49,10 +49,10 @@ export default async function DashboardTeamsPage() {
         <DashboardSectionEyebrow accent="cyan" className="mt-5">
           Explore
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
           Browse registered teams
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           {playerTier === "collegiate"
             ? "Explore collegiate orgs on Maxime and join one with an invite code from their captain or manager."
             : "Explore grassroots orgs on Maxime and join one with an invite code from their captain or manager."}
@@ -60,7 +60,7 @@ export default async function DashboardTeamsPage() {
       </header>
 
       <section>
-        <h2 className="font-heading mb-4 text-lg font-semibold text-white">
+        <h2 className="font-heading mb-4 text-lg font-semibold text-[var(--foreground)]">
           {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
         </h2>
         <TeamsDirectory
@@ -71,11 +71,11 @@ export default async function DashboardTeamsPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
-        <h2 className="font-heading text-lg font-semibold text-white">
+      <section className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
+        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
           Join with an invite code
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
           Found a team you like? Get their code and join your roster.
         </p>
         <div className="mt-5">

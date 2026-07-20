@@ -32,7 +32,7 @@ export function VodReviewArt() {
           width={stripX2 - stripX1}
           height={stripH}
           rx="3"
-          className="stroke-zinc-600"
+          className="stroke-[var(--foreground-subtle)]"
           strokeWidth="1.25"
         />
 
@@ -43,7 +43,7 @@ export function VodReviewArt() {
             y1={stripY}
             x2={x}
             y2={stripY + stripH}
-            className="stroke-zinc-700"
+            className="stroke-[var(--border-strong)]"
             strokeWidth="1"
           />
         ))}
@@ -57,7 +57,7 @@ export function VodReviewArt() {
                 y={perfRowYTop}
                 width="4"
                 height="3"
-                className="stroke-zinc-700"
+                className="stroke-[var(--border-strong)]"
                 strokeWidth="0.75"
               />
               <rect
@@ -65,7 +65,7 @@ export function VodReviewArt() {
                 y={perfRowYBot}
                 width="4"
                 height="3"
-                className="stroke-zinc-700"
+                className="stroke-[var(--border-strong)]"
                 strokeWidth="0.75"
               />
             </g>
@@ -77,7 +77,7 @@ export function VodReviewArt() {
           y1="100"
           x2={stripX2}
           y2="100"
-          className="stroke-zinc-700"
+          className="stroke-[var(--border-strong)]"
           strokeWidth="1"
         />
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -87,7 +87,7 @@ export function VodReviewArt() {
             y1="98"
             x2={stripX1 + i * 24}
             y2="104"
-            className="stroke-zinc-700"
+            className="stroke-[var(--border-strong)]"
             strokeWidth="1"
           />
         ))}
@@ -97,14 +97,14 @@ export function VodReviewArt() {
           y1={stripY + stripH}
           x2={pinX}
           y2="106"
-          className="stroke-cyan-400"
+          className="stroke-[var(--accent)]"
           strokeWidth="1.25"
         />
         <circle
           cx={pinX}
           cy="106"
           r="3"
-          className="fill-cyan-300"
+          className="fill-[color-mix(in_srgb,var(--accent)_85%,white)]"
           stroke="none"
         />
 
@@ -114,7 +114,7 @@ export function VodReviewArt() {
           width="56"
           height="18"
           rx="4"
-          className="stroke-cyan-400 fill-cyan-400/10"
+          className="stroke-[var(--accent)] fill-[color-mix(in_srgb,var(--accent)_10%,transparent)]"
           strokeWidth="1.25"
         />
         <line
@@ -122,7 +122,7 @@ export function VodReviewArt() {
           y1="23"
           x2={pinX + 14}
           y2="23"
-          className="stroke-cyan-300"
+          className="stroke-[color-mix(in_srgb,var(--accent)_85%,white)]"
           strokeWidth="1.25"
         />
         <line
@@ -130,7 +130,7 @@ export function VodReviewArt() {
           y1="32"
           x2={pinX}
           y2={stripY}
-          className="stroke-cyan-400/60"
+          className="stroke-[color-mix(in_srgb,var(--accent)_60%,transparent)]"
           strokeWidth="1"
           strokeDasharray="2 2"
         />

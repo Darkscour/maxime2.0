@@ -102,10 +102,10 @@ export function ScoutPlayerGridCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-2xl border bg-[var(--surface)] transition-colors",
+        "flex h-full flex-col rounded-none border bg-[var(--surface)] transition-colors",
         joinRequestPending
-          ? "border-cyan-400/25 hover:border-cyan-400/35"
-          : "border-white/5 hover:border-violet-400/20",
+          ? "border-[var(--accent)] hover:border-[var(--foreground)]"
+          : "border-[var(--border)] hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]",
       )}
     >
       <Link
@@ -125,9 +125,9 @@ export function ScoutPlayerGridCard({
       </Link>
 
       {canManage && (
-        <div className="mt-auto border-t border-white/5 px-5 py-4">
+        <div className="mt-auto border-t border-[var(--border)] px-5 py-4">
           {onRoster ? (
-            <p className="text-xs text-zinc-500">Already on your roster</p>
+            <p className="text-xs text-[var(--foreground-muted)]">Already on your roster</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               <Button

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 function DemoPageBackLink() {
   return (
-    <span className="inline-flex items-center gap-1.5 text-sm text-zinc-500">
+    <span className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-subtle)]">
       <ArrowLeft className="h-4 w-4" />
       Dashboard
     </span>
@@ -29,10 +29,10 @@ export function MarketingScoutPageView() {
         <DashboardSectionEyebrow accent="violet" className="mt-4">
           Recruitment
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-2xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)]">
           Player profiles
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">
           Browse players by region, compare fit, and invite the right candidates directly.
         </p>
       </header>
@@ -44,8 +44,8 @@ export function MarketingScoutPageView() {
             className={cn(
               "flex h-full flex-col rounded-2xl border bg-[var(--surface)] transition-colors",
               index === 2
-                ? "border-cyan-400/25"
-                : "border-white/5 hover:border-violet-400/20",
+                ? "border-[color-mix(in_srgb,var(--accent)_25%,transparent)]"
+                : "border-[color-mix(in_srgb,var(--border)_50%,transparent)] hover:border-[color-mix(in_srgb,var(--accent-2)_20%,transparent)]",
             )}
           >
             <div className="block p-4">
@@ -60,7 +60,7 @@ export function MarketingScoutPageView() {
                 className="border-0 bg-transparent p-0"
               />
             </div>
-            <div className="mt-auto border-t border-white/5 px-4 py-3">
+            <div className="mt-auto border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-3">
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -106,10 +106,10 @@ export function MarketingWatchlistPageView() {
         <DashboardSectionEyebrow accent="violet" className="mt-4">
           Recruitment
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-2xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)]">
           Watchlist
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">
           Shortlist players by region, then send invites when you&apos;re ready to recruit
           them to {MOCK_TEAM_NAME}.
         </p>
@@ -119,7 +119,7 @@ export function MarketingWatchlistPageView() {
         {MOCK_WATCHLIST_PLAYERS.map((player) => (
           <article
             key={player.id}
-            className="flex h-full flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors hover:border-violet-400/20"
+            className="flex h-full flex-col rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--surface)] transition-colors hover:border-[color-mix(in_srgb,var(--accent-2)_20%,transparent)]"
           >
             <div className="block p-4">
               <PlayerScoutCard
@@ -133,7 +133,7 @@ export function MarketingWatchlistPageView() {
                 className="border-0 bg-transparent p-0"
               />
             </div>
-            <div className="mt-auto border-t border-white/5 px-4 py-3">
+            <div className="mt-auto border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-3">
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -148,7 +148,7 @@ export function MarketingWatchlistPageView() {
                   type="button"
                   size="sm"
                   variant="ghost"
-                  className="pointer-events-none gap-1.5 text-zinc-400"
+                  className="pointer-events-none gap-1.5 text-[var(--foreground-muted)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Remove
@@ -173,7 +173,7 @@ function MarketingRosterMemberCard({ member }: { member: RosterMember }) {
   const staffRole = roleLabel(member.role);
 
   return (
-    <article className="group flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors hover:border-cyan-400/15">
+    <article className="group flex flex-col rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--surface)] transition-colors hover:border-[color-mix(in_srgb,var(--accent)_15%,transparent)]">
       <div className="p-4">
         <PlayerScoutCard
           handle={label}
@@ -187,12 +187,12 @@ function MarketingRosterMemberCard({ member }: { member: RosterMember }) {
         />
       </div>
       {member.role === "player" && (
-        <div className="mt-auto border-t border-white/5 px-4 py-2.5">
+        <div className="mt-auto border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-2.5">
           <Button
             type="button"
             size="sm"
             variant="ghost"
-            className="pointer-events-none gap-1.5 text-zinc-400"
+            className="pointer-events-none gap-1.5 text-[var(--foreground-muted)]"
           >
             <Trash2 className="h-3.5 w-3.5" />
             Remove from roster
@@ -217,17 +217,17 @@ export function MarketingRosterPageView() {
           Team
         </DashboardSectionEyebrow>
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <h1 className="font-heading text-2xl font-semibold text-white">
+          <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
             {MOCK_TEAM_NAME}
           </h1>
-          <span className="text-sm text-zinc-500">{MOCK_ROSTER_TOTAL} on team</span>
+          <span className="text-sm text-[var(--foreground-subtle)]">{MOCK_ROSTER_TOTAL} on team</span>
         </div>
       </header>
 
       <div className="space-y-5">
         {staff.length > 0 && (
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-subtle)]">
               Leadership
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -240,7 +240,7 @@ export function MarketingRosterPageView() {
 
         {players.length > 0 && (
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--foreground-subtle)]">
               Players
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -248,7 +248,7 @@ export function MarketingRosterPageView() {
                 <MarketingRosterMemberCard key={member.membershipId} member={member} />
               ))}
             </div>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-[var(--foreground-subtle)]">
               Showing {players.length} of {MOCK_ROSTER_TOTAL - staff.length} players on
               roster
             </p>

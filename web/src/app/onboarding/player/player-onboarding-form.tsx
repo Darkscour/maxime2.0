@@ -308,12 +308,12 @@ export function PlayerOnboardingForm({
       </div>
 
       {isCollegiate && (
-        <div className="space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5">
+        <div className="space-y-5 rounded-none border border-[var(--border)] bg-[var(--surface)] p-5">
           <div>
-            <p className="text-sm font-medium text-violet-100">
+            <p className="text-sm font-medium text-[var(--foreground)]">
               Collegiate student verification
             </p>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
               Collegiate profiles require a school email. You cannot create a campus
               profile with a personal email alone.
             </p>
@@ -356,7 +356,9 @@ export function PlayerOnboardingForm({
       )}
 
       <div className="space-y-5">
-        <p className="text-sm font-medium text-zinc-200">Competitive profile</p>
+        <p className="text-sm font-medium text-[var(--foreground)]">
+          Competitive profile
+        </p>
 
         <FormField label="In-game handle" hint="How scouts will find you">
           <TextInput
@@ -462,10 +464,12 @@ export function PlayerOnboardingForm({
         <BioCharacterCount length={draft.bio.length} max={PLAYER_BIO_MAX_LENGTH} />
       </div>
 
-      <div className="rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5 space-y-4">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--surface)] p-5 space-y-4">
         <div>
-          <p className="text-sm font-medium text-violet-100">Join a team now</p>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="text-sm font-medium text-[var(--foreground)]">
+            Join a team now
+          </p>
+          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
             Have an invite code from a captain? Paste it below to join their org when
             your profile is saved.
           </p>
@@ -479,9 +483,11 @@ export function PlayerOnboardingForm({
         </FormField>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <p className="text-sm font-medium text-zinc-200">Not on a team yet?</p>
-        <p className="mt-1 text-sm leading-6 text-zinc-400">
+      <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
+        <p className="text-sm font-medium text-[var(--foreground)]">
+          Not on a team yet?
+        </p>
+        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">
           {isCollegiate
             ? "Save your profile and appear in your school's campus talent pool. Teams can scout and invite you anytime."
             : `Save your profile and get discovered by ${TIER_LABELS.grassroots.toLowerCase()} teams in your region.`}
@@ -517,14 +523,14 @@ export function PlayerOnboardingForm({
             }
             router.push(tierBackHref);
           }}
-          className="text-sm text-zinc-400 hover:text-white"
+          className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
         >
           ← Back
         </Link>
       </div>
 
-      <p className="text-center text-sm text-zinc-500">
-        <OnboardingHomeLink className="text-cyan-400 hover:text-cyan-300" />
+      <p className="text-center text-sm text-[var(--foreground-muted)]">
+        <OnboardingHomeLink className="text-[var(--accent)] hover:text-[var(--accent-strong)]" />
       </p>
     </form>
   );

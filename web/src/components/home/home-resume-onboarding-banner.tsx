@@ -19,9 +19,9 @@ export function HomeResumeOnboardingBanner() {
 
   if (showDashboard) {
     return (
-      <div className="border-b border-cyan-400/20 bg-cyan-400/[0.06]">
+      <div className="border-b border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <p className="text-sm text-cyan-100/90">
+          <p className="text-sm text-[var(--foreground)]">
             You&apos;re signed in. Head to your dashboard or keep browsing.
           </p>
           <Button href="/dashboard" size="sm" className="gap-1.5" prefetch={false}>
@@ -35,9 +35,9 @@ export function HomeResumeOnboardingBanner() {
 
   if (degraded) {
     return (
-      <div className="border-b border-amber-400/20 bg-amber-400/[0.06]">
+      <div className="border-b border-[color-mix(in_srgb,var(--warning)_25%,var(--border))] bg-[color-mix(in_srgb,var(--warning)_8%,transparent)]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <p className="text-sm text-amber-100/90">
+          <p className="text-sm text-[var(--foreground)]">
             You&apos;re signed in, but we couldn&apos;t verify your account right
             now. The database may be temporarily unavailable — try again in about a
             minute.{" "}
@@ -45,7 +45,7 @@ export function HomeResumeOnboardingBanner() {
               href="https://status.supabase.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 underline-offset-2 transition-colors hover:text-cyan-300 hover:underline"
+              className="text-[var(--accent)] underline-offset-2 transition-colors hover:text-[var(--accent-strong)] hover:underline"
             >
               Check Supabase status
             </Link>
@@ -59,7 +59,7 @@ export function HomeResumeOnboardingBanner() {
             <Link
               href="/auth/continue?intent=sign-in"
               prefetch={false}
-              className="rounded-lg px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+              className="rounded-none px-3 py-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
             >
               Retry sign-in
             </Link>
@@ -70,9 +70,9 @@ export function HomeResumeOnboardingBanner() {
   }
 
   return (
-    <div className="border-b border-cyan-400/20 bg-cyan-400/[0.06]">
+    <div className="border-b border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <p className="text-sm text-cyan-100/90">
+        <p className="text-sm text-[var(--foreground)]">
           You&apos;re signed in. Finish onboarding anytime, or keep browsing the
           site.
         </p>

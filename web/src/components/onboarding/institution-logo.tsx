@@ -29,7 +29,7 @@ export function InstitutionLogoWithFallback({
           className={cn(
             dim,
             text,
-            "flex items-center justify-center rounded-lg bg-cyan-400/15 font-semibold text-cyan-200 ring-1 ring-inset ring-cyan-400/25",
+            "flex items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] font-semibold text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
           )}
           aria-hidden
         >

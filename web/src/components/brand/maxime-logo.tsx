@@ -53,7 +53,7 @@ export function MaximeLogo({
         height={side}
         decoding="async"
         fetchPriority={priority ? "high" : undefined}
-        className={cn("block shrink-0 object-contain", className)}
+        className={cn("maxime-logo-img block shrink-0 object-contain", className)}
         style={{ width: side, height: side }}
       />
     );
@@ -69,7 +69,7 @@ export function MaximeLogo({
         height={h}
         decoding="async"
         fetchPriority={priority ? "high" : undefined}
-        className={cn("block shrink-0 object-contain", className)}
+        className={cn("maxime-logo-img block shrink-0 object-contain", className)}
         style={{ width: w, height: h }}
       />
     );

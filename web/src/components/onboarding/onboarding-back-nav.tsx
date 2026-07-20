@@ -41,7 +41,7 @@ export function OnboardingBackNav({
     <Link
       href={dest}
       onClick={handleClick}
-      className="mb-6 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+      className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
     >
       <ArrowLeft className="h-4 w-4" />
       {label}

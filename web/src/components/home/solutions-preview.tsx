@@ -56,17 +56,17 @@ export function SolutionsPreview() {
   return (
     <section
       id="solutions"
-      className="relative scroll-mt-24 border-b border-white/5 bg-[var(--background-elevated)]/30 py-10 sm:py-12"
+      className="relative scroll-mt-24 border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--background-elevated)]/30 py-10 sm:py-12"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
             Solutions
           </p>
-          <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl">
             Built for two kinds of esports orgs
           </h2>
-          <p className="mt-3 text-base leading-7 text-zinc-400 sm:text-lg">
+          <p className="mt-3 text-base leading-7 text-[var(--foreground-muted)] sm:text-lg">
             Pick the track that matches your org. The cards below explain who
             each path is for and how membership works — not every product module.
           </p>
@@ -85,8 +85,8 @@ export function SolutionsPreview() {
                 className={cn(
                   "flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition-colors",
                   active
-                    ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-100"
-                    : "border-white/5 bg-[var(--surface)] text-zinc-400 hover:border-white/10 hover:text-white",
+                    ? "border-[color-mix(in_srgb,var(--accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[color-mix(in_srgb,var(--accent)_60%,white)]"
+                    : "border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--surface)] text-[var(--foreground-muted)] hover:border-[var(--border)] hover:text-[var(--foreground)]",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -142,12 +142,14 @@ function AudienceCard({
   accent: "cyan" | "violet";
 }) {
   const accentClass =
-    accent === "cyan" ? "text-cyan-300" : "text-violet-300";
+    accent === "cyan"
+      ? "text-[color-mix(in_srgb,var(--accent)_85%,white)]"
+      : "text-[color-mix(in_srgb,var(--accent-2)_85%,white)]";
 
   return (
     <motion.div
       variants={revealItem}
-      className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6 sm:p-8"
+      className="rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--surface)] p-6 sm:p-8"
     >
       <p
         className={cn(
@@ -157,10 +159,10 @@ function AudienceCard({
       >
         {eyebrow}
       </p>
-      <h3 className="font-heading mt-2 text-xl font-semibold text-white">
+      <h3 className="font-heading mt-2 text-xl font-semibold text-[var(--foreground)]">
         {heading}
       </h3>
-      <p className="mt-2 text-sm leading-6 text-zinc-400">{intro}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">{intro}</p>
       <ul className="mt-5 space-y-3">
         {highlights.map((highlight) => (
           <HighlightRow key={highlight.text} highlight={highlight} />
@@ -173,14 +175,15 @@ function AudienceCard({
 function HighlightRow({ highlight }: { highlight: SolutionHighlight }) {
   const Icon = highlight.icon;
   const tone = highlight.tone ?? "cyan";
-  const iconClass = tone === "cyan" ? "text-cyan-400" : "text-violet-400";
+  const iconClass =
+    tone === "cyan" ? "text-[var(--accent)]" : "text-[var(--accent-2)]";
 
   return (
     <li className="flex gap-3 text-sm leading-6">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)] ring-1 ring-inset ring-[var(--border)]">
         <Icon className={cn("h-4 w-4", iconClass)} />
       </span>
-      <span className="pt-1.5 text-zinc-300">{highlight.text}</span>
+      <span className="pt-1.5 text-[var(--foreground)]">{highlight.text}</span>
     </li>
   );
 }

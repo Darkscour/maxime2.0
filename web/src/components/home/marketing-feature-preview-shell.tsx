@@ -31,10 +31,10 @@ export function MarketingFeaturePreviewShell({
         <DashboardSectionEyebrow accent={eyebrowAccent}>
           {eyebrow}
         </DashboardSectionEyebrow>
-        <h2 className="font-heading mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+        <h2 className="font-heading mt-2 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl">
           {title}
         </h2>
-        <p className="mt-3 text-base leading-7 text-zinc-400 sm:text-lg">
+        <p className="mt-3 text-base leading-7 text-[var(--foreground-muted)] sm:text-lg">
           {description}
         </p>
         {previewNote ? (
@@ -47,8 +47,8 @@ export function MarketingFeaturePreviewShell({
         ) : null}
       </header>
 
-      <div className="rounded-2xl border border-white/5 bg-[var(--surface)]/40 p-4 sm:p-5">
-        <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)]/40 p-4 sm:p-5">
+        <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
           {previewLabel}
         </p>
         <div className="mt-4">{children}</div>

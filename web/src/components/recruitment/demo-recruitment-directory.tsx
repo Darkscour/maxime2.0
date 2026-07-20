@@ -86,13 +86,13 @@ export function DemoRecruitmentDirectory({ compact = false }: { compact?: boolea
       />
 
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-[var(--surface)] px-4 py-3">
-          <div className="text-sm text-zinc-400">
-            Showing <span className="font-semibold text-white">{filtered.length}</span>{" "}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+          <div className="text-sm text-[var(--foreground-muted)]">
+            Showing <span className="font-semibold text-[var(--foreground)]">{filtered.length}</span>{" "}
             sample players
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-zinc-500">Sort by</span>
+            <span className="text-[var(--foreground-muted)]">Sort by</span>
             {(
               [
                 ["fit", "Best fit"],
@@ -106,8 +106,8 @@ export function DemoRecruitmentDirectory({ compact = false }: { compact?: boolea
                 onClick={() => setSort(key)}
                 className={
                   sort === key
-                    ? "rounded-full bg-cyan-400/10 px-3 py-1 text-cyan-300 ring-1 ring-inset ring-cyan-400/40"
-                    : "rounded-full px-3 py-1 text-zinc-400 hover:text-white"
+                    ? "rounded-none bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] px-3 py-1 text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_40%,transparent)]"
+                    : "rounded-none px-3 py-1 text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
                 }
               >
                 {label}
@@ -117,15 +117,15 @@ export function DemoRecruitmentDirectory({ compact = false }: { compact?: boolea
         </div>
 
         {filtered.length === 0 ? (
-          <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[var(--surface)] py-16 text-center">
-            <Users className="h-8 w-8 text-zinc-600" />
-            <h3 className="font-heading mt-3 text-base font-semibold text-white">
+          <div className="mt-4 flex flex-col items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
+            <Users className="h-8 w-8 text-[var(--foreground-muted)]" />
+            <h3 className="font-heading mt-3 text-base font-semibold text-[var(--foreground)]">
               No players match those filters
             </h3>
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_RECRUITMENT_FILTERS)}
-              className="mt-4 rounded-full bg-cyan-400 px-4 py-1.5 text-xs font-medium text-zinc-950 hover:bg-cyan-300"
+              className="mt-4 rounded-none bg-[var(--accent)] px-4 py-1.5 text-xs font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-strong)]"
             >
               Reset filters
             </button>

@@ -6,10 +6,10 @@ export function OnboardingResumeBanner({ show }: { show: boolean }) {
 
   return (
     <div
-      className="mb-6 flex items-start gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] px-4 py-3 text-sm text-cyan-100"
+      className="mb-6 flex items-start gap-3 rounded-none border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)]"
       role="status"
     >
-      <Info className="mt-0.5 h-4 w-4 shrink-0" />
+      <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
       <p className="flex-1 leading-6">
         You&apos;ve already signed up with this email but haven&apos;t finished
         onboarding yet. Pick up where you left off below.

@@ -124,33 +124,37 @@ export function SchoolCombobox({
   return (
     <div ref={rootRef} className="relative">
       <label className="block">
-        <span className="text-sm font-medium text-zinc-200">
+        <span className="text-sm font-medium text-[var(--foreground)]">
           {label}
-          {required && <span className="text-red-400"> *</span>}
+          {required && <span className="text-red-600"> *</span>}
         </span>
         {hint && (
-          <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>
+          <span className="mt-0.5 block text-xs text-[var(--foreground-muted)]">
+            {hint}
+          </span>
         )}
 
         {value ? (
-          <div className="mt-2 flex items-center gap-3 rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2.5">
+          <div className="mt-2 flex items-center gap-3 rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2.5">
             <InstitutionLogoWithFallback
               name={value.name}
               logoUrl={value.logoUrl}
               size="sm"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-zinc-100">
+              <p className="truncate text-sm font-medium text-[var(--foreground)]">
                 {value.name}
               </p>
               {value.city && (
-                <p className="truncate text-xs text-zinc-500">{value.city}</p>
+                <p className="truncate text-xs text-[var(--foreground-muted)]">
+                  {value.city}
+                </p>
               )}
             </div>
             <button
               type="button"
               onClick={clear}
-              className="rounded-md p-1 text-zinc-500 hover:bg-white/5 hover:text-white"
+              className="rounded-none p-1 text-[var(--foreground-muted)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
               aria-label="Clear school selection"
             >
               <X className="h-4 w-4" />
@@ -158,7 +162,7 @@ export function SchoolCombobox({
           </div>
         ) : (
           <div className="relative mt-2">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-muted)]" />
             <input
               type="text"
               value={query}
@@ -175,7 +179,7 @@ export function SchoolCombobox({
               aria-controls={listId}
               required={required}
             />
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-muted)]" />
           </div>
         )}
       </label>
@@ -184,37 +188,41 @@ export function SchoolCombobox({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-white/10 bg-[#0c0e12] py-1 shadow-xl shadow-black/40"
+          className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-none border border-[var(--border)] bg-[var(--surface)] py-1 shadow-sm"
         >
           {searchError && (
-            <li className="px-3 py-3 text-xs leading-5 text-red-300/90">
+            <li className="px-3 py-3 text-xs leading-5 text-red-800">
               {searchError}
             </li>
           )}
 
           {needsBootstrap && !searchError && (
-            <li className="px-3 py-3 text-xs leading-5 text-amber-200/90">
+            <li className="px-3 py-3 text-xs leading-5 text-[var(--foreground-muted)]">
               School list not loaded yet. Run{" "}
-              <code className="text-amber-100">npm run db:institutions</code> to
-              import U.S. universities.
+              <code className="text-[var(--foreground)]">
+                npm run db:institutions
+              </code>{" "}
+              to import U.S. universities.
             </li>
           )}
 
           {!needsBootstrap && query.trim().length < 2 && (
-            <li className="px-3 py-3 text-xs text-zinc-500">
+            <li className="px-3 py-3 text-xs text-[var(--foreground-muted)]">
               Type at least 2 characters to search…
             </li>
           )}
 
           {!needsBootstrap && query.trim().length >= 2 && loading && (
-            <li className="px-3 py-3 text-xs text-zinc-500">Searching…</li>
+            <li className="px-3 py-3 text-xs text-[var(--foreground-muted)]">
+              Searching…
+            </li>
           )}
 
           {!needsBootstrap &&
             !loading &&
             query.trim().length >= 2 &&
             results.length === 0 && (
-              <li className="px-3 py-3 text-xs text-zinc-500">
+              <li className="px-3 py-3 text-xs text-[var(--foreground-muted)]">
                 No schools found. Try a different spelling.
               </li>
             )}
@@ -223,7 +231,7 @@ export function SchoolCombobox({
             <li key={institution.id} role="option">
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+                className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--background)]"
                 onClick={() => select(institution)}
               >
                 <InstitutionLogoWithFallback
@@ -232,11 +240,11 @@ export function SchoolCombobox({
                   size="sm"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm text-zinc-100">
+                  <p className="truncate text-sm text-[var(--foreground)]">
                     {institution.name}
                   </p>
                   {institution.city && (
-                    <p className="truncate text-xs text-zinc-500">
+                    <p className="truncate text-xs text-[var(--foreground-muted)]">
                       {institution.city}
                     </p>
                   )}

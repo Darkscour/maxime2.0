@@ -1,9 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { Lock } from "lucide-react";
-import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 export const PUBLIC_PORTAL_CARD_LIMIT = 4;
 
@@ -19,7 +18,7 @@ function isSignUpDestination(url: string) {
 export function GatedBlurCard({
   children,
   gated,
-  redirectUrl = "/auth/continue?intent=sign-in",
+  redirectUrl = "/sign-in",
   message = "Sign in to unlock the full directory",
   ctaLabel = "Sign up free",
 }: {
@@ -34,37 +33,34 @@ export function GatedBlurCard({
   }
 
   const signUpFlow = isSignUpDestination(redirectUrl);
+  const href = signUpFlow ? "/sign-up" : "/sign-in";
 
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden border border-[var(--border)]">
       <div
-        className="pointer-events-none select-none blur-[6px] brightness-[0.55] saturate-50"
+        className="pointer-events-none select-none blur-[6px] brightness-[0.85] saturate-50"
         aria-hidden
       >
         {children}
       </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 rounded-xl bg-zinc-950/50 p-4 backdrop-blur-[1px]">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 ring-1 ring-inset ring-white/15">
-          <Lock className="h-4 w-4 text-zinc-200" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 bg-[color-mix(in_srgb,var(--background)_72%,transparent)] p-4 backdrop-blur-[1px]">
+        <span className="oc-mark">
+          <Lock className="h-4 w-4" />
         </span>
-        <p className="max-w-[200px] text-center text-xs font-medium leading-5 text-white sm:text-sm">
+        <p className="max-w-[200px] text-center text-xs font-medium leading-5 text-[var(--foreground)] sm:text-sm">
           {message}
         </p>
-        {signUpFlow ? (
-          <Button href="/sign-up" variant="primary" size="sm">
-            {ctaLabel}
-          </Button>
-        ) : (
-          <SignInButton
-            mode="modal"
-            forceRedirectUrl={redirectUrl}
-            appearance={clerkAuthAppearance}
+        <Button href={href} variant="primary" size="sm">
+          {ctaLabel}
+        </Button>
+        {!signUpFlow ? (
+          <Link
+            href="/sign-up"
+            className="text-xs text-[var(--accent)] hover:text-[var(--accent-strong)]"
           >
-            <Button variant="primary" size="sm">
-              {ctaLabel}
-            </Button>
-          </SignInButton>
-        )}
+            Or get started free
+          </Link>
+        ) : null}
       </div>
     </div>
   );

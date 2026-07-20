@@ -104,24 +104,24 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
         title="Org profile"
         description="Your team's public identity — titles, region, and roster size."
         preview={
-          <div className="inline-flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-3 rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-3 backdrop-blur-sm">
             {profileImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={profileImageUrl}
                 alt={`${name || "Team"} profile`}
-                className="h-11 w-11 rounded-xl object-cover ring-1 ring-inset ring-white/10"
+                className="h-11 w-11 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
               />
             ) : (
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400/30 to-cyan-400/20 ring-1 ring-inset ring-white/10">
-                <Building2 className="h-5 w-5 text-violet-300" />
+              <span className="flex h-11 w-11 items-center justify-center rounded-none bg-[var(--background)] ring-1 ring-inset ring-[var(--border)]">
+                <Building2 className="h-5 w-5 text-[var(--accent-2)]" />
               </span>
             )}
             <div>
-              <p className="font-heading text-base font-semibold text-white">
+              <p className="font-heading text-base font-semibold text-[var(--foreground)]">
                 {name || "Your team"}
               </p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[var(--foreground-muted)]">
                 {games.length > 0
                   ? `${games.length} title${games.length === 1 ? "" : "s"} · ${region || "No region"}`
                   : "Add competitive titles"}
@@ -244,14 +244,14 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
                 <img
                   src={profileImageUrl}
                   alt={`${name || "Team"} profile`}
-                  className="h-16 w-16 rounded-xl border border-white/10 object-cover"
+                  className="h-16 w-16 rounded-none border border-[var(--border)] object-cover"
                 />
               ) : (
-                <span className="flex h-16 w-16 items-center justify-center rounded-xl border border-dashed border-white/15 bg-white/[0.02]">
-                  <Building2 className="h-5 w-5 text-zinc-600" />
+                <span className="flex h-16 w-16 items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--background)]">
+                  <Building2 className="h-5 w-5 text-[var(--foreground-muted)]" />
                 </span>
               )}
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-300 transition-colors hover:border-white/20 hover:text-white">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground-muted)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]">
                 <Upload className="h-4 w-4" />
                 {uploadingImage ? "Uploading..." : "Upload image"}
                 <input
@@ -317,7 +317,7 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
               {profileImageUrl && (
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--foreground-muted)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
                   onClick={() => setProfileImageUrl("")}
                 >
                   <X className="h-4 w-4" />

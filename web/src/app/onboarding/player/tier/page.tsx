@@ -40,9 +40,9 @@ export default async function PlayerTierOnboardingPage({
         })}
       />
 
-      <p className="mt-8 text-center text-sm text-zinc-500">
+      <p className="mt-8 text-center text-sm text-[var(--foreground-muted)]">
         Not ready to finish?{" "}
-        <OnboardingHomeLink className="text-cyan-400 hover:text-cyan-300" />
+        <OnboardingHomeLink className="text-[var(--accent)] hover:text-[var(--accent-strong)]" />
       </p>
     </div>
   );

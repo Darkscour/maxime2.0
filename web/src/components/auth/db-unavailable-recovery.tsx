@@ -19,16 +19,19 @@ export function DbUnavailableRecovery({
   secondaryLabel?: string;
 }) {
   return (
-    <div className="w-full max-w-md rounded-3xl border border-amber-400/20 bg-[var(--surface)]/90 p-8 text-center shadow-2xl shadow-black/20">
-      <h1 className="font-heading text-2xl font-semibold text-white">{title}</h1>
-      <p className="mt-3 text-sm leading-7 text-zinc-400">{description}</p>
-      <p className="mt-2 text-xs text-zinc-500">
+    <div className="w-full text-center">
+      <p className="oc-kicker mb-3">Temporary issue</p>
+      <h1 className="font-heading text-2xl font-medium tracking-tight text-[var(--foreground)]">
+        {title}
+      </h1>
+      <p className="mt-3 text-sm leading-7 text-[var(--foreground-muted)]">{description}</p>
+      <p className="mt-2 text-xs text-[var(--foreground-subtle)]">
         Try again in about a minute. You can also check{" "}
         <Link
           href={SUPABASE_STATUS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-cyan-400 transition-colors hover:text-cyan-300"
+          className="text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
         >
           Supabase status
         </Link>{" "}

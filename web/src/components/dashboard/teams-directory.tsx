@@ -25,8 +25,8 @@ export function TeamsDirectory({
 }) {
   if (teams.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
-        <p className="text-sm text-zinc-400">
+      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
+        <p className="text-sm text-[var(--foreground-muted)]">
           No teams have registered yet. Check back soon as orgs join Maxime.
         </p>
       </div>
@@ -63,7 +63,7 @@ function TeamCardAvatar({ name }: { name: string }) {
 
   return (
     <span
-      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/90 to-violet-500/90 text-lg font-bold text-zinc-950"
+      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-[var(--foreground)] text-lg font-bold text-[var(--background)]"
       aria-hidden
     >
       {initial}
@@ -111,10 +111,10 @@ function TeamCard({
   return (
     <article
       className={cn(
-        "flex h-full flex-col rounded-2xl border bg-[var(--surface)] transition-colors",
+        "flex h-full flex-col rounded-none border bg-[var(--surface)] transition-colors",
         requestPending
-          ? "border-cyan-400/25 hover:border-cyan-400/35"
-          : "border-white/5 hover:border-cyan-400/20",
+          ? "border-[var(--accent)] hover:border-[var(--foreground)]"
+          : "border-[var(--border)] hover:border-[color-mix(in_srgb,var(--accent)_35%,var(--border))]",
       )}
     >
       <div className="p-5">
@@ -122,7 +122,7 @@ function TeamCard({
           <TeamCardAvatar name={team.name} />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <h2 className="font-heading text-lg font-semibold text-white">
+              <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
                 {team.name}
               </h2>
               <button
@@ -130,7 +130,7 @@ function TeamCard({
                 onClick={() => setExpanded((v) => !v)}
                 aria-expanded={expanded}
                 aria-label={expanded ? "Collapse team details" : "Expand team details"}
-                className="shrink-0 rounded-lg p-1 text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300"
+                className="shrink-0 rounded-lg p-1 text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground-muted)]"
               >
                 <ChevronDown
                   className={cn(
@@ -140,18 +140,18 @@ function TeamCard({
                 />
               </button>
             </div>
-            <p className="mt-1 text-sm text-zinc-400">{detailLine}</p>
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">{detailLine}</p>
             {team.school && (
-              <p className="mt-2 text-xs text-zinc-500">{team.school}</p>
+              <p className="mt-2 text-xs text-[var(--foreground-muted)]">{team.school}</p>
             )}
           </div>
         </div>
 
         {expanded && (
-          <div className="mt-4 space-y-3 border-t border-white/5 pt-4 text-sm text-zinc-400">
+          <div className="mt-4 space-y-3 border-t border-[var(--border)] pt-4 text-sm text-[var(--foreground-muted)]">
             {team.games.length > 0 && (
               <div>
-                <p className="text-xs uppercase tracking-wider text-zinc-600">Titles</p>
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Titles</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {team.games.map((game) => (
                     <Badge key={game} tone="violet">
@@ -164,7 +164,7 @@ function TeamCard({
 
             <div className="grid gap-2 text-xs">
               <div className="flex items-center gap-2">
-                <Calendar className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
+                <Calendar className="h-3.5 w-3.5 shrink-0 text-[var(--foreground-muted)]" />
                 <span>On Maxime since {formatJoinedDate(team.createdAt)}</span>
               </div>
               {team.rosterSize != null && team.rosterSize > 0 && (
@@ -173,7 +173,7 @@ function TeamCard({
                 </p>
               )}
               {team.accountTier && (
-                <p className="capitalize text-zinc-500">{team.accountTier} org</p>
+                <p className="capitalize text-[var(--foreground-muted)]">{team.accountTier} org</p>
               )}
             </div>
 
@@ -182,7 +182,7 @@ function TeamCard({
                 href={team.discordUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300"
+                className="inline-flex items-center gap-2 text-[var(--accent)] hover:text-[var(--accent)]"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 Discord server
@@ -193,7 +193,7 @@ function TeamCard({
         )}
       </div>
 
-      <div className="mt-auto border-t border-white/5 px-5 py-4">
+      <div className="mt-auto border-t border-[var(--border)] px-5 py-4">
         <TeamJoinRequestButton
           teamId={team.id}
           teamName={team.name}

@@ -4,15 +4,18 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Subtle invite code inline with the workspace header — not a standalone callout. */
+/** Invite code row for the Program Board masthead / ID plate. */
 export function WorkspaceInviteCode({
   inviteCode,
   className,
+  tone = "light",
 }: {
   inviteCode: string;
   className?: string;
+  tone?: "light" | "dark";
 }) {
   const [copied, setCopied] = useState(false);
+  const dark = tone === "dark";
 
   async function copy() {
     await navigator.clipboard.writeText(inviteCode);
@@ -21,22 +24,43 @@ export function WorkspaceInviteCode({
   }
 
   return (
-    <p className={cn("mt-3 text-sm text-zinc-500", className)}>
-      <span>Invite code </span>
+    <div className={cn("pb-invite-row", dark && "!border-[color-mix(in_srgb,#f6f7f9_28%,transparent)]", className)}>
+      <span
+        className={cn(
+          "pb-kicker",
+          dark ? "!text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]" : "!text-[var(--foreground-muted)]",
+        )}
+      >
+        Invite code
+      </span>
       <button
         type="button"
         onClick={copy}
-        className="inline-flex items-center gap-1 font-mono text-zinc-400 transition-colors hover:text-zinc-300"
+        className={cn(
+          "inline-flex max-w-full items-center gap-2 text-left transition-colors",
+          dark
+            ? "text-[#f6f7f9] hover:text-[color-mix(in_srgb,#f6f7f9_80%,var(--accent))]"
+            : "hover:text-[var(--accent)]",
+        )}
         title="Copy invite code"
       >
-        {inviteCode}
+        <span className={cn("pb-invite-code", dark && "!text-[#f6f7f9]")}>{inviteCode}</span>
         {copied ? (
-          <Check className="h-3 w-3 text-emerald-400/80" />
+          <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
         ) : (
-          <Copy className="h-3 w-3 opacity-60" />
+          <Copy className="h-3.5 w-3.5 shrink-0 opacity-55" />
         )}
       </button>
-      <span className="text-zinc-600"> · share with players</span>
-    </p>
+      <span
+        className={cn(
+          "text-xs",
+          dark
+            ? "text-[color-mix(in_srgb,#f6f7f9_55%,transparent)]"
+            : "text-[var(--foreground-muted)]",
+        )}
+      >
+        Share with players
+      </span>
+    </div>
   );
 }

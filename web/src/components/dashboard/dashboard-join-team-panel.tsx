@@ -50,9 +50,9 @@ export function DashboardJoinTeamPanel({
   if (blockedOnTeam && membershipRole === "player") {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-[var(--foreground-muted)]">
           You&apos;re on{" "}
-          <span className="font-medium text-zinc-200">{teamName ?? "a team"}</span>.
+          <span className="font-medium text-[var(--foreground)]">{teamName ?? "a team"}</span>.
           Leave your current roster before joining another with an invite code.
         </p>
         {error && <FormError message={error} />}
@@ -98,7 +98,7 @@ export function DashboardJoinTeamPanel({
 
   if (blockedOnTeam) {
     return (
-      <p className="text-sm text-zinc-400">
+      <p className="text-sm text-[var(--foreground-muted)]">
         You&apos;re already on a team. Managers and captains manage membership from
         team settings.
       </p>
@@ -135,7 +135,7 @@ export function DashboardJoinTeamPanel({
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormError message={error} />
       {success && (
-        <p className="text-sm text-emerald-300" role="status">
+        <p className="text-sm text-[var(--success)]" role="status">
           {success}
         </p>
       )}

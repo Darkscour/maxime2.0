@@ -104,7 +104,7 @@ export default async function OnboardingLayout({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-0px)] flex-1 flex-col border-b border-white/5 bg-spotlight py-10 sm:py-14">
+    <div className="oc-hero-field flex min-h-[calc(100vh-0px)] flex-1 flex-col border-b border-[var(--border)] py-10 sm:py-14">
       <Container className="max-w-2xl">
         <OnboardingResumeBanner show={showResumeBanner} />
         {!showResumeBanner ? (

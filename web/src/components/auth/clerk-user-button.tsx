@@ -7,7 +7,7 @@ import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 
 /** Avoid Clerk UserButton SSR/client hydration mismatches. */
 export function ClerkUserButton({
-  avatarClassName = "h-9 w-9 ring-1 ring-cyan-400/30",
+  avatarClassName = "h-9 w-9 ring-1 ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]",
 }: {
   avatarClassName?: string;
 }) {
@@ -21,7 +21,7 @@ export function ClerkUserButton({
     return (
       <span
         aria-hidden
-        className={cn("inline-block shrink-0 rounded-full bg-white/10", avatarClassName)}
+        className={cn("inline-block shrink-0 rounded-none bg-[var(--surface-2)]", avatarClassName)}
       />
     );
   }

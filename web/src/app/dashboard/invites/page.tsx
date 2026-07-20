@@ -31,7 +31,7 @@ export default async function TeamInvitesPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -39,8 +39,8 @@ export default async function TeamInvitesPage() {
         <DashboardSectionEyebrow accent="cyan" className="mt-5">
           Explore
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">Team invites</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">Team invites</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           {isGrassroots
             ? "Accept or decline recruitment invites from grassroots teams. Managers can also invite you after you request to join."
             : "Accept or decline recruitment invites from collegiate teams at your school. Managers can also invite you after you request to join."}

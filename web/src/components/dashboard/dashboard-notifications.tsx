@@ -33,9 +33,9 @@ function formatWhen(iso: string) {
 }
 
 function typeTone(type: string) {
-  if (type === "recruitment") return "text-violet-300";
-  if (type === "analytics") return "text-cyan-300";
-  return "text-zinc-300";
+  if (type === "recruitment") return "text-[var(--accent-2)]";
+  if (type === "analytics") return "text-[var(--accent)]";
+  return "text-[var(--foreground-muted)]";
 }
 
 export function DashboardNotifications() {
@@ -151,7 +151,7 @@ export function DashboardNotifications() {
         ref={panelRef}
         role="dialog"
         aria-label="Notifications"
-        className="fixed z-[9999] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-2xl border border-[#2a3042] shadow-[0_24px_64px_rgba(0,0,0,0.85)]"
+        className="fixed z-[9999] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-none border border-[#2a3042] shadow-[0_24px_64px_rgba(0,0,0,0.85)]"
         style={{
           top: panelPos.top,
           right: panelPos.right,
@@ -162,12 +162,12 @@ export function DashboardNotifications() {
           className="flex items-center justify-between border-b border-[#2a3042] px-4 py-3"
           style={{ backgroundColor: PANEL_HEADER_BG }}
         >
-          <p className="text-sm font-medium text-white">Notifications</p>
+          <p className="text-sm font-medium text-[var(--foreground)]">Notifications</p>
           {unread > 0 && (
             <button
               type="button"
               onClick={markAllRead}
-              className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300"
+              className="flex items-center gap-1 text-xs text-[var(--accent)] hover:text-[var(--accent)]"
             >
               <Check className="h-3 w-3" />
               Mark all read
@@ -180,11 +180,11 @@ export function DashboardNotifications() {
           style={{ backgroundColor: PANEL_BG }}
         >
           {loading ? (
-            <div className="flex items-center justify-center py-10 text-zinc-500">
+            <div className="flex items-center justify-center py-10 text-[var(--foreground-muted)]">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : items.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-zinc-500">
+            <p className="px-4 py-8 text-center text-sm text-[var(--foreground-muted)]">
               No updates yet. Invites, analytics, and recruitment activity will show
               up here.
             </p>
@@ -204,16 +204,16 @@ export function DashboardNotifications() {
                       <p
                         className={cn(
                           "text-sm font-medium",
-                          item.read ? "text-zinc-300" : "text-white",
+                          item.read ? "text-[var(--foreground-muted)]" : "text-[var(--foreground)]",
                         )}
                       >
                         {item.title}
                       </p>
-                      <span className="shrink-0 text-[10px] text-zinc-600">
+                      <span className="shrink-0 text-[10px] text-[var(--foreground-muted)]">
                         {formatWhen(item.createdAt)}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--foreground-muted)]">
                       {item.body}
                     </p>
                     <p
@@ -238,7 +238,7 @@ export function DashboardNotifications() {
           <Link
             href="/dashboard"
             onClick={() => setOpen(false)}
-            className="text-xs text-zinc-500 hover:text-zinc-300"
+            className="text-xs text-[var(--foreground-muted)] hover:text-[var(--foreground-muted)]"
           >
             View dashboard →
           </Link>
@@ -254,11 +254,11 @@ export function DashboardNotifications() {
         aria-label="Notifications"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+        className="relative rounded-lg p-2 text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
       >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-400 px-1 text-[10px] font-bold text-zinc-950">
+          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-[var(--accent)] px-1 text-[10px] font-bold text-[var(--accent-ink)]">
             {unread > 9 ? "9+" : unread}
           </span>
         )}

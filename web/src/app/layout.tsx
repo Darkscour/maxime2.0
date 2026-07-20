@@ -5,7 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 import { authContinueSignupPath } from "@/lib/auth-intent";
 import "./globals.css";
-import { MarketingOnly } from "@/components/app-chrome";
+import { MarketingFooterOnly, MarketingOnly } from "@/components/app-chrome";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BenignNavigationErrors } from "@/components/providers/benign-navigation-errors";
@@ -57,7 +57,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-cyan-500/30"
+        className="relative min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-[color-mix(in_srgb,var(--accent)_25%,transparent)]"
         suppressHydrationWarning
       >
         <ClerkProvider
@@ -74,9 +74,9 @@ export default function RootLayout({
             <Navbar />
           </MarketingOnly>
           <main className="flex min-h-0 flex-1 flex-col">{children}</main>
-          <MarketingOnly>
+          <MarketingFooterOnly>
             <Footer />
-          </MarketingOnly>
+          </MarketingFooterOnly>
         </ClerkProvider>
       </body>
     </html>

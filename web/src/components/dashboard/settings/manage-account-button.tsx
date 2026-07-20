@@ -10,10 +10,10 @@ export function ManageAccountButton() {
     <button
       type="button"
       onClick={() => openUserProfile()}
-      className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-zinc-200 transition-colors hover:border-cyan-400/25 hover:bg-cyan-400/[0.06] hover:text-white"
+      className="inline-flex items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--foreground)] hover:bg-[var(--surface)]"
     >
       Manage sign-in & security
-      <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
+      <ExternalLink className="h-3.5 w-3.5 text-[var(--foreground-muted)]" />
     </button>
   );
 }

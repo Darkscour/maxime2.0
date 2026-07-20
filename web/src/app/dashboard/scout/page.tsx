@@ -55,7 +55,7 @@ export default async function DashboardScoutPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -63,10 +63,10 @@ export default async function DashboardScoutPage() {
         <DashboardSectionEyebrow accent="violet" className="mt-5">
           Recruitment
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
           Player profiles
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           {teamTier === "collegiate"
             ? "Browse collegiate players at your school. Campus talent outside your institution is hidden. Save candidates to your watchlist or send an invite directly."
             : "Browse grassroots players on Maxime. Save candidates to your watchlist or send an invite directly."}
@@ -74,9 +74,9 @@ export default async function DashboardScoutPage() {
       </header>
 
       {visiblePlayers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
-          <Search className="mx-auto h-8 w-8 text-zinc-600" />
-          <p className="mt-4 text-sm text-zinc-400">
+        <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
+          <Search className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
+          <p className="mt-4 text-sm text-[var(--foreground-muted)]">
             No player profiles yet. They&apos;ll appear here as players complete
             onboarding.
           </p>

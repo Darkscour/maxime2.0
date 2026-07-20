@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Activity, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dashboardStatCardClassName } from "@/components/dashboard/dashboard-cards";
 
@@ -39,7 +38,7 @@ function pipelineHint(pendingJoinRequests: number, pendingInvites: number): stri
   return parts.length > 0 ? parts.join(" · ") : "No pending requests";
 }
 
-/** Compact recruiting health — same footprint as other overview stat cards. */
+/** Compact recruiting health — scoreboard cell on the program board. */
 export function ManagerTeamSnapshotCard({
   memberCount,
   rosterSize,
@@ -52,29 +51,21 @@ export function ManagerTeamSnapshotCard({
 
   return (
     <div className={cn(dashboardStatCardClassName, className)}>
-      <div className="flex flex-1 items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">
-            Team snapshot
-          </p>
-          <p className="font-heading mt-2 break-words text-2xl font-semibold leading-tight text-white">
-            {headline}
-          </p>
-          <p className="mt-1 break-words text-xs leading-5 text-zinc-500">{hint}</p>
-          {pendingJoinRequests > 0 && (
-            <Link
-              href="/dashboard/join-requests"
-              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-cyan-400/90 hover:text-cyan-300"
-            >
-              <Users className="h-3 w-3 shrink-0" />
-              Review join requests
-            </Link>
-          )}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-          <Activity className="h-4 w-4 text-violet-400" />
-        </span>
-      </div>
+      <p className="pb-stat-label pb-kicker !text-[var(--foreground-muted)]">Team snapshot</p>
+      <p className="pb-stat-value font-board mt-2 break-words text-[2rem] font-semibold leading-[0.95] tracking-[0.01em] uppercase text-[var(--foreground)]">
+        {headline}
+      </p>
+      <p className="pb-stat-hint mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
+        {hint}
+      </p>
+      {pendingJoinRequests > 0 && (
+        <Link
+          href="/dashboard/join-requests"
+          className="pb-stat-link mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
+        >
+          Review join requests
+        </Link>
+      )}
     </div>
   );
 }

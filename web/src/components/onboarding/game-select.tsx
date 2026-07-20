@@ -32,7 +32,7 @@ function GameLogo({
     <span
       className={cn(
         dim,
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-lg",
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-none",
       )}
     >
       {src ? (
@@ -80,26 +80,28 @@ export function GameSelect({
   return (
     <div ref={rootRef} className="relative">
       <label className="block">
-        <span className="text-sm font-medium text-zinc-200">
+        <span className="text-sm font-medium text-[var(--foreground)]">
           {label}
-          {required && <span className="text-red-400"> *</span>}
+          {required && <span className="text-red-600"> *</span>}
         </span>
         {hint ? (
-          <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>
+          <span className="mt-0.5 block text-xs text-[var(--foreground-muted)]">
+            {hint}
+          </span>
         ) : (
           <span className="mt-0.5 block min-h-4" aria-hidden />
         )}
 
         {selected ? (
-          <div className="mt-2 flex items-center gap-3 rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2.5">
+          <div className="mt-2 flex items-center gap-3 rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2.5">
             <GameLogo game={selected} />
-            <p className="min-w-0 flex-1 truncate text-sm font-medium text-zinc-100">
+            <p className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--foreground)]">
               {selected}
             </p>
             <button
               type="button"
               onClick={clear}
-              className="rounded-md p-1 text-zinc-500 hover:bg-white/5 hover:text-white"
+              className="rounded-none p-1 text-[var(--foreground-muted)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
               aria-label="Clear game selection"
             >
               <X className="h-4 w-4" />
@@ -111,7 +113,7 @@ export function GameSelect({
             onClick={() => setOpen((v) => !v)}
             className={cn(
               fieldClassName,
-              "mt-2 flex w-full items-center justify-between text-left text-zinc-500",
+              "mt-2 flex w-full items-center justify-between text-left text-[var(--foreground-muted)]",
             )}
             aria-expanded={open}
             aria-controls={listId}
@@ -126,17 +128,17 @@ export function GameSelect({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-white/10 bg-[#0c0e12] py-1 shadow-xl shadow-black/40"
+          className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-none border border-[var(--border)] bg-[var(--surface)] py-1 shadow-sm"
         >
           {ONBOARDING_GAMES.map((game) => (
             <li key={game} role="option" aria-selected={selected === game}>
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+                className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--background)]"
                 onClick={() => select(game)}
               >
                 <GameLogo game={game} />
-                <span className="text-sm text-zinc-100">{game}</span>
+                <span className="text-sm text-[var(--foreground)]">{game}</span>
               </button>
             </li>
           ))}

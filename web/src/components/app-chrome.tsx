@@ -10,6 +10,21 @@ function isAppShellRoute(pathname: string) {
   );
 }
 
+/** Home uses Overcast Ink Frame chrome (FrameNav / FrameFooter). */
+function isHomeRoute(pathname: string) {
+  return pathname === "/";
+}
+
+function isAuthRoute(pathname: string) {
+  return (
+    pathname === "/sign-in" ||
+    pathname.startsWith("/sign-in/") ||
+    pathname === "/sign-up" ||
+    pathname.startsWith("/sign-up/") ||
+    pathname.startsWith("/auth/")
+  );
+}
+
 export function AppShellOnly({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (!isAppShellRoute(pathname)) return null;
@@ -18,6 +33,15 @@ export function AppShellOnly({ children }: { children: React.ReactNode }) {
 
 export function MarketingOnly({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (isAppShellRoute(pathname)) return null;
+  if (isAppShellRoute(pathname) || isHomeRoute(pathname)) return null;
+  return <>{children}</>;
+}
+
+/** Site footer — hidden on auth pages for a cleaner centered layout. */
+export function MarketingFooterOnly({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (isAppShellRoute(pathname) || isHomeRoute(pathname) || isAuthRoute(pathname)) {
+    return null;
+  }
   return <>{children}</>;
 }

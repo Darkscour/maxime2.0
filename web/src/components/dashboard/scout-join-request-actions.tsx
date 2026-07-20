@@ -65,9 +65,9 @@ export function ScoutJoinRequestActions({
   return (
     <div className="space-y-3">
       {joinRequestPending && (
-        <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3">
-          <p className="text-sm font-medium text-cyan-100">Requested to join your team</p>
-          <p className="mt-1 text-xs leading-5 text-cyan-200/70">
+        <div className="rounded-none border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] px-4 py-3">
+          <p className="text-sm font-medium text-[var(--accent)]">Requested to join your team</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--accent)]/70">
             This player asked to join {teamName}. Send a recruitment invite so they can
             accept from their dashboard.
           </p>

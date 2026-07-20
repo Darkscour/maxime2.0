@@ -191,12 +191,12 @@ export function TeamOnboardingForm({
       <FormError message={error} />
 
       {isCollegiate ? (
-        <div className="space-y-5 rounded-2xl border border-violet-400/20 bg-violet-400/[0.04] p-5">
+        <div className="space-y-5 rounded-none border border-[var(--border)] bg-[var(--surface)] p-5">
           <div>
-            <p className="text-sm font-medium text-violet-100">
+            <p className="text-sm font-medium text-[var(--foreground)]">
               Collegiate org verification
             </p>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
               Collegiate teams require a school affiliation and official school
               email. You cannot create a campus org profile with a personal email
               alone.
@@ -231,8 +231,10 @@ export function TeamOnboardingForm({
           </FormField>
         </div>
       ) : (
-        <div className="space-y-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.04] p-5">
-          <p className="text-sm font-medium text-cyan-100">Manager contact</p>
+        <div className="space-y-5 rounded-none border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm font-medium text-[var(--foreground)]">
+            Manager contact
+          </p>
           <FormField
             label="Name on Maxime"
             hint="How you appear on the platform — not derived from your email."
@@ -260,8 +262,10 @@ export function TeamOnboardingForm({
         </div>
       )}
 
-      <div className="space-y-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <p className="text-sm font-medium text-zinc-200">Leadership details</p>
+      <div className="space-y-5 rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
+        <p className="text-sm font-medium text-[var(--foreground)]">
+          Leadership details
+        </p>
         <FormField
           label="Your role at the org"
           hint={isCollegiate ? "Required for collegiate team managers" : "Required"}
@@ -280,12 +284,12 @@ export function TeamOnboardingForm({
             ))}
           </SelectInput>
         </FormField>
-        <label className="flex items-start gap-3 text-sm text-zinc-300">
+        <label className="flex items-start gap-3 text-sm text-[var(--foreground)]">
           <input
             type="checkbox"
             checked={draft.authorized}
             onChange={(e) => patchDraft("authorized", e.target.checked)}
-            className="mt-1 rounded border-white/20 bg-transparent"
+            className="mt-1 rounded-none border-[var(--border)] bg-transparent"
             required
           />
           <span>
@@ -319,8 +323,8 @@ export function TeamOnboardingForm({
                 onClick={() => toggleGame(game)}
                 className={
                   active
-                    ? "rounded-full bg-cyan-400/15 px-3 py-1.5 text-xs font-medium text-cyan-200 ring-1 ring-inset ring-cyan-400/35"
-                    : "rounded-full bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400 ring-1 ring-inset ring-white/10 hover:text-white"
+                    ? "rounded-none bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] px-3 py-1.5 text-xs font-medium text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_35%,transparent)]"
+                    : "rounded-none bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)] hover:text-[var(--foreground)]"
                 }
               >
                 <span className="inline-flex items-center gap-1.5">
@@ -329,7 +333,7 @@ export function TeamOnboardingForm({
                     <img
                       src={logoPath}
                       alt=""
-                      className="h-4 w-4 rounded object-contain"
+                      className="h-4 w-4 rounded-none object-contain"
                     />
                   ) : null}
                   {game}
@@ -386,8 +390,8 @@ export function TeamOnboardingForm({
         {loading ? "Creating team…" : "Create team & get invite code"}
       </Button>
 
-      <p className="text-center text-sm text-zinc-500">
-        <OnboardingHomeLink className="text-cyan-400 hover:text-cyan-300" />
+      <p className="text-center text-sm text-[var(--foreground-muted)]">
+        <OnboardingHomeLink className="text-[var(--accent)] hover:text-[var(--accent-strong)]" />
       </p>
     </form>
   );

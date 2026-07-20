@@ -34,7 +34,7 @@ export default async function WatchlistPage() {
       <header>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -42,10 +42,10 @@ export default async function WatchlistPage() {
         <DashboardSectionEyebrow accent="violet" className="mt-5">
           Recruitment
         </DashboardSectionEyebrow>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
           Watchlist
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-400">
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--foreground-muted)]">
           {ctx.accountTier === "collegiate"
             ? `Shortlist collegiate players at your school, then send invites when you're ready to recruit them to ${ctx.team.name}.`
             : `Shortlist grassroots players, then send invites when you're ready to recruit them to ${ctx.team.name}.`}

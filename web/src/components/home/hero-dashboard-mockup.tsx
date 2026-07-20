@@ -5,17 +5,17 @@ export function HeroDashboardMockup({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "gradient-border rounded-2xl bg-[var(--surface)]/80 p-2 shadow-2xl shadow-cyan-500/5 backdrop-blur",
+        "gradient-border rounded-2xl bg-[var(--surface)]/80 p-2 shadow-2xl shadow-[0_25px_50px_-12px_var(--accent-glow)] backdrop-blur",
         className,
       )}
     >
-      <div className="overflow-hidden rounded-xl border border-white/5 bg-[var(--background)]">
-        <div className="border-b border-white/5 px-4 py-3">
+      <div className="overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--background)]">
+        <div className="border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
-            <span className="ml-2 text-xs text-zinc-500">maxime.com/dashboard</span>
+            <span className="ml-2 text-xs text-[var(--foreground-subtle)]">maxime.com/dashboard</span>
           </div>
         </div>
 

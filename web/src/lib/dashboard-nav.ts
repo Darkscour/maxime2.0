@@ -215,17 +215,17 @@ function formatMembershipRole(role: string | null | undefined): string {
 export { formatMembershipRole };
 
 export const navGroupAccentEyebrowClasses: Record<NavGroupAccent, string> = {
-  cyan: "text-cyan-400/90",
-  violet: "text-violet-400/90",
-  emerald: "text-emerald-400/90",
-  muted: "text-zinc-500",
+  cyan: "text-[var(--accent)]",
+  violet: "text-[var(--accent-2)]",
+  emerald: "text-[var(--success)]",
+  muted: "text-[var(--foreground-muted)]",
 };
 
 export const navGroupAccentBorderClasses: Record<NavGroupAccent, string> = {
-  cyan: "border-cyan-400/20",
-  violet: "border-violet-400/20",
-  emerald: "border-emerald-400/20",
-  muted: "border-white/8",
+  cyan: "border-[color-mix(in_srgb,var(--accent)_25%,var(--border))]",
+  violet: "border-[color-mix(in_srgb,var(--accent-2)_25%,var(--border))]",
+  emerald: "border-[color-mix(in_srgb,var(--success)_25%,var(--border))]",
+  muted: "border-[var(--border)]",
 };
 
 export const navGroupAccentLinkClasses: Record<
@@ -233,19 +233,23 @@ export const navGroupAccentLinkClasses: Record<
   { active: string; iconActive: string }
 > = {
   cyan: {
-    active: "bg-cyan-400/10 text-white ring-1 ring-inset ring-cyan-400/25",
-    iconActive: "text-cyan-400",
+    active:
+      "bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))]",
+    iconActive: "text-[var(--accent)]",
   },
   violet: {
-    active: "bg-violet-400/10 text-white ring-1 ring-inset ring-violet-400/25",
-    iconActive: "text-violet-400",
+    active:
+      "bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]",
+    iconActive: "text-[var(--accent-2)]",
   },
   emerald: {
-    active: "bg-emerald-400/10 text-white ring-1 ring-inset ring-emerald-400/25",
-    iconActive: "text-emerald-400",
+    active:
+      "bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-[var(--foreground)] border border-[color-mix(in_srgb,var(--success)_35%,var(--border))]",
+    iconActive: "text-[var(--success)]",
   },
   muted: {
-    active: "bg-white/[0.06] text-white ring-1 ring-inset ring-white/10",
-    iconActive: "text-zinc-300",
+    active:
+      "bg-[var(--surface-2)] text-[var(--foreground)] border border-[var(--border)]",
+    iconActive: "text-[var(--foreground-muted)]",
   },
 };

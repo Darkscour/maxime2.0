@@ -33,8 +33,8 @@ export function RosterArt() {
                 rx="4"
                 className={
                   selected
-                    ? "stroke-cyan-400 fill-cyan-400/10"
-                    : "stroke-zinc-700"
+                    ? "stroke-[var(--accent)] fill-[color-mix(in_srgb,var(--accent)_10%,transparent)]"
+                    : "stroke-[var(--border-strong)]"
                 }
                 strokeWidth="1.25"
               />
@@ -42,7 +42,7 @@ export function RosterArt() {
                 cx="34"
                 cy={y + rowH / 2}
                 r="5"
-                className={selected ? "stroke-cyan-300" : "stroke-zinc-600"}
+                className={selected ? "stroke-[color-mix(in_srgb,var(--accent)_85%,white)]" : "stroke-[var(--foreground-subtle)]"}
                 strokeWidth="1.25"
               />
               <line
@@ -50,7 +50,7 @@ export function RosterArt() {
                 y1={y + rowH / 2 - 2}
                 x2="120"
                 y2={y + rowH / 2 - 2}
-                className={selected ? "stroke-cyan-300" : "stroke-zinc-600"}
+                className={selected ? "stroke-[color-mix(in_srgb,var(--accent)_85%,white)]" : "stroke-[var(--foreground-subtle)]"}
                 strokeWidth="1.25"
               />
               <line
@@ -58,7 +58,7 @@ export function RosterArt() {
                 y1={y + rowH / 2 + 4}
                 x2="96"
                 y2={y + rowH / 2 + 4}
-                className={selected ? "stroke-cyan-300/60" : "stroke-zinc-700"}
+                className={selected ? "stroke-[color-mix(in_srgb,var(--accent)_60%,transparent)]" : "stroke-[var(--border-strong)]"}
                 strokeWidth="1.25"
               />
               <rect
@@ -68,7 +68,7 @@ export function RosterArt() {
                 height="10"
                 rx="3"
                 className={
-                  selected ? "stroke-cyan-400/80" : "stroke-zinc-700"
+                  selected ? "stroke-[color-mix(in_srgb,var(--accent)_80%,transparent)]" : "stroke-[var(--border-strong)]"
                 }
                 strokeWidth="1"
               />

@@ -46,7 +46,7 @@ function SponsorCardDetails({
       {sponsor.description && (
         <p
           className={cn(
-            "leading-relaxed text-zinc-400",
+            "leading-relaxed text-[var(--foreground-muted)]",
             compact ? "line-clamp-2 text-sm" : "line-clamp-3 text-sm sm:text-[15px]",
           )}
         >
@@ -71,13 +71,13 @@ function SponsorCardDetails({
           {visibleGames.map((game) => (
             <span
               key={game}
-              className="rounded-md bg-white/5 px-1.5 py-0.5 text-[11px] text-zinc-400 ring-1 ring-inset ring-white/10"
+              className="rounded-none bg-[var(--background)] px-1.5 py-0.5 text-[11px] text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]"
             >
               {game}
             </span>
           ))}
           {extraGames > 0 && (
-            <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[11px] text-zinc-500 ring-1 ring-inset ring-white/10">
+            <span className="rounded-none bg-[var(--background)] px-1.5 py-0.5 text-[11px] text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]">
               +{extraGames}
             </span>
           )}
@@ -90,15 +90,15 @@ function SponsorCardDetails({
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2">
-      <dt className="shrink-0 text-zinc-600">{label}</dt>
-      <dd className="min-w-0 truncate text-zinc-300">{value}</dd>
+      <dt className="shrink-0 text-[var(--foreground-muted)]">{label}</dt>
+      <dd className="min-w-0 truncate text-[var(--foreground-muted)]">{value}</dd>
     </div>
   );
 }
 
 function LeadStatusPill({ lead }: { lead: SponsorLeadRecord }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300 ring-1 ring-inset ring-emerald-400/20">
+    <span className="inline-flex items-center rounded-none bg-[color-mix(in_srgb,var(--success)_10%,transparent)] px-2 py-0.5 text-[10px] font-medium text-[var(--success)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--success)_20%,transparent)]">
       {SPONSOR_LEAD_STATUS_LABELS[lead.status as SponsorLeadStatus]}
     </span>
   );
@@ -119,9 +119,9 @@ export function SponsorDirectoryCard({
 }) {
   if (compact) {
     return (
-      <article className="group flex min-h-[15.5rem] flex-col rounded-xl border border-white/5 bg-[var(--surface)] p-4 transition-colors hover:border-emerald-400/20">
+      <article className="group flex min-h-[15.5rem] flex-col rounded-none border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))]">
         {tag && (
-          <span className="mb-2 inline-block rounded-full bg-zinc-500/10 px-2 py-0.5 text-[10px] text-zinc-400 ring-1 ring-inset ring-white/10">
+          <span className="mb-2 inline-block rounded-none bg-[color-mix(in_srgb,var(--foreground-muted)_10%,transparent)] px-2 py-0.5 text-[10px] text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]">
             {tag}
           </span>
         )}
@@ -133,10 +133,10 @@ export function SponsorDirectoryCard({
             size="sm"
           />
           <div className="min-w-0 flex-1">
-            <h3 className="font-heading truncate text-base font-semibold text-white group-hover:text-emerald-100">
+            <h3 className="font-heading truncate text-base font-semibold text-[var(--foreground)] group-hover:text-[var(--accent)]">
               {sponsor.name}
             </h3>
-            <p className="mt-0.5 truncate text-sm text-zinc-500">{sponsor.industry}</p>
+            <p className="mt-0.5 truncate text-sm text-[var(--foreground-muted)]">{sponsor.industry}</p>
           </div>
         </div>
 
@@ -154,18 +154,18 @@ export function SponsorDirectoryCard({
               href={sponsor.sponsorLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm font-medium text-cyan-400 hover:text-cyan-300"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-strong)]"
             >
               Apply
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           ) : (
-            <span className="text-sm text-zinc-600">No link</span>
+            <span className="text-sm text-[var(--foreground-muted)]">No link</span>
           )}
         </div>
 
         {showPipeline && (
-          <div className="mt-3.5 border-t border-white/5 pt-3">
+          <div className="mt-3.5 border-t border-[var(--border)] pt-3">
             <SponsorLeadActions sponsor={sponsor} lead={lead} compact />
           </div>
         )}
@@ -176,11 +176,11 @@ export function SponsorDirectoryCard({
   return (
     <article
       className={cn(
-        "group flex min-h-[18rem] flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-7 transition-colors hover:border-cyan-400/20 sm:min-h-[19rem] sm:p-8",
+        "group flex min-h-[18rem] flex-col rounded-none border border-[var(--border)] bg-[var(--surface)] p-7 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] sm:min-h-[19rem] sm:p-8",
       )}
     >
       {tag && (
-        <span className="mb-3 inline-block rounded-full bg-zinc-500/10 px-2.5 py-1 text-xs text-zinc-400 ring-1 ring-inset ring-white/10">
+        <span className="mb-3 inline-block rounded-none bg-[color-mix(in_srgb,var(--foreground-muted)_10%,transparent)] px-2.5 py-1 text-xs text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]">
           {tag}
         </span>
       )}
@@ -192,10 +192,10 @@ export function SponsorDirectoryCard({
           size="md"
         />
         <div className="min-w-0 flex-1">
-          <h3 className="font-heading text-xl font-semibold leading-snug text-white group-hover:text-cyan-100 sm:text-2xl">
+          <h3 className="font-heading text-xl font-semibold leading-snug text-[var(--foreground)] group-hover:text-[var(--accent)] sm:text-2xl">
             {sponsor.name}
           </h3>
-          <p className="mt-1 text-base text-zinc-400">{sponsor.industry}</p>
+          <p className="mt-1 text-base text-[var(--foreground-muted)]">{sponsor.industry}</p>
         </div>
       </div>
 
@@ -214,13 +214,13 @@ export function SponsorDirectoryCard({
               href={sponsor.sponsorLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-400 transition-colors hover:text-cyan-300"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
             >
               View application
               <ExternalLink className="h-4 w-4" />
             </a>
           ) : (
-            <span className="text-sm text-zinc-600">No link</span>
+            <span className="text-sm text-[var(--foreground-muted)]">No link</span>
           )}
         </div>
         {showPipeline && (

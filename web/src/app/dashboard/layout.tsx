@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Barlow_Condensed } from "next/font/google";
 import {
   getDashboardContext,
   getExistingUserAccount,
@@ -13,6 +14,12 @@ import {
 import { deriveOnboardingComplete } from "@/lib/onboarding-complete";
 import { resolveIncompleteOnboardingPath } from "@/lib/onboarding-resume";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +70,12 @@ export default async function DashboardLayout({
   }
 
   return (
-    <DashboardShell accountType={ctx.accountType} accountTier={ctx.accountTier}>
+    <DashboardShell
+      accountType={ctx.accountType}
+      accountTier={ctx.accountTier}
+      teamName={ctx.team?.name}
+      className={barlowCondensed.variable}
+    >
       {children}
     </DashboardShell>
   );

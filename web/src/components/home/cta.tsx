@@ -4,8 +4,14 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import {
+  marketingHashHref,
+  useMarketingHashRoot,
+} from "@/hooks/use-marketing-hash-root";
 
 export function CTA() {
+  const hashRoot = useMarketingHashRoot();
+
   return (
     <section id="cta" className="py-10 sm:py-12">
       <Container>
@@ -19,15 +25,15 @@ export function CTA() {
           <div className="relative overflow-hidden rounded-[calc(theme(borderRadius.3xl)-4px)] bg-[var(--background)] px-8 py-12 sm:px-14 sm:py-14">
             <div className="bg-grid bg-grid-fade absolute inset-0 opacity-50" aria-hidden />
             <div
-              className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-3xl"
+              className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] blur-3xl"
               aria-hidden
             />
             <div className="relative mx-auto max-w-2xl text-center">
-              <Sparkles className="mx-auto h-8 w-8 text-cyan-400" />
-              <h2 className="font-heading mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              <Sparkles className="mx-auto h-8 w-8 text-[var(--accent)]" />
+              <h2 className="font-heading mt-6 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl">
                 Ready to level up your org?
               </h2>
-              <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
+              <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[var(--foreground-muted)] sm:text-lg">
                 Whether you run a campus club or a grassroots stack — managers
                 scout players and land sponsors while players get discovered and
                 join teams, all from one workspace.
@@ -37,7 +43,11 @@ export function CTA() {
                   Start free
                   <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button href="/#solutions" variant="outline" size="lg">
+                <Button
+                  href={marketingHashHref(hashRoot, "#solutions")}
+                  variant="outline"
+                  size="lg"
+                >
                   Compare solutions
                 </Button>
               </div>

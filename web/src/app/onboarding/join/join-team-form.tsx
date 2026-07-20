@@ -76,7 +76,7 @@ export function JoinTeamForm() {
         </Button>
         <Link
           href={buildOnboardingHref("/onboarding/done", onboardingQuery)}
-          className="text-sm text-zinc-400 hover:text-white"
+          className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
         >
           Skip for now
         </Link>

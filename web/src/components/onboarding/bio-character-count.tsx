@@ -9,7 +9,7 @@ export function BioCharacterCount({
 
   return (
     <p
-      className={`mt-1.5 text-right text-xs ${nearLimit ? "text-amber-400/90" : "text-zinc-500"}`}
+      className={`mt-1.5 text-right text-xs ${nearLimit ? "text-[var(--warning)]" : "text-[var(--foreground-muted)]"}`}
       aria-live="polite"
     >
       {length}/{max}

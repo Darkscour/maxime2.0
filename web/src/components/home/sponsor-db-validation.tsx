@@ -29,11 +29,11 @@ export function SponsorDbValidation({
   const StatusIcon = status.icon;
 
   return (
-    <div className="mt-16 rounded-xl border border-dashed border-cyan-400/25 bg-cyan-400/[0.04] p-5 sm:p-6">
+    <div className="mt-16 rounded-none border border-dashed border-[color-mix(in_srgb,var(--accent)_30%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_6%,transparent)] p-5 sm:p-6">
       <div className="flex items-start gap-3">
-        <Database className="mt-0.5 h-5 w-5 shrink-0 text-cyan-400" />
+        <Database className="mt-0.5 h-5 w-5 shrink-0 text-[var(--accent)]" />
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
             Supabase validation
           </p>
           <p className={`mt-2 flex items-center gap-2 text-sm font-medium ${status.tone}`}>

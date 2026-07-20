@@ -71,14 +71,14 @@ export function RecruitmentDemoPanel({
     <div
       className={
         compact
-          ? "rounded-xl border border-white/5 bg-[var(--surface)]/80 p-4 sm:p-5"
-          : "rounded-2xl border border-white/5 bg-[var(--surface)] p-5 sm:p-6"
+          ? "rounded-none border border-[var(--border)] bg-[var(--surface)]/80 p-4 sm:p-5"
+          : "rounded-none border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6"
       }
     >
-      <p className="text-xs font-medium uppercase tracking-wider text-cyan-400/90">
+      <p className="text-xs font-medium uppercase tracking-wider text-[var(--accent)]">
         Interactive preview
       </p>
-      <p className="mt-1 text-sm text-zinc-500">
+      <p className="mt-1 text-sm text-[var(--foreground-muted)]">
         {PUBLIC_PORTAL_CARD_LIMIT} player preview
         {gateLast ? " — last card blurred until you sign in" : ""}.
       </p>
@@ -86,12 +86,12 @@ export function RecruitmentDemoPanel({
       {showFilters && (
         <div className="mt-4 flex flex-col gap-3">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-[var(--foreground-muted)]" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search handle…"
-              className="w-full rounded-lg border border-white/10 bg-[var(--background)] py-2 pl-8 pr-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-400/40 focus:outline-none"
+              className="w-full rounded-none border border-[var(--border)] bg-[var(--background)] py-2 pl-8 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--foreground)] focus:outline-none"
             />
           </div>
 
@@ -130,7 +130,7 @@ export function RecruitmentDemoPanel({
         </div>
       )}
 
-      <p className="mt-3 text-xs text-zinc-500">
+      <p className="mt-3 text-xs text-[var(--foreground-muted)]">
         Showing {filtered.length} preview player{filtered.length === 1 ? "" : "s"}
       </p>
 
@@ -142,7 +142,7 @@ export function RecruitmentDemoPanel({
         }
       >
         {filtered.length === 0 ? (
-          <p className="col-span-full py-8 text-center text-sm text-zinc-500">
+          <p className="col-span-full py-8 text-center text-sm text-[var(--foreground-muted)]">
             No players match those filters. Try clearing one constraint.
           </p>
         ) : (
@@ -180,12 +180,12 @@ function FilterSelect({
   options: string[];
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs text-zinc-500">
+    <label className="flex flex-col gap-1 text-xs text-[var(--foreground-muted)]">
       {label}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2 text-sm text-zinc-200 focus:border-cyan-400/40 focus:outline-none"
+        className="rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
       >
         <option value="">All</option>
         {options.map((o) => (

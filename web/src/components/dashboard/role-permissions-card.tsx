@@ -68,14 +68,14 @@ export function RolePermissionsCard({
     <>
       {!embedded && (
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-inset ring-violet-400/25">
-            <Shield className="h-5 w-5 text-violet-300" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_30%,transparent)]">
+            <Shield className="h-5 w-5 text-[var(--accent-2)]" />
           </span>
           <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500">
+            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">
               Role & permissions
             </p>
-            <h2 className="font-heading mt-1 text-lg font-semibold text-white">
+            <h2 className="font-heading mt-1 text-lg font-semibold text-[var(--foreground)]">
               {accountType === "team_manager"
                 ? "Team manager"
                 : accountType === "player"
@@ -83,14 +83,14 @@ export function RolePermissionsCard({
                   : "Account"}
             </h2>
             {managerTitle && (
-              <p className="mt-0.5 text-sm text-zinc-400">{managerTitle}</p>
+              <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">{managerTitle}</p>
             )}
           </div>
         </div>
       )}
 
       {embedded && managerTitle && (
-        <p className="text-sm text-zinc-400">{managerTitle}</p>
+        <p className="text-sm text-[var(--foreground-muted)]">{managerTitle}</p>
       )}
 
       <div className={embedded ? "mt-3 flex flex-wrap gap-2" : "mt-4 flex flex-wrap gap-2"}>
@@ -110,14 +110,14 @@ export function RolePermissionsCard({
         {permissions.map((row) => (
           <li
             key={row.label}
-            className="flex items-center gap-2.5 text-sm text-zinc-300"
+            className="flex items-center gap-2.5 text-sm text-[var(--foreground-muted)]"
           >
             {row.allowed ? (
               <Check className="h-4 w-4 shrink-0 text-emerald-400" />
             ) : (
-              <X className="h-4 w-4 shrink-0 text-zinc-600" />
+              <X className="h-4 w-4 shrink-0 text-[var(--foreground-muted)]" />
             )}
-            <span className={row.allowed ? "text-zinc-200" : "text-zinc-500"}>
+            <span className={row.allowed ? "text-[var(--foreground)]" : "text-[var(--foreground-muted)]"}>
               {row.label}
             </span>
           </li>
@@ -137,7 +137,7 @@ export function RolePermissionsCard({
   if (embedded) return content;
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
       {content}
     </div>
   );

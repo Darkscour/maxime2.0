@@ -120,20 +120,20 @@ export function AccountSettingsForm({
               <img
                 src={avatarUrl}
                 alt=""
-                className="h-16 w-16 rounded-xl object-cover ring-1 ring-inset ring-white/10"
+                className="h-16 w-16 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
               />
             ) : (
-              <span className="font-heading flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 text-xl font-bold text-zinc-950">
+              <span className="font-heading flex h-16 w-16 items-center justify-center rounded-none bg-[var(--foreground)] text-xl font-bold text-[var(--background)]">
                 {initial}
               </span>
             )}
-            <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface)] ring-1 ring-white/10">
-              <Camera className="h-3.5 w-3.5 text-zinc-400 group-hover:text-white" />
+            <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface)] ring-1 ring-[var(--border)]">
+              <Camera className="h-3.5 w-3.5 text-[var(--foreground-muted)] group-hover:text-[var(--foreground)]" />
             </span>
           </button>
           <div>
-            <p className="text-sm text-zinc-300">Upload a photo</p>
-            <p className="mt-0.5 text-xs text-zinc-500">JPG or PNG, max 10 MB</p>
+            <p className="text-sm text-[var(--foreground-muted)]">Upload a photo</p>
+            <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">JPG or PNG, max 10 MB</p>
           </div>
           <input
             ref={fileRef}

@@ -28,14 +28,14 @@ export function SponsorMinimalCard({
   showPipeline?: boolean;
 }) {
   return (
-    <article className="relative flex flex-col rounded-xl border border-white/5 bg-[var(--surface)] p-5 transition-colors hover:border-cyan-400/25 hover:bg-[var(--surface-2)]">
+    <article className="relative flex flex-col rounded-none border border-[var(--border)] bg-[var(--surface)] p-5 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] hover:bg-[var(--surface-2)]">
       {tag && (
-        <span className="absolute right-3 top-3 rounded-full bg-zinc-500/10 px-2 py-0.5 text-[10px] text-zinc-400 ring-1 ring-inset ring-white/10">
+        <span className="absolute right-3 top-3 rounded-none bg-[color-mix(in_srgb,var(--foreground-muted)_10%,transparent)] px-2 py-0.5 text-[10px] text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]">
           {tag}
         </span>
       )}
 
-      <h3 className="font-heading pr-16 text-base font-semibold text-white">
+      <h3 className="font-heading pr-16 text-base font-semibold text-[var(--foreground)]">
         {sponsor.name}
       </h3>
 
@@ -47,13 +47,13 @@ export function SponsorMinimalCard({
               href={sponsor.sponsorLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-cyan-300 hover:text-cyan-200"
+              className="inline-flex items-center gap-1 text-[var(--accent)] hover:text-[var(--accent-strong)]"
             >
               View application
               <ExternalLink className="h-3 w-3" />
             </a>
           ) : (
-            <span className="text-zinc-500">—</span>
+            <span className="text-[var(--foreground-muted)]">—</span>
           )}
         </Row>
         <Row label="Sponsorship difficulty">
@@ -81,10 +81,10 @@ function Row({
 }) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-      <dt className="w-36 shrink-0 text-xs font-medium uppercase tracking-wider text-zinc-500">
+      <dt className="w-36 shrink-0 text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
         {label}
       </dt>
-      <dd className="text-zinc-300">{children ?? value}</dd>
+      <dd className="text-[var(--foreground-muted)]">{children ?? value}</dd>
     </div>
   );
 }

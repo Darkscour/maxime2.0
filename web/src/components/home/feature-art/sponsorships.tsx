@@ -32,8 +32,8 @@ export function SponsorshipsArt() {
       >
         <defs>
           <radialGradient id="sponsor-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="rgb(167,139,250)" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="rgb(167,139,250)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent-2)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--accent-2)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -48,7 +48,7 @@ export function SponsorshipsArt() {
               x2={cx}
               y2={cy}
               className={
-                t.matched ? "stroke-violet-400/80" : "stroke-zinc-700/70"
+                t.matched ? "stroke-[color-mix(in_srgb,var(--accent-2)_80%,transparent)]" : "stroke-[color-mix(in_srgb,var(--border-strong)_70%,transparent)]"
               }
               strokeWidth={t.matched ? "1.5" : "1"}
               strokeDasharray={t.matched ? undefined : "2 4"}
@@ -60,8 +60,8 @@ export function SponsorshipsArt() {
           const tcx = t.x + TILE / 2;
           const tcy = t.y + TILE / 2;
           const strokeClass = t.matched
-            ? "stroke-violet-400/80"
-            : "stroke-zinc-600";
+            ? "stroke-[color-mix(in_srgb,var(--accent-2)_80%,transparent)]"
+            : "stroke-[var(--foreground-subtle)]";
           return (
             <g key={`t-${i}`}>
               <rect
@@ -121,14 +121,14 @@ export function SponsorshipsArt() {
           cx={cx}
           cy={cy}
           r="22"
-          className="stroke-violet-400 fill-violet-400/10"
+          className="stroke-[var(--accent-2)] fill-[color-mix(in_srgb,var(--accent-2)_10%,transparent)]"
           strokeWidth="1.5"
         />
         <circle
           cx={cx}
           cy={cy}
           r="32"
-          className="stroke-violet-400/40"
+          className="stroke-[color-mix(in_srgb,var(--accent-2)_40%,transparent)]"
           strokeWidth="1"
           strokeDasharray="2 4"
         />
@@ -136,7 +136,7 @@ export function SponsorshipsArt() {
           x={cx}
           y={cy + 4}
           textAnchor="middle"
-          className="fill-violet-200 font-mono"
+          className="fill-[color-mix(in_srgb,var(--accent-2)_70%,white)] font-mono"
           fontSize="10"
           letterSpacing="1.5"
         >

@@ -5,7 +5,7 @@
  * subtle accent glow) so the section reads as one designed family rather than
  * seven loose drawings. Keep new illustrations consistent by:
  *   - 1.5px strokes on structural lines (use `STROKE_BASE` / `STROKE_ACCENT`)
- *   - one accent color "pop" per illustration (cyan or violet, not both)
+ *   - one accent color "pop" per illustration (copper accent or accent-2, not both)
  *   - SVG `viewBox` set to "0 0 400 240" for pillars, "0 0 240 140" for
  *     secondary cards
  *   - `fill="none"` on every shape unless you specifically want a tinted fill
@@ -15,18 +15,18 @@ import { cn } from "@/lib/utils";
 
 export type Accent = "cyan" | "violet";
 
-export const STROKE_BASE = "stroke-zinc-500";
-export const STROKE_BASE_SOFT = "stroke-zinc-700";
-export const STROKE_CYAN = "stroke-cyan-400";
-export const STROKE_VIOLET = "stroke-violet-400";
+export const STROKE_BASE = "stroke-[var(--foreground-subtle)]";
+export const STROKE_BASE_SOFT = "stroke-[var(--border-strong)]";
+export const STROKE_CYAN = "stroke-[var(--accent)]";
+export const STROKE_VIOLET = "stroke-[var(--accent-2)]";
 
-export const FILL_CYAN_SOFT = "fill-cyan-400/10";
-export const FILL_VIOLET_SOFT = "fill-violet-400/10";
+export const FILL_CYAN_SOFT = "fill-[color-mix(in_srgb,var(--accent)_10%,transparent)]";
+export const FILL_VIOLET_SOFT = "fill-[color-mix(in_srgb,var(--accent-2)_10%,transparent)]";
 
 const ACCENT_GLOW: Record<Accent, string> = {
-  cyan: "before:bg-[radial-gradient(60%_50%_at_50%_0%,rgba(34,211,238,0.12),transparent_70%)]",
+  cyan: "before:bg-[radial-gradient(60%_50%_at_50%_0%,color-mix(in_srgb,var(--accent)_12%,transparent),transparent_70%)]",
   violet:
-    "before:bg-[radial-gradient(60%_50%_at_50%_0%,rgba(167,139,250,0.12),transparent_70%)]",
+    "before:bg-[radial-gradient(60%_50%_at_50%_0%,color-mix(in_srgb,var(--accent-2)_12%,transparent),transparent_70%)]",
 };
 
 export function IllustrationFrame({
@@ -41,7 +41,7 @@ export function IllustrationFrame({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.035]",
+        "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground)_3.5%,transparent)]",
         "before:absolute before:inset-0 before:opacity-80 before:content-['']",
         ACCENT_GLOW[accent],
         className,

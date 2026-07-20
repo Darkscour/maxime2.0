@@ -57,13 +57,13 @@ export default async function OnboardingDonePage({
           />
         </div>
       </Suspense>
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/25">
-        <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--success)_12%,transparent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--success)_28%,transparent)]">
+        <CheckCircle2 className="h-7 w-7 text-[var(--success)]" />
       </div>
-      <h1 className="font-heading mt-5 text-3xl font-semibold text-white sm:text-4xl">
+      <h1 className="font-heading mt-5 text-3xl font-semibold text-[var(--foreground)] sm:text-4xl">
         You&apos;re set up on Maxime!
       </h1>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-400">
+      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[var(--foreground-muted)]">
         {status.accountType === "team_manager"
           ? "Your team profile is saved. Head to your dashboard to explore sponsorships, recruitment, and org tools."
           : status.hasTeam
@@ -71,15 +71,19 @@ export default async function OnboardingDonePage({
             : "Your player profile is saved. Open your dashboard to explore the platform, or join a team with an invite code."}
       </p>
 
-      <div className="mx-auto mt-8 max-w-md rounded-2xl border border-white/5 bg-[var(--surface)] p-6 text-left">
+      <div className="mx-auto mt-8 max-w-md rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6 text-left">
         {status.team && (
           <div className="mb-4">
-            <p className="text-xs uppercase tracking-wider text-zinc-500">Team</p>
-            <p className="font-heading mt-1 text-lg font-semibold text-white">
+            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">
+              Team
+            </p>
+            <p className="font-heading mt-1 text-lg font-semibold text-[var(--foreground)]">
               {status.team.name}
             </p>
             {status.team.school && (
-              <p className="text-sm text-zinc-400">{status.team.school}</p>
+              <p className="text-sm text-[var(--foreground-muted)]">
+                {status.team.school}
+              </p>
             )}
             <div className="mt-2 flex flex-wrap gap-1.5">
               {status.team.games.map((g) => (
@@ -92,14 +96,14 @@ export default async function OnboardingDonePage({
         )}
 
         {status.playerProfile && (
-          <div className={status.team ? "border-t border-white/5 pt-4" : ""}>
-            <p className="text-xs uppercase tracking-wider text-zinc-500">
+          <div className={status.team ? "border-t border-[var(--border)] pt-4" : ""}>
+            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">
               Player profile
             </p>
-            <p className="font-heading mt-1 text-lg font-semibold text-white">
+            <p className="font-heading mt-1 text-lg font-semibold text-[var(--foreground)]">
               {status.playerProfile.handle}
             </p>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[var(--foreground-muted)]">
               {status.playerProfile.game} · {status.playerProfile.role} ·{" "}
               {status.playerProfile.rank}
             </p>
@@ -116,11 +120,11 @@ export default async function OnboardingDonePage({
         )}
 
         {isCaptain && inviteCode && (
-          <div className="mt-4 border-t border-white/5 pt-4">
-            <p className="text-xs uppercase tracking-wider text-zinc-500">
+          <div className="mt-4 border-t border-[var(--border)] pt-4">
+            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">
               Player invite code
             </p>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
               Players paste this during onboarding to join your team.
             </p>
             <InviteCodeCopy code={inviteCode} />
@@ -140,11 +144,11 @@ export default async function OnboardingDonePage({
       </div>
 
       {!status.hasTeam && status.hasPlayerProfile && (
-        <p className="mt-6 text-sm text-zinc-500">
+        <p className="mt-6 text-sm text-[var(--foreground-muted)]">
           Have an invite code?{" "}
           <Link
             href={buildOnboardingHref("/onboarding/join", { test: testMode })}
-            className="text-cyan-400 hover:text-cyan-300"
+            className="text-[var(--accent)] hover:text-[var(--accent-strong)]"
           >
             Join a team →
           </Link>

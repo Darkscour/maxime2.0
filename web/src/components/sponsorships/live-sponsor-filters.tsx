@@ -55,22 +55,22 @@ export function LiveSponsorFiltersPanel({
 
   return (
     <aside className={cn(sticky && stickyTopClass[stickyContext])}>
-      <div className="overflow-hidden rounded-2xl border border-emerald-400/15 bg-gradient-to-b from-emerald-400/[0.06] to-[var(--surface)] shadow-sm shadow-black/20">
-        <div className="flex items-center justify-between gap-3 border-b border-white/5 px-4 py-3.5">
+      <div className="overflow-hidden rounded-none border border-[var(--foreground)] bg-[var(--surface)]">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10 ring-1 ring-inset ring-emerald-400/20">
-              <SlidersHorizontal className="h-4 w-4 text-emerald-300" />
+            <span className="oc-mark">
+              <SlidersHorizontal className="h-4 w-4" />
             </span>
             <div>
-              <p className="text-sm font-medium text-white">Filters</p>
-              <p className="text-[11px] text-zinc-500">Narrow the directory</p>
+              <p className="text-sm font-medium text-[var(--foreground)]">Filters</p>
+              <p className="text-[11px] text-[var(--foreground-muted)]">Narrow the directory</p>
             </div>
           </div>
           {hasActive && (
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_LIVE_SPONSOR_FILTERS)}
-              className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-200"
+              className="inline-flex items-center gap-1 rounded-none px-2 py-1 text-[11px] font-medium text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
             >
               <X className="h-3 w-3" />
               Clear
@@ -80,11 +80,11 @@ export function LiveSponsorFiltersPanel({
 
         <div className="space-y-5 p-4">
           <label className="block">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
               Search
             </span>
             <div className="relative mt-2">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-muted)]" />
               <input
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -96,7 +96,7 @@ export function LiveSponsorFiltersPanel({
 
           {industries.length > 0 && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
                 Industry
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -126,7 +126,7 @@ export function LiveSponsorFiltersPanel({
 
           {difficulties.length > 0 && (
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
                 Difficulty
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -155,16 +155,16 @@ export function LiveSponsorFiltersPanel({
           )}
         </div>
 
-        <div className="border-t border-white/5 bg-black/20 px-4 py-3">
-          <p className="text-xs text-zinc-500">
+        <div className="border-t border-[var(--border)] bg-[var(--background)] px-4 py-3">
+          <p className="text-xs text-[var(--foreground-muted)]">
             Showing{" "}
-            <span className="font-semibold text-emerald-200/90">{resultsCount}</span>
+            <span className="font-semibold text-[var(--accent)]">{resultsCount}</span>
             {totalCount != null && totalCount !== resultsCount ? (
               <span> of {totalCount}</span>
             ) : null}{" "}
             {resultsLabel}
             {hasActive && (
-              <span className="ml-1.5 text-zinc-600">
+              <span className="ml-1.5 text-[var(--foreground-subtle)]">
                 · {activeCount} filter{activeCount === 1 ? "" : "s"} active
               </span>
             )}
@@ -189,10 +189,10 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+        "rounded-none px-2.5 py-1 text-[11px] font-medium transition-colors",
         active
-          ? "bg-emerald-400/15 text-emerald-200 ring-1 ring-inset ring-emerald-400/30"
-          : "bg-white/[0.03] text-zinc-400 ring-1 ring-inset ring-white/8 hover:bg-white/[0.05] hover:text-zinc-200",
+          ? "border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)]"
+          : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground-muted)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]",
       )}
     >
       {children}

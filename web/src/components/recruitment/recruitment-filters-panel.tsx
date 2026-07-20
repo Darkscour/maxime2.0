@@ -47,28 +47,28 @@ export function RecruitmentFiltersPanel({
 }) {
   return (
     <aside className={cn(sticky && "lg:sticky lg:top-20 lg:self-start")}>
-      <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
+      <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-medium text-white">
-            <Sliders className="h-4 w-4 text-cyan-400" />
+          <div className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+            <Sliders className="h-4 w-4 text-[var(--accent)]" />
             Filters
           </div>
           <button
             type="button"
             onClick={() => setFilters(DEFAULT_RECRUITMENT_FILTERS)}
-            className="text-xs text-zinc-500 hover:text-white"
+            className="text-xs text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
           >
             Reset
           </button>
         </div>
 
         <div className="relative mt-4">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--foreground-muted)]" />
           <input
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             placeholder="Search handle…"
-            className="w-full rounded-lg border border-white/10 bg-[var(--background)] py-2 pl-9 pr-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-400/50 focus:outline-none"
+            className="w-full rounded-none border border-[var(--border)] bg-[var(--background)] py-2 pl-9 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--foreground)] focus:outline-none"
           />
         </div>
 
@@ -77,7 +77,7 @@ export function RecruitmentFiltersPanel({
             <select
               value={filters.game}
               onChange={(e) => setFilters({ ...filters, game: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2 text-sm text-zinc-100 focus:border-cyan-400/50 focus:outline-none"
+              className="w-full rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
             >
               <option value="">All games</option>
               {games.map((g) => (
@@ -104,7 +104,7 @@ export function RecruitmentFiltersPanel({
             <select
               value={filters.region}
               onChange={(e) => setFilters({ ...filters, region: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-[var(--background)] px-3 py-2 text-sm text-zinc-100 focus:border-cyan-400/50 focus:outline-none"
+              className="w-full rounded-none border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--foreground)] focus:outline-none"
             >
               <option value="">All regions</option>
               {regions.map((r) => (
@@ -136,8 +136,8 @@ export function RecruitmentFiltersPanel({
           </FilterSection>
         )}
 
-        <div className="mt-6 rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs text-zinc-400">
-          <span className="font-semibold text-cyan-300">{resultsCount}</span>{" "}
+        <div className="mt-6 rounded-none border border-[var(--border)] bg-[var(--background)] p-3 text-xs text-[var(--foreground-muted)]">
+          <span className="font-semibold text-[var(--accent)]">{resultsCount}</span>{" "}
           {resultsLabel}
         </div>
       </div>
@@ -154,7 +154,7 @@ function FilterSection({
 }) {
   return (
     <div className="mt-5">
-      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
         {title}
       </h4>
       <div className="mt-2">{children}</div>
@@ -203,10 +203,10 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full px-2.5 py-1 text-xs transition-colors",
+        "rounded-none px-2.5 py-1 text-xs transition-colors",
         active
-          ? "bg-cyan-400/10 text-cyan-300 ring-1 ring-inset ring-cyan-400/40"
-          : "bg-white/[0.03] text-zinc-300 ring-1 ring-inset ring-white/5 hover:bg-white/[0.06]",
+          ? "border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)]"
+          : "border border-[var(--border)] bg-[var(--background)] text-[var(--foreground-muted)] hover:border-[var(--foreground)] hover:text-[var(--foreground)]",
       )}
     >
       {children}

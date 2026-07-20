@@ -31,10 +31,10 @@ export default async function ComingSoonPage({ params }: PageProps) {
       <Container className="relative">
         <div className="mx-auto max-w-xl text-center">
           <MaximeLogo size="lg" className="mx-auto" />
-          <h1 className="font-heading mt-8 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h1 className="font-heading mt-8 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl">
             {page.title}
           </h1>
-          <p className="mt-4 text-base leading-7 text-zinc-400">{page.description}</p>
+          <p className="mt-4 text-base leading-7 text-[var(--foreground-muted)]">{page.description}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button href="/" variant="primary" size="lg">
               Back to homepage
@@ -45,7 +45,7 @@ export default async function ComingSoonPage({ params }: PageProps) {
           </div>
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-white"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Return home

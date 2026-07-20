@@ -80,9 +80,9 @@ export function TeamInvitesPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6 sm:p-8">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6 sm:p-8">
       {onTeam && currentTeamName && invites.length > 0 && (
-        <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3">
+        <div className="mb-6 flex items-start gap-3 rounded-none border border-amber-400/20 bg-amber-400/5 px-4 py-3">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
           <div className="min-w-0 flex-1">
             <p className="text-sm text-amber-100">
@@ -111,11 +111,11 @@ export function TeamInvitesPanel({
 
       {invites.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-            <Mail className="h-5 w-5 text-zinc-500" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-none bg-[var(--surface-2)] ring-1 ring-inset ring-[var(--border)]">
+            <Mail className="h-5 w-5 text-[var(--foreground-muted)]" />
           </span>
-          <p className="mt-4 text-sm font-medium text-zinc-300">No team invites yet</p>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-500">
+          <p className="mt-4 text-sm font-medium text-[var(--foreground-muted)]">No team invites yet</p>
+          <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--foreground-muted)]">
             When a manager sends you a recruitment invite, it will show up here and in your
             notification bell. You can also browse teams and request to join directly.
           </p>
@@ -128,15 +128,15 @@ export function TeamInvitesPanel({
           {invites.map((invite) => (
             <li
               key={invite.id}
-              className="rounded-xl border border-white/5 bg-black/20 px-4 py-4"
+              className="rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-4"
             >
-              <p className="text-base font-medium text-white">{invite.teamName}</p>
+              <p className="text-base font-medium text-[var(--foreground)]">{invite.teamName}</p>
               {invite.message && (
-                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
                   &ldquo;{invite.message}&rdquo;
                 </p>
               )}
-              <p className="mt-1 text-xs text-zinc-600">
+              <p className="mt-1 text-xs text-[var(--foreground-muted)]">
                 Invited{" "}
                 {new Date(invite.invitedAt).toLocaleDateString(undefined, {
                   month: "short",

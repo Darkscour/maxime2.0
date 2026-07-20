@@ -38,24 +38,24 @@ export function InviteMessageModal({
         className="absolute inset-0 bg-black/70"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#0d0f14] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-none border border-[var(--border)] bg-[#0d0f14] p-6 shadow-2xl">
         <button
           type="button"
           aria-label="Close dialog"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-zinc-500 hover:bg-white/5 hover:text-white"
+          className="absolute right-4 top-4 rounded-lg p-1 text-[var(--foreground-muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <h2 className="font-heading pr-8 text-lg font-semibold text-white">
+        <h2 className="font-heading pr-8 text-lg font-semibold text-[var(--foreground)]">
           Invite {playerHandle}
         </h2>
-        <p className="mt-1 text-sm text-zinc-400">
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
           Customize the message {playerHandle} sees with your invite from {teamName}.
         </p>
 
-        <label className="mt-5 block text-xs font-medium uppercase tracking-wider text-zinc-500">
+        <label className="mt-5 block text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
           Invite message
           <textarea
             rows={5}

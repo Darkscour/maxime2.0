@@ -76,7 +76,7 @@ export default async function ScoutPlayerProfilePage({
     <div className="mx-auto max-w-3xl space-y-8">
       <Link
         href="/dashboard/scout"
-        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+        className="inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground-muted)]"
       >
         <ArrowLeft className="h-4 w-4" />
         Scout
@@ -86,25 +86,25 @@ export default async function ScoutPlayerProfilePage({
         Recruitment
       </DashboardSectionEyebrow>
 
-      <article className="rounded-2xl border border-white/5 bg-[var(--surface)] p-8">
-        <p className="text-xs uppercase tracking-wider text-zinc-500">Player profile</p>
-        <h1 className="font-heading mt-2 text-3xl font-semibold text-white">
+      <article className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-8">
+        <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Player profile</p>
+        <h1 className="font-heading mt-2 text-3xl font-semibold text-[var(--foreground)]">
           {profile.handle}
         </h1>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-2 text-sm text-[var(--foreground-muted)]">
           {profile.game} · {profile.role} · {profile.rank}
         </p>
 
-        <dl className="mt-6 space-y-3 text-sm text-zinc-400">
+        <dl className="mt-6 space-y-3 text-sm text-[var(--foreground-muted)]">
           {profile.region && (
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-violet-400" />
+              <MapPin className="h-4 w-4 text-[var(--accent-2)]" />
               <span>{profile.region}</span>
             </div>
           )}
           {profile.hoursPerWeek != null && (
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-cyan-400" />
+              <Clock className="h-4 w-4 text-[var(--accent)]" />
               <span>{profile.hoursPerWeek} hrs/week on {profile.game}</span>
             </div>
           )}
@@ -113,7 +113,7 @@ export default async function ScoutPlayerProfilePage({
         </dl>
 
         {profile.bio && (
-          <p className="mt-6 text-sm leading-7 text-zinc-400">{profile.bio}</p>
+          <p className="mt-6 text-sm leading-7 text-[var(--foreground-muted)]">{profile.bio}</p>
         )}
 
         {profile.tags.length > 0 && (
@@ -126,7 +126,7 @@ export default async function ScoutPlayerProfilePage({
           </div>
         )}
 
-        <div className="mt-8 border-t border-white/5 pt-6">
+        <div className="mt-8 border-t border-[var(--border)] pt-6">
           {onRoster ? (
             <p className="text-sm text-emerald-400">Already on your roster</p>
           ) : canManage && (joinRequestPending || invitePending) ? (

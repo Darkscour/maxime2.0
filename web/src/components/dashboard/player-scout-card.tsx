@@ -26,14 +26,14 @@ function PlayerScoutCardAvatar({
       <img
         src={imageUrl}
         alt=""
-        className="h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ring-inset ring-white/10"
+        className="h-12 w-12 shrink-0 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
       />
     );
   }
 
   return (
     <span
-      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/90 to-violet-500/90 text-lg font-bold text-zinc-950"
+      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-[var(--foreground)] text-lg font-bold text-[var(--background)]"
       aria-hidden
     >
       {initial}
@@ -56,24 +56,24 @@ export function PlayerScoutCard({
   return (
     <article
       className={cn(
-        "flex items-start gap-4 rounded-2xl border border-white/5 bg-[var(--surface)] p-5",
+        "flex items-start gap-4 rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5",
         className,
       )}
     >
       <PlayerScoutCardAvatar handle={handle || "Player"} imageUrl={imageUrl} />
       <div className="min-w-0 flex-1">
         {badge && (
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-400">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
             {badge}
           </p>
         )}
-        <h2 className="font-heading text-lg font-semibold text-white">
+        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
           {handle || "Your handle"}
         </h2>
-        <p className="mt-1 text-sm text-zinc-400">
+        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
           {detailLine || "Competitive details"}
         </p>
-        {school && <p className="mt-2 text-xs text-zinc-500">{school}</p>}
+        {school && <p className="mt-2 text-xs text-[var(--foreground-muted)]">{school}</p>}
       </div>
     </article>
   );
@@ -86,7 +86,7 @@ export function PlayerScoutCardLink({
   return (
     <Link
       href={href}
-      className="group block transition-colors hover:[&_article]:border-violet-400/25"
+      className="group block transition-colors hover:[&_article]:border-[var(--accent-2)]"
     >
       <PlayerScoutCard
         {...props}

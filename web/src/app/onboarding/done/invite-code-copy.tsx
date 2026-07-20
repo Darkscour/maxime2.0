@@ -16,13 +16,15 @@ export function InviteCodeCopy({ code }: { code: string }) {
     <button
       type="button"
       onClick={copy}
-      className="mt-3 flex w-full items-center justify-between gap-3 rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-4 py-3 text-left transition-colors hover:bg-cyan-400/10"
+      className="mt-3 flex w-full items-center justify-between gap-3 rounded-none border border-[var(--foreground)] bg-[var(--surface)] px-4 py-3 text-left transition-colors hover:bg-[var(--background)]"
     >
-      <code className="font-mono text-sm font-semibold text-cyan-200">{code}</code>
+      <code className="font-mono text-sm font-semibold text-[var(--foreground)]">
+        {code}
+      </code>
       {copied ? (
-        <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+        <Check className="h-4 w-4 shrink-0 text-[var(--success)]" />
       ) : (
-        <Copy className="h-4 w-4 shrink-0 text-cyan-400" />
+        <Copy className="h-4 w-4 shrink-0 text-[var(--accent)]" />
       )}
     </button>
   );

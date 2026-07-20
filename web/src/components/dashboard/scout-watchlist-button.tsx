@@ -22,7 +22,7 @@ export function ScoutWatchlistButton({
 
   if (!canManage) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-[var(--foreground-muted)]">
         Set up your team profile to add players to your watchlist.
       </p>
     );

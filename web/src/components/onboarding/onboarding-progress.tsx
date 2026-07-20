@@ -33,7 +33,9 @@ function getActiveStepIndex(pathname: string): number {
 }
 
 function connectorClass(leftStepIndex: number, activeIndex: number) {
-  return leftStepIndex < activeIndex ? "bg-emerald-400/30" : "bg-white/10";
+  return leftStepIndex < activeIndex
+    ? "bg-[var(--accent)]"
+    : "bg-[var(--border)]";
 }
 
 export function OnboardingProgress({ pathname }: { pathname: string }) {
@@ -66,10 +68,14 @@ export function OnboardingProgress({ pathname }: { pathname: string }) {
               <div className="flex w-14 shrink-0 flex-col items-center sm:w-16">
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full bg-[#0a0c10] text-xs font-semibold ring-1 ring-inset transition-colors",
-                    done && "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
-                    active && "bg-cyan-400/15 text-cyan-200 ring-cyan-400/35",
-                    !done && !active && "text-zinc-500 ring-white/10",
+                    "flex h-8 w-8 items-center justify-center rounded-none border text-xs font-semibold transition-colors",
+                    done &&
+                      "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)]",
+                    active &&
+                      "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]",
+                    !done &&
+                      !active &&
+                      "border-[var(--border)] text-[var(--foreground-muted)]",
                   )}
                   aria-current={active ? "step" : undefined}
                 >
@@ -77,8 +83,12 @@ export function OnboardingProgress({ pathname }: { pathname: string }) {
                 </span>
                 <span
                   className={cn(
-                    "mt-2 whitespace-nowrap text-center text-xs font-medium",
-                    active ? "text-white" : done ? "text-emerald-300/80" : "text-zinc-500",
+                    "mt-2 whitespace-nowrap text-center font-mono text-[10px] font-medium uppercase tracking-[0.12em]",
+                    active
+                      ? "text-[var(--foreground)]"
+                      : done
+                        ? "text-[var(--accent)]"
+                        : "text-[var(--foreground-muted)]",
                   )}
                 >
                   {step.label}
@@ -102,7 +112,7 @@ export function OnboardingBackLink({
   return (
     <Link
       href={href}
-      className="mb-6 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+      className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
     >
       {children}
     </Link>

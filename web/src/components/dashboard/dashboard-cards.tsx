@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-/** Shared footprint for the four overview stat cards — grows with content. */
+/** Shared footprint for overview stats — scoreboard cell or standalone. */
 export const dashboardStatCardClassName =
-  "flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5";
+  "ops-status-cell pb-stat flex flex-col border-2 border-[var(--foreground)] bg-[var(--surface)] p-5";
 
 export function DashboardStatCard({
   label,
@@ -15,25 +15,22 @@ export function DashboardStatCard({
   label: string;
   value: string;
   hint?: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }>;
   className?: string;
 }) {
+  void Icon;
+
   return (
     <div className={cn(dashboardStatCardClassName, className)}>
-      <div className="flex flex-1 items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">{label}</p>
-          <p className="font-heading mt-2 break-words text-2xl font-semibold leading-tight text-white">
-            {value}
-          </p>
-          {hint && (
-            <p className="mt-1 break-words text-xs leading-5 text-zinc-500">{hint}</p>
-          )}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-          <Icon className="h-4 w-4 text-cyan-400" />
-        </span>
-      </div>
+      <p className="pb-stat-label pb-kicker !text-[var(--foreground-muted)]">{label}</p>
+      <p className="pb-stat-value font-board mt-2 break-words text-[2rem] font-semibold leading-[0.95] tracking-[0.01em] uppercase text-[var(--foreground)]">
+        {value}
+      </p>
+      {hint && (
+        <p className="pb-stat-hint mt-2 break-words text-xs leading-5 text-[var(--foreground-muted)]">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
@@ -44,34 +41,32 @@ export function FeatureTile({
   description,
   icon: Icon,
   tone = "cyan",
+  index,
 }: {
   href: string;
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   tone?: "cyan" | "violet";
+  index?: number;
 }) {
-  const iconClass = tone === "cyan" ? "text-cyan-400" : "text-violet-400";
-  const hoverRing =
-    tone === "cyan"
-      ? "hover:border-cyan-400/25 hover:bg-cyan-400/[0.03]"
-      : "hover:border-violet-400/25 hover:bg-violet-400/[0.03]";
+  void Icon;
+  void tone;
 
   return (
-    <Link
-      href={href}
-      className={cn(
-        "group flex flex-col rounded-2xl border border-white/5 bg-[var(--surface)] p-5 transition-colors",
-        hoverRing,
-      )}
-    >
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-        <Icon className={cn("h-4 w-4", iconClass)} />
+    <Link href={href} className="pb-work-row group">
+      <span className="font-mono text-[11px] tracking-[0.14em] text-[var(--foreground-subtle)]">
+        {index != null ? String(index).padStart(2, "0") : "—"}
       </span>
-      <h3 className="font-heading mt-4 text-base font-semibold text-white">{title}</h3>
-      <p className="mt-2 flex-1 text-sm leading-6 text-zinc-400">{description}</p>
-      <span className="mt-4 text-sm font-medium text-zinc-300 group-hover:text-white">
-        Open →
+      <div className="min-w-0">
+        <h3 className="font-board text-lg font-semibold uppercase tracking-[0.03em] text-[var(--foreground)]">
+          {title}
+        </h3>
+        <p className="mt-1 text-sm leading-6 text-[var(--foreground-muted)]">{description}</p>
+      </div>
+      <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--accent)] transition-transform group-hover:translate-x-0.5">
+        Open
+        <span aria-hidden>→</span>
       </span>
     </Link>
   );

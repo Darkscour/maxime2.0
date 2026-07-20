@@ -8,28 +8,28 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
   const trend = data.profileViewsTrend;
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-6">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-6">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 ring-1 ring-inset ring-cyan-400/25">
-            <BarChart3 className="h-5 w-5 text-cyan-300" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]">
+            <BarChart3 className="h-5 w-5 text-[var(--accent)]" />
           </span>
           <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500">Analytics</p>
-            <h2 className="font-heading mt-1 text-lg font-semibold text-white">
+            <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Analytics</p>
+            <h2 className="font-heading mt-1 text-lg font-semibold text-[var(--foreground)]">
               Scout visibility
             </h2>
-            <p className="mt-0.5 text-sm text-zinc-500">
+            <p className="mt-0.5 text-sm text-[var(--foreground-muted)]">
               How teams discover and engage with your profile
             </p>
           </div>
         </div>
         {trend != null && (
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${
+            className={`inline-flex items-center gap-1 rounded-none px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${
               trend >= 0
-                ? "bg-emerald-400/10 text-emerald-300 ring-emerald-400/20"
-                : "bg-rose-400/10 text-rose-300 ring-rose-400/20"
+                ? "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)] ring-[color-mix(in_srgb,var(--success)_28%,transparent)]"
+                : "bg-[color-mix(in_srgb,var(--danger)_12%,transparent)] text-[var(--danger)] ring-[color-mix(in_srgb,var(--danger)_28%,transparent)]"
             }`}
           >
             {trend >= 0 ? "+" : ""}
@@ -49,8 +49,8 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
             <AbstractAreaChart
               values={data.weeklyProfileViews}
               gradientId="views-gradient"
-              stroke="#22d3ee"
-              fill="#22d3ee"
+              stroke="#b84a1b"
+              fill="#b84a1b"
             />
           </div>
           <WeekLabels labels={data.weekLabels} />
@@ -66,7 +66,7 @@ export function PlayerAnalyticsCard({ data }: { data: PlayerAnalyticsSnapshot })
             <AbstractWaveChart
               values={data.weeklyPlayTime}
               gradientId="play-gradient"
-              stroke="#a78bfa"
+              stroke="#8f3d18"
             />
           </div>
           <WeekLabels labels={data.weekLabels} />
@@ -105,16 +105,15 @@ function ChartPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent px-4 pb-3 pt-4">
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-cyan-400/5 blur-2xl" />
-      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+    <div className="relative overflow-hidden rounded-none border border-[var(--border)] bg-[var(--background)] px-4 pb-3 pt-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--foreground-muted)]">
         {title}
       </p>
-      <p className="mt-0.5 text-xs text-zinc-600">{subtitle}</p>
+      <p className="mt-0.5 text-xs text-[var(--foreground-muted)]">{subtitle}</p>
       <div className="relative mt-3">
         {children}
         {empty && (
-          <p className="mt-2 text-center text-[11px] leading-4 text-zinc-600">{emptyHint}</p>
+          <p className="mt-2 text-center text-[11px] leading-4 text-[var(--foreground-muted)]">{emptyHint}</p>
         )}
       </div>
     </div>
@@ -125,7 +124,7 @@ function WeekLabels({ labels }: { labels: string[] }) {
   return (
     <div className="mt-2 flex justify-between gap-1 px-1">
       {labels.map((label) => (
-        <span key={label} className="flex-1 text-center text-[9px] text-zinc-700">
+        <span key={label} className="flex-1 text-center text-[9px] text-[var(--foreground-muted)]">
           {label}
         </span>
       ))}
@@ -146,18 +145,18 @@ function Metric({
 }) {
   const toneClass =
     tone === "cyan"
-      ? "text-cyan-400"
+      ? "text-[var(--accent)]"
       : tone === "violet"
-        ? "text-violet-400"
-        : "text-emerald-400";
+        ? "text-[var(--accent-2)]"
+        : "text-[var(--success)]";
 
   return (
-    <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-black/30 px-3.5 py-3 shadow-[0_10px_30px_-20px_rgba(34,211,238,0.55)]">
-      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
+    <div className="rounded-none border border-[var(--border)] bg-[var(--background)] px-3.5 py-3">
+      <dt className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-[var(--foreground-muted)]">
         <Icon className={`h-3 w-3 ${toneClass}`} />
         {label}
       </dt>
-      <dd className="font-heading mt-1.5 text-base font-semibold text-zinc-100">{value}</dd>
+      <dd className="font-heading mt-1.5 text-base font-semibold text-[var(--foreground)]">{value}</dd>
     </div>
   );
 }

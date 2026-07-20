@@ -83,13 +83,13 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
       />
 
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-400">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--foreground-muted)]">
           <span>
-            Showing <span className="font-medium text-white">{filtered.length}</span>{" "}
+            Showing <span className="font-medium text-[var(--foreground)]">{filtered.length}</span>{" "}
             sample sponsors
           </span>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-zinc-500">Sort</span>
+            <span className="text-[var(--foreground-muted)]">Sort</span>
             {(
               [
                 ["alpha", "A–Z"],
@@ -102,8 +102,8 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
                 onClick={() => setSort(key)}
                 className={
                   sort === key
-                    ? "rounded-lg bg-white/[0.06] px-2.5 py-1 text-zinc-200"
-                    : "rounded-lg px-2.5 py-1 text-zinc-500 hover:text-zinc-300"
+                    ? "rounded-none bg-[var(--background)] px-2.5 py-1 text-[var(--foreground)]"
+                    : "rounded-none px-2.5 py-1 text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
                 }
               >
                 {label}
@@ -113,15 +113,15 @@ export function DemoSponsorshipDirectory({ compact = false }: { compact?: boolea
         </div>
 
         {filtered.length === 0 ? (
-          <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[var(--surface)] py-16 text-center">
-            <Handshake className="h-8 w-8 text-zinc-600" />
-            <h3 className="font-heading mt-3 text-base font-semibold text-white">
+          <div className="mt-4 flex flex-col items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
+            <Handshake className="h-8 w-8 text-[var(--foreground-muted)]" />
+            <h3 className="font-heading mt-3 text-base font-semibold text-[var(--foreground)]">
               No sponsors match those filters
             </h3>
             <button
               type="button"
               onClick={() => setFilters(DEFAULT_LIVE_SPONSOR_FILTERS)}
-              className="mt-4 rounded-lg bg-cyan-400/10 px-4 py-2 text-xs font-medium text-cyan-300 ring-1 ring-inset ring-cyan-400/25"
+              className="mt-4 rounded-none bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] px-4 py-2 text-xs font-medium text-[var(--accent)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_25%,transparent)]"
             >
               Clear filters
             </button>

@@ -54,18 +54,18 @@ export function PlayTimeWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[var(--surface)] p-5">
+    <div className="rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Play time</p>
-          <p className="font-heading mt-2 text-2xl font-semibold text-white">
+          <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)]">Play time</p>
+          <p className="font-heading mt-2 text-2xl font-semibold text-[var(--foreground)]">
             {hoursPerWeek != null ? `${hoursPerWeek}` : "—"}
-            <span className="ml-1 text-sm font-normal text-zinc-500">hrs/wk</span>
+            <span className="ml-1 text-sm font-normal text-[var(--foreground-muted)]">hrs/wk</span>
           </p>
-          <p className="mt-1 text-xs text-zinc-500">Self-reported · {game}</p>
+          <p className="mt-1 text-xs text-[var(--foreground-muted)]">Self-reported · {game}</p>
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
-          <Clock className="h-4 w-4 text-cyan-400" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[var(--surface-2)] ring-1 ring-inset ring-[var(--border)]">
+          <Clock className="h-4 w-4 text-[var(--accent)]" />
         </span>
       </div>
 

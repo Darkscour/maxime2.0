@@ -7,14 +7,14 @@ import { SponsorshipsPreview } from "@/components/home/sponsorships-preview";
 export function DeveloperMarketingPreview() {
   return (
     <div className="space-y-4 border-b border-dashed border-amber-400/20 pb-12">
-      <div className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3 sm:px-5">
+      <div className="rounded-none border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3 sm:px-5">
         <Badge tone="amber" className="mb-2">
           Developer preview
         </Badge>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-[var(--foreground-muted)]">
           Visitor-facing homepage sections below — only you see this on the dashboard.
-          Set <code className="text-zinc-300">DEVELOPER_EMAIL</code> in{" "}
-          <code className="text-zinc-300">.env</code> to match your sign-in email.
+          Set <code className="text-[var(--foreground-muted)]">DEVELOPER_EMAIL</code> in{" "}
+          <code className="text-[var(--foreground-muted)]">.env</code> to match your sign-in email.
         </p>
       </div>
       <RecruitmentPreview />

@@ -74,11 +74,11 @@ export function WatchlistPanel({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
-        <Bookmark className="mx-auto h-8 w-8 text-zinc-600" />
-        <p className="mt-4 text-sm text-zinc-400">
+      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
+        <Bookmark className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
+        <p className="mt-4 text-sm text-[var(--foreground-muted)]">
           Your watchlist is empty. Browse{" "}
-          <Link href="/dashboard/scout" className="text-cyan-400 hover:text-cyan-300">
+          <Link href="/dashboard/scout" className="text-[var(--accent)] hover:text-[var(--accent)]">
             scout players
           </Link>{" "}
           and save candidates to compare before recruiting.
@@ -98,7 +98,7 @@ export function WatchlistPanel({
         {items.map((player) => (
           <div
             key={player.id}
-            className="flex h-full flex-col rounded-2xl border border-white/5 bg-[var(--surface)] transition-colors hover:border-violet-400/20"
+            className="flex h-full flex-col rounded-none border border-[var(--foreground)] bg-[var(--surface)] transition-colors hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]"
           >
             <Link
               href={`/dashboard/scout/${player.handle}`}
@@ -118,7 +118,7 @@ export function WatchlistPanel({
               />
             </Link>
 
-            <div className="mt-auto border-t border-white/5 px-5 py-4">
+            <div className="mt-auto border-t border-[var(--border)] px-5 py-4">
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -140,7 +140,7 @@ export function WatchlistPanel({
                   variant="ghost"
                   disabled={loadingId === player.playerProfileId}
                   onClick={() => remove(player.playerProfileId)}
-                  className="gap-1.5 text-zinc-400"
+                  className="gap-1.5 text-[var(--foreground-muted)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Remove
@@ -150,7 +150,7 @@ export function WatchlistPanel({
           </div>
         ))}
       </div>
-      <p className="text-xs text-zinc-600">
+      <p className="text-xs text-[var(--foreground-muted)]">
         Players receive your custom message on their dashboard and can accept or decline
         directly — no invite code required.
       </p>

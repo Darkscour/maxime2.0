@@ -12,10 +12,6 @@ import { DashboardNotifications } from "@/components/dashboard/dashboard-notific
 import { useDashboardNavBadges } from "@/hooks/use-dashboard-nav-badges";
 import {
   getDashboardNavGroups,
-  navGroupAccentBorderClasses,
-  navGroupAccentEyebrowClasses,
-  navGroupAccentLinkClasses,
-  type NavGroupAccent,
   type NavItem,
 } from "@/lib/dashboard-nav";
 
@@ -23,10 +19,14 @@ export function DashboardShell({
   children,
   accountType,
   accountTier,
+  teamName,
+  className,
 }: {
   children: React.ReactNode;
   accountType: string | null;
   accountTier: string | null;
+  teamName?: string | null;
+  className?: string;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,31 +34,40 @@ export function DashboardShell({
   const badges = useDashboardNavBadges();
 
   return (
-    <div className="flex min-h-[calc(100vh-0px)] flex-1 bg-[var(--background)]">
-      <aside className="hidden w-64 shrink-0 border-r border-white/5 bg-[#0a0c10]/80 lg:flex lg:flex-col">
-        <SidebarHeader accountType={accountType} accountTier={accountTier} />
+    <div className={cn("dashboard-program flex min-h-[calc(100vh-0px)] flex-1", className)}>
+      <aside className="hidden w-[16rem] shrink-0 border-r-2 border-[var(--foreground)] bg-[var(--surface)] lg:flex lg:flex-col">
+        <SidebarHeader
+          accountType={accountType}
+          accountTier={accountTier}
+          teamName={teamName}
+        />
         <SidebarNav groups={navGroups} pathname={pathname} badges={badges} />
         <SidebarFooter />
       </aside>
 
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          className="fixed inset-0 z-40 bg-[rgba(15,28,46,0.45)] lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/5 bg-[#0a0c10] transition-transform lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-[16rem] flex-col border-r-2 border-[var(--foreground)] bg-[var(--surface)] transition-transform lg:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between border-b border-white/5 px-4 py-4">
-          <SidebarHeader accountType={accountType} accountTier={accountTier} compact />
+        <div className="flex items-center justify-between border-b-2 border-[var(--foreground)] px-4 py-4">
+          <SidebarHeader
+            accountType={accountType}
+            accountTier={accountTier}
+            teamName={teamName}
+            compact
+          />
           <button
             type="button"
             aria-label="Close menu"
-            className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 hover:text-white"
+            className="p-2 text-[var(--foreground-muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
             onClick={() => setMobileOpen(false)}
           >
             <X className="h-5 w-5" />
@@ -74,11 +83,11 @@ export function DashboardShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 items-center gap-3 border-b border-white/5 bg-[var(--background)]/80 px-4 backdrop-blur-xl lg:px-8">
+        <header className="flex h-12 items-center gap-3 border-b-2 border-[var(--foreground)] bg-[var(--surface)] px-4 lg:px-8">
           <button
             type="button"
             aria-label="Open menu"
-            className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 hover:text-white lg:hidden"
+            className="p-2 text-[var(--foreground-muted)] hover:bg-[var(--background)] hover:text-[var(--foreground)] lg:hidden"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
@@ -86,14 +95,27 @@ export function DashboardShell({
           <div className="lg:hidden">
             <MaximeLogo size="nav" href="/dashboard" />
           </div>
+          <div className="hidden min-w-0 items-baseline gap-3 lg:flex">
+            <p className="pb-kicker">Program board</p>
+            {teamName ? (
+              <>
+                <span className="text-[var(--border-strong)]" aria-hidden>
+                  /
+                </span>
+                <p className="font-board truncate text-sm font-semibold uppercase tracking-[0.06em] text-[var(--foreground)]">
+                  {teamName}
+                </p>
+              </>
+            ) : null}
+          </div>
           <div className="ml-auto flex items-center gap-1">
             <DashboardNotifications />
             <div className="lg:hidden">
-              <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-cyan-400/30" />
+              <ClerkUserButton avatarClassName="h-8 w-8 ring-1 ring-[var(--border)]" />
             </div>
           </div>
         </header>
-        <div className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">{children}</div>
+        <div className="flex-1 overflow-y-auto px-4 py-7 lg:px-8 lg:py-8">{children}</div>
       </div>
     </div>
   );
@@ -102,10 +124,12 @@ export function DashboardShell({
 function SidebarHeader({
   accountType,
   accountTier,
+  teamName,
   compact,
 }: {
   accountType: string | null;
   accountTier: string | null;
+  teamName?: string | null;
   compact?: boolean;
 }) {
   const roleLabel =
@@ -118,15 +142,20 @@ function SidebarHeader({
         : "Collegiate player";
 
   return (
-    <div className={cn("border-b border-white/5", compact ? "" : "px-4 py-5")}>
+    <div className={cn("border-b-2 border-[var(--foreground)]", compact ? "" : "px-4 py-5")}>
       <Link href="/dashboard" className="inline-block">
         <MaximeLogo size="nav" href={null} />
       </Link>
       {!compact && (
-        <div className="mt-4 border-t border-white/5 pt-3">
-          <span className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium tracking-wide text-zinc-400">
+        <div className="mt-4 space-y-2 border-t border-[var(--border)] pt-3">
+          <p className="inline-block border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
             {roleLabel}
-          </span>
+          </p>
+          {teamName ? (
+            <p className="font-board text-sm font-semibold uppercase tracking-[0.04em] text-[var(--foreground)]">
+              {teamName}
+            </p>
+          ) : null}
         </div>
       )}
     </div>
@@ -135,17 +164,19 @@ function SidebarHeader({
 
 function SidebarFooter({ onSignOut }: { onSignOut?: () => void }) {
   return (
-      <div className="mt-2 space-y-2 border-t border-white/5 px-3 pb-5 pt-4">
-      <div className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-3 py-2.5 ring-1 ring-inset ring-white/5">
-        <ClerkUserButton avatarClassName="h-9 w-9 shrink-0 ring-1 ring-cyan-400/30" />
-        <p className="min-w-0 text-xs text-zinc-500">Signed in</p>
+    <div className="mt-auto space-y-2 border-t-2 border-[var(--foreground)] px-3 pb-5 pt-4">
+      <div className="flex items-center gap-3 bg-[var(--background)] px-3 py-2.5">
+        <ClerkUserButton avatarClassName="h-9 w-9 shrink-0 ring-1 ring-[var(--border)]" />
+        <p className="min-w-0 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
+          Signed in
+        </p>
       </div>
       <ClerkSignOutButton
         redirectUrl="/sign-in"
         onClick={onSignOut}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+        className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
       >
-        <LogOut className="h-4 w-4 text-zinc-500" />
+        <LogOut className="h-4 w-4 text-[var(--foreground-muted)]" />
         Sign out
       </ClerkSignOutButton>
     </div>
@@ -163,88 +194,70 @@ function SidebarNav({
   badges: ReturnType<typeof useDashboardNavBadges>;
   onNavigate?: () => void;
 }) {
-  return (
-    <nav className="px-3 py-4">
-      {groups.map((group, index) => {
-        const accent = group.accent ?? "cyan";
+  let linkIndex = 0;
 
-        return (
-          <div
-            key={group.label ?? `nav-group-${index}`}
-            className={cn(
-              index > 0 && "mt-3 border-t border-dashed pt-3",
-              index > 0 && navGroupAccentBorderClasses[accent],
-            )}
-          >
-            {group.label ? (
-              <p
-                className={cn(
-                  "mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider",
-                  navGroupAccentEyebrowClasses[accent],
-                )}
-              >
-                {group.label}
-              </p>
-            ) : null}
-            <div className="space-y-1">
-              {group.items.map((item) => (
+  return (
+    <nav className="flex-1 overflow-y-auto px-2 py-4">
+      {groups.map((group, index) => (
+        <div
+          key={group.label ?? `nav-group-${index}`}
+          className={cn(index > 0 && "mt-5 border-t border-[var(--border)] pt-4")}
+        >
+          {group.label ? (
+            <p className="mb-2 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--foreground-subtle)]">
+              {group.label}
+            </p>
+          ) : null}
+          <div className="space-y-0.5">
+            {group.items.map((item) => {
+              linkIndex += 1;
+              return (
                 <SidebarLink
                   key={item.href}
                   item={item}
-                  accent={accent}
+                  index={linkIndex}
                   active={item.isActive?.(pathname) ?? pathname === item.href}
-                  badgeCount={
-                    item.badgeKey ? badges[item.badgeKey] : 0
-                  }
+                  badgeCount={item.badgeKey ? badges[item.badgeKey] : 0}
                   onNavigate={onNavigate}
                 />
-              ))}
-            </div>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </nav>
   );
 }
 
 function SidebarLink({
   item,
+  index,
   active,
-  accent = "cyan",
   badgeCount = 0,
   onNavigate,
 }: {
   item: NavItem;
+  index: number;
   active: boolean;
-  accent?: NavGroupAccent;
   badgeCount?: number;
   onNavigate?: () => void;
 }) {
-  const linkStyles = navGroupAccentLinkClasses[accent];
-  const Icon = item.icon;
   const showBadge = badgeCount > 0;
 
   return (
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={cn(
-        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-        active
-          ? linkStyles.active
-          : "text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-      )}
+      data-active={active ? "true" : "false"}
+      className="pb-sidebar-link"
     >
-      <Icon
-        className={cn(
-          "h-4 w-4 shrink-0",
-          active ? linkStyles.iconActive : "text-zinc-500",
-        )}
-      />
+      <span className="font-mono text-[10px] tracking-[0.08em] text-[var(--foreground-subtle)]">
+        {String(index).padStart(2, "0")}
+      </span>
       <span className="min-w-0 flex-1 truncate">{item.label}</span>
       {showBadge && (
         <span
-          className="inline-flex shrink-0 items-center gap-1 rounded-full bg-cyan-400/15 px-2 py-0.5 text-[10px] font-semibold text-cyan-200 ring-1 ring-inset ring-cyan-400/30"
+          className="inline-flex shrink-0 items-center gap-1 border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] px-1.5 py-0.5 font-mono text-[10px] font-semibold text-[var(--accent)]"
           aria-label={`${badgeCount} pending`}
         >
           <Bell className="h-3 w-3" />

@@ -82,11 +82,11 @@ export function JoinRequestsPanel({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 bg-[var(--surface)]/50 p-10 text-center">
-        <UserPlus className="mx-auto h-8 w-8 text-zinc-600" />
-        <p className="mt-4 text-sm text-zinc-400">
+      <div className="rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)]/50 p-10 text-center">
+        <UserPlus className="mx-auto h-8 w-8 text-[var(--foreground-muted)]" />
+        <p className="mt-4 text-sm text-[var(--foreground-muted)]">
           No pending join requests. When players tap{" "}
-          <strong className="font-medium text-zinc-300">Request to join</strong> on
+          <strong className="font-medium text-[var(--foreground-muted)]">Request to join</strong> on
           your team from Browse teams, they&apos;ll show up here.
         </p>
       </div>
@@ -105,11 +105,11 @@ export function JoinRequestsPanel({
         {items.map((player) => (
           <article
             key={player.id}
-            className="flex flex-col rounded-2xl border border-cyan-400/20 bg-[var(--surface)] p-5"
+            className="flex flex-col rounded-none border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[var(--surface)] p-5"
           >
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge tone="cyan">Requested to join</Badge>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-[var(--foreground-muted)]">
                 {formatRequestedAt(player.requestedAt)}
               </span>
             </div>
@@ -129,7 +129,7 @@ export function JoinRequestsPanel({
               />
             </Link>
 
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-white/5 pt-4">
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--border)] pt-4">
               <Button
                 type="button"
                 size="sm"

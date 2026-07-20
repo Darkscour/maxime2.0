@@ -87,17 +87,17 @@ export function SponsorshipsPortal({
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/5 bg-spotlight">
+      <section className="relative overflow-hidden border-b border-[var(--border)] bg-spotlight">
         <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden />
         <Container className="relative py-16 sm:py-20">
           <Badge tone="violet">
             <Handshake className="h-3.5 w-3.5" /> Sponsorship Portal
           </Badge>
-          <h1 className="font-heading mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+          <h1 className="font-heading mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--foreground)] sm:text-5xl">
             See how sponsorship discovery{" "}
             <span className="text-gradient">works on Maxime</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--foreground-muted)]">
             Try filters and sample cards below. Sign in to access your live sponsor
             directory from your dashboard.
           </p>
@@ -120,14 +120,14 @@ export function SponsorshipsPortal({
               resultsCount={demoFiltered.length}
             />
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-[var(--surface)] px-4 py-3">
-                <div className="text-sm text-zinc-400">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+                <div className="text-sm text-[var(--foreground-muted)]">
                   Showing{" "}
-                  <span className="font-semibold text-white">{demoFiltered.length}</span>{" "}
+                  <span className="font-semibold text-[var(--foreground)]">{demoFiltered.length}</span>{" "}
                   sample sponsors
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="text-zinc-500">Sort by</span>
+                  <span className="text-[var(--foreground-muted)]">Sort by</span>
                   {(
                     [
                       ["best", "Best match"],
@@ -141,8 +141,8 @@ export function SponsorshipsPortal({
                       onClick={() => setDemoSort(key)}
                       className={
                         demoSort === key
-                          ? "rounded-full bg-violet-400/10 px-3 py-1 text-violet-300 ring-1 ring-inset ring-violet-400/40"
-                          : "rounded-full px-3 py-1 text-zinc-400 hover:text-white"
+                          ? "rounded-none bg-[color-mix(in_srgb,var(--accent-2)_10%,transparent)] px-3 py-1 text-[var(--accent-2)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent-2)_40%,transparent)]"
+                          : "rounded-none px-3 py-1 text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
                       }
                     >
                       {label}
@@ -152,15 +152,15 @@ export function SponsorshipsPortal({
               </div>
 
               {demoFiltered.length === 0 ? (
-                <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[var(--surface)] py-16 text-center">
-                  <Handshake className="h-8 w-8 text-zinc-600" />
-                  <h3 className="font-heading mt-3 text-base font-semibold text-white">
+                <div className="mt-4 flex flex-col items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--surface)] py-16 text-center">
+                  <Handshake className="h-8 w-8 text-[var(--foreground-muted)]" />
+                  <h3 className="font-heading mt-3 text-base font-semibold text-[var(--foreground)]">
                     No sponsors match those filters
                   </h3>
                   <button
                     type="button"
                     onClick={() => setDemoFilters(DEFAULT_SPONSOR_FILTERS)}
-                    className="mt-4 rounded-full bg-violet-400 px-4 py-1.5 text-xs font-medium text-zinc-950 hover:bg-violet-300"
+                    className="mt-4 rounded-none bg-[var(--accent)] px-4 py-1.5 text-xs font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-strong)]"
                   >
                     Reset filters
                   </button>

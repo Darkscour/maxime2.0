@@ -261,7 +261,7 @@ export function PlayerProfileEditForm({
                   placeholder="20"
                   className="max-w-[140px]"
                 />
-                <span className="text-sm text-zinc-500">hrs / week</span>
+                <span className="text-sm text-[var(--foreground-muted)]">hrs / week</span>
               </div>
             </SettingsField>
             <SettingsField label="Availability">

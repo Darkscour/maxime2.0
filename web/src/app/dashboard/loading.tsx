@@ -1,7 +1,7 @@
 function SkeletonBlock({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-xl bg-white/[0.04] ${className ?? ""}`}
+      className={`animate-pulse rounded-none bg-[var(--surface-2)] ${className ?? ""}`}
       aria-hidden
     />
   );
@@ -18,13 +18,13 @@ export default function DashboardLoading() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
-          <SkeletonBlock key={index} className="h-28 rounded-2xl" />
+          <SkeletonBlock key={index} className="h-28 rounded-none" />
         ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <SkeletonBlock className="h-64 rounded-2xl" />
-        <SkeletonBlock className="h-64 rounded-2xl" />
+        <SkeletonBlock className="h-64 rounded-none" />
+        <SkeletonBlock className="h-64 rounded-none" />
       </div>
     </div>
   );

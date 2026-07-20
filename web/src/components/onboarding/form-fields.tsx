@@ -16,12 +16,14 @@ export function FormField({
 }) {
   return (
     <label className={cn("block", className)}>
-      <span className="text-sm font-medium text-zinc-200">
+      <span className="text-sm font-medium text-[var(--foreground)]">
         {label}
-        {required && <span className="text-red-400"> *</span>}
+        {required && <span className="text-red-600"> *</span>}
       </span>
       {hint ? (
-        <span className="mt-0.5 block text-xs text-zinc-500">{hint}</span>
+        <span className="mt-0.5 block text-xs text-[var(--foreground-muted)]">
+          {hint}
+        </span>
       ) : (
         <span className="mt-0.5 block min-h-4" aria-hidden />
       )}
@@ -50,7 +52,7 @@ export function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>
 export function FormError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="rounded-lg border border-red-400/20 bg-red-400/5 px-3 py-2 text-sm text-red-200">
+    <p className="rounded-none border border-red-600/30 bg-red-50 px-3 py-2 text-sm text-red-800">
       {message}
     </p>
   );
@@ -67,13 +69,13 @@ export function StepHeader({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
         {step}
       </p>
-      <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+      <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-[var(--foreground)] sm:text-4xl">
         {title}
       </h1>
-      <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">
+      <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--foreground-muted)] sm:text-base">
         {subtitle}
       </p>
     </div>

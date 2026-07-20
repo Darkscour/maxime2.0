@@ -32,8 +32,8 @@ export function RecruitmentArt() {
       >
         <defs>
           <radialGradient id="recruit-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="rgb(34,211,238)" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="rgb(34,211,238)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -48,7 +48,7 @@ export function RecruitmentArt() {
                 height={cardH}
                 rx="5"
                 className={
-                  isFocused ? "stroke-cyan-400/70" : "stroke-zinc-700"
+                  isFocused ? "stroke-[color-mix(in_srgb,var(--accent)_70%,transparent)]" : "stroke-[var(--border-strong)]"
                 }
                 strokeWidth="1.25"
               />
@@ -57,7 +57,7 @@ export function RecruitmentArt() {
                 cy={c.y + cardH / 2}
                 r="6"
                 className={
-                  isFocused ? "stroke-cyan-300" : "stroke-zinc-600"
+                  isFocused ? "stroke-[color-mix(in_srgb,var(--accent)_85%,white)]" : "stroke-[var(--foreground-subtle)]"
                 }
                 strokeWidth="1.25"
               />
@@ -67,7 +67,7 @@ export function RecruitmentArt() {
                 x2={c.x + cardW - 8}
                 y2={c.y + cardH / 2 - 5}
                 className={
-                  isFocused ? "stroke-cyan-300/70" : "stroke-zinc-700"
+                  isFocused ? "stroke-[color-mix(in_srgb,var(--accent)_70%,transparent)]" : "stroke-[var(--border-strong)]"
                 }
                 strokeWidth="1.25"
               />
@@ -77,7 +77,7 @@ export function RecruitmentArt() {
                 x2={c.x + cardW - 24}
                 y2={c.y + cardH / 2 + 5}
                 className={
-                  isFocused ? "stroke-cyan-300/40" : "stroke-zinc-800"
+                  isFocused ? "stroke-[color-mix(in_srgb,var(--accent)_40%,transparent)]" : "stroke-[var(--border)]"
                 }
                 strokeWidth="1.25"
               />
@@ -97,7 +97,7 @@ export function RecruitmentArt() {
           cx={fx}
           cy={fy}
           r="46"
-          className="stroke-cyan-400/60"
+          className="stroke-[color-mix(in_srgb,var(--accent)_60%,transparent)]"
           strokeWidth="1"
           strokeDasharray="3 4"
         />
@@ -105,14 +105,14 @@ export function RecruitmentArt() {
           cx={fx}
           cy={fy}
           r="28"
-          className="stroke-cyan-400/80"
+          className="stroke-[color-mix(in_srgb,var(--accent)_80%,transparent)]"
           strokeWidth="1.25"
         />
         <circle
           cx={fx}
           cy={fy}
           r="2.5"
-          className="fill-cyan-300"
+          className="fill-[color-mix(in_srgb,var(--accent)_85%,white)]"
           stroke="none"
         />
 
@@ -121,7 +121,7 @@ export function RecruitmentArt() {
           y1={fy}
           x2={fx - 32}
           y2={fy}
-          className="stroke-cyan-400"
+          className="stroke-[var(--accent)]"
           strokeWidth="1.25"
         />
         <line
@@ -129,7 +129,7 @@ export function RecruitmentArt() {
           y1={fy}
           x2={fx + 60}
           y2={fy}
-          className="stroke-cyan-400"
+          className="stroke-[var(--accent)]"
           strokeWidth="1.25"
         />
         <line
@@ -137,7 +137,7 @@ export function RecruitmentArt() {
           y1={fy - 60}
           x2={fx}
           y2={fy - 32}
-          className="stroke-cyan-400"
+          className="stroke-[var(--accent)]"
           strokeWidth="1.25"
         />
         <line
@@ -145,7 +145,7 @@ export function RecruitmentArt() {
           y1={fy + 32}
           x2={fx}
           y2={fy + 60}
-          className="stroke-cyan-400"
+          className="stroke-[var(--accent)]"
           strokeWidth="1.25"
         />
 
@@ -153,7 +153,7 @@ export function RecruitmentArt() {
           const r = 64;
           const len = 10;
           return (
-            <g className="stroke-cyan-400" strokeWidth="1.5">
+            <g className="stroke-[var(--accent)]" strokeWidth="1.5">
               <polyline points={`${fx - r},${fy - r + len} ${fx - r},${fy - r} ${fx - r + len},${fy - r}`} />
               <polyline points={`${fx + r - len},${fy - r} ${fx + r},${fy - r} ${fx + r},${fy - r + len}`} />
               <polyline points={`${fx - r},${fy + r - len} ${fx - r},${fy + r} ${fx - r + len},${fy + r}`} />
@@ -162,12 +162,12 @@ export function RecruitmentArt() {
           );
         })()}
 
-        <g className="stroke-cyan-400/50" strokeWidth="1" strokeDasharray="2 3">
+        <g className="stroke-[color-mix(in_srgb,var(--accent)_50%,transparent)]" strokeWidth="1" strokeDasharray="2 3">
           <line x1={fx + 70} y1={fy - 30} x2={fx + 130} y2={fy - 30} />
           <line x1={fx + 70} y1={fy} x2={fx + 115} y2={fy} />
           <line x1={fx + 70} y1={fy + 30} x2={fx + 120} y2={fy + 30} />
         </g>
-        <g className="fill-cyan-300/60" stroke="none">
+        <g className="fill-[color-mix(in_srgb,var(--accent)_60%,transparent)]" stroke="none">
           <circle cx={fx + 132} cy={fy - 30} r="1.5" />
           <circle cx={fx + 117} cy={fy} r="1.5" />
           <circle cx={fx + 122} cy={fy + 30} r="1.5" />

@@ -136,7 +136,7 @@ function DemoCursor({
             animate={{ scale: 2.2, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.45 }}
-            className="absolute left-1 top-1 h-4 w-4 rounded-full bg-cyan-400/50"
+            className="absolute left-1 top-1 h-4 w-4 rounded-full bg-[color-mix(in_srgb,var(--accent)_50%,transparent)]"
           />
         ) : null}
       </AnimatePresence>
@@ -266,7 +266,7 @@ export function DashboardDemo() {
   return (
     <section
       id="demo"
-      className="scroll-mt-24 border-b border-white/5 py-10 sm:py-12"
+      className="scroll-mt-24 border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] py-10 sm:py-12"
     >
       <Container>
         <SectionHeader
@@ -276,7 +276,7 @@ export function DashboardDemo() {
         />
 
         <motion.div
-          className="mx-auto mt-7 max-w-4xl overflow-hidden rounded-2xl border border-white/5 bg-[var(--surface)] shadow-2xl shadow-black/20"
+          className="mx-auto mt-7 max-w-4xl overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[var(--surface)] shadow-2xl shadow-black/20"
           initial={{ opacity: 0, y: 26, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: false, amount: 0.25 }}
@@ -291,7 +291,7 @@ export function DashboardDemo() {
               type="button"
               aria-label={playing ? "Pause tour" : "Play tour"}
               onClick={() => setPlaying((value) => !value)}
-              className="absolute right-4 top-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-3 py-1.5 text-xs font-medium text-zinc-100 backdrop-blur transition-colors hover:border-white/25 hover:text-white"
+              className="absolute right-4 top-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-black/40 px-3 py-1.5 text-xs font-medium text-[var(--foreground)] backdrop-blur transition-colors hover:border-[color-mix(in_srgb,var(--border-strong)_80%,var(--foreground))] hover:text-[var(--foreground)]"
             >
               {playing ? (
                 <>
@@ -336,7 +336,7 @@ export function DashboardDemo() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35 }}
-                  className="max-w-2xl text-sm leading-6 text-zinc-300 sm:text-base"
+                  className="max-w-2xl text-sm leading-6 text-[var(--foreground)] sm:text-base"
                 >
                   {step.caption}
                 </motion.p>
@@ -344,7 +344,7 @@ export function DashboardDemo() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 border-t border-white/5 px-4 py-3 sm:px-5">
+          <div className="flex flex-wrap gap-2 border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-3 sm:px-5">
             {demoSteps.map((item, index) => (
               <button
                 key={item.id}
@@ -355,8 +355,8 @@ export function DashboardDemo() {
                 }}
                 className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                   index === activeStep
-                    ? "bg-cyan-400/15 text-cyan-200 ring-1 ring-inset ring-cyan-400/30"
-                    : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
+                    ? "bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-[color-mix(in_srgb,var(--accent)_70%,white)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--accent)_30%,transparent)]"
+                    : "text-[var(--foreground-subtle)] hover:bg-[color-mix(in_srgb,var(--foreground)_5%,transparent)] hover:text-[var(--foreground)]"
                 }`}
               >
                 {item.label}

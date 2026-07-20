@@ -13,16 +13,19 @@ const games = [
 
 export function Logos() {
   return (
-    <section id="logos" className="border-b border-white/5 bg-[var(--background-elevated)]/30 py-6 sm:py-8">
+    <section
+      id="logos"
+      className="border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[color-mix(in_srgb,var(--background-elevated)_30%,transparent)] py-6 sm:py-8"
+    >
       <Container>
-        <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
+        <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-[var(--foreground-subtle)]">
           Built for every major competitive title
         </p>
         <div className="fade-x mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {games.map((g) => (
             <span
               key={g}
-              className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-300"
+              className="text-sm font-medium text-[var(--foreground-subtle)] transition-colors hover:text-[var(--foreground-muted)]"
             >
               {g}
             </span>

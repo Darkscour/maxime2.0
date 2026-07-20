@@ -32,7 +32,14 @@ export default async function SignUpPage({
   }
 
   return (
-    <AuthPageShell>
+    <AuthPageShell
+      kicker="Get started"
+      title="Create your Maxime account"
+      description="Register to set up your team or player profile."
+      alternateHint="Already have an account?"
+      alternateHref="/sign-in"
+      alternateLabel="Sign in"
+    >
       <AuthPageGate intent="sign-up" skipSignedInRedirect={allowAuthPage}>
         <SignUp {...clerkSignUpPageProps} />
       </AuthPageGate>

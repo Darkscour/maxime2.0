@@ -39,8 +39,8 @@ export function AiCoachArt() {
       >
         <defs>
           <radialGradient id="coach-glow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="rgb(34,211,238)" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="rgb(34,211,238)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -53,8 +53,8 @@ export function AiCoachArt() {
             y2={nodes[b].y}
             className={
               nodes[a].bright || nodes[b].bright
-                ? "stroke-cyan-400/60"
-                : "stroke-zinc-700"
+                ? "stroke-[color-mix(in_srgb,var(--accent)_60%,transparent)]"
+                : "stroke-[var(--border-strong)]"
             }
             strokeWidth="1"
             strokeDasharray={
@@ -64,7 +64,7 @@ export function AiCoachArt() {
         ))}
 
         {nodes.map((n, i) => {
-          const cls = n.bright ? "stroke-cyan-300" : "stroke-zinc-600";
+          const cls = n.bright ? "stroke-[color-mix(in_srgb,var(--accent)_85%,white)]" : "stroke-[var(--foreground-subtle)]";
           if (n.shape === "hex") {
             const r = 9;
             const pts = Array.from({ length: 6 }).map((_, k) => {
@@ -116,7 +116,7 @@ export function AiCoachArt() {
           width="280"
           height="46"
           rx="10"
-          className="stroke-zinc-600 fill-zinc-950/60"
+          className="stroke-[var(--foreground-subtle)] fill-[color-mix(in_srgb,var(--background)_60%,transparent)]"
           strokeWidth="1.25"
         />
         <line
@@ -124,7 +124,7 @@ export function AiCoachArt() {
           y1="183"
           x2="206"
           y2="183"
-          className="stroke-zinc-600"
+          className="stroke-[var(--foreground-subtle)]"
           strokeWidth="1.25"
         />
         <line
@@ -132,7 +132,7 @@ export function AiCoachArt() {
           y1="195"
           x2="176"
           y2="195"
-          className="stroke-zinc-700"
+          className="stroke-[var(--border-strong)]"
           strokeWidth="1.25"
         />
 
@@ -142,12 +142,12 @@ export function AiCoachArt() {
           width="30"
           height="22"
           rx="6"
-          className="stroke-cyan-400 fill-cyan-400/10"
+          className="stroke-[var(--accent)] fill-[color-mix(in_srgb,var(--accent)_10%,transparent)]"
           strokeWidth="1.25"
         />
         <polygon
           points="306,184 318,189 306,194"
-          className="fill-cyan-300"
+          className="fill-[color-mix(in_srgb,var(--accent)_85%,white)]"
           stroke="none"
         />
       </svg>

@@ -11,7 +11,7 @@ import { twMerge } from "tailwind-merge";
  *   handles conditional inputs like booleans, arrays, and objects.
  *
  * Example:
- *   cn("p-2 text-zinc-300", isActive && "text-cyan-400", className)
+ *   cn("p-2 text-zinc-300", isActive && "text-[var(--accent)]", className)
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
