@@ -38,7 +38,7 @@ export function InviteMessageModal({
         className="absolute inset-0 bg-black/70"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg rounded-none border border-[var(--border)] bg-[#0d0f14] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-none border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
         <button
           type="button"
           aria-label="Close dialog"

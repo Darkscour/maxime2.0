@@ -132,7 +132,7 @@ export function InteractiveAreaChart({
     <div className="relative">
       <div className="mb-2 flex min-h-10 items-center justify-center px-1">
         {active ? (
-          <div className="flex flex-col items-center rounded-lg border border-[var(--border)] bg-[#161a24] px-4 py-2 text-center shadow-xl">
+          <div className="flex flex-col items-center rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-center shadow-xl">
             <p className="text-[10px] leading-tight text-[var(--foreground-muted)]">{active.date}</p>
             <p className="mt-0.5 text-sm font-semibold text-[var(--foreground)]">
               {valueLabel(active.value)}
@@ -186,7 +186,8 @@ export function InteractiveAreaChart({
               x2={width - padding}
               y1={padding + (height - padding * 2) * ratio}
               y2={padding + (height - padding * 2) * ratio}
-              stroke="rgba(255,255,255,0.04)"
+              stroke="var(--foreground)"
+              opacity="0.06"
               strokeWidth="1"
               strokeDasharray="4 8"
             />
@@ -209,7 +210,8 @@ export function InteractiveAreaChart({
               x2={activePoint.x}
               y1={padding}
               y2={height}
-              stroke="rgba(255,255,255,0.1)"
+              stroke="var(--foreground)"
+              opacity="0.12"
               strokeWidth="1"
               strokeDasharray="3 4"
             />

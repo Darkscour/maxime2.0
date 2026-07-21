@@ -291,7 +291,7 @@ export function DashboardDemo() {
               type="button"
               aria-label={playing ? "Pause tour" : "Play tour"}
               onClick={() => setPlaying((value) => !value)}
-              className="absolute right-4 top-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-black/40 px-3 py-1.5 text-xs font-medium text-[var(--foreground)] backdrop-blur transition-colors hover:border-[color-mix(in_srgb,var(--border-strong)_80%,var(--foreground))] hover:text-[var(--foreground)]"
+              className="absolute right-4 top-4 z-30 inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-[var(--surface)]/80 px-3 py-1.5 text-xs font-medium text-[var(--foreground)] backdrop-blur transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]"
             >
               {playing ? (
                 <>

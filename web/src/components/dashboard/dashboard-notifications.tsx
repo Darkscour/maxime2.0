@@ -18,8 +18,8 @@ type NotificationItem = {
   createdAt: string;
 };
 
-const PANEL_BG = "#161a24";
-const PANEL_HEADER_BG = "#11141b";
+const PANEL_BG = "var(--surface)";
+const PANEL_HEADER_BG = "var(--surface-2)";
 
 function formatWhen(iso: string) {
   const date = new Date(iso);
@@ -151,7 +151,7 @@ export function DashboardNotifications() {
         ref={panelRef}
         role="dialog"
         aria-label="Notifications"
-        className="fixed z-[9999] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-none border border-[#2a3042] shadow-[0_24px_64px_rgba(0,0,0,0.85)]"
+        className="fixed z-[9999] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-none border border-[var(--border)] shadow-[0_24px_64px_rgba(12,12,14,0.15)]"
         style={{
           top: panelPos.top,
           right: panelPos.right,
@@ -159,7 +159,7 @@ export function DashboardNotifications() {
         }}
       >
         <div
-          className="flex items-center justify-between border-b border-[#2a3042] px-4 py-3"
+          className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3"
           style={{ backgroundColor: PANEL_HEADER_BG }}
         >
           <p className="text-sm font-medium text-[var(--foreground)]">Notifications</p>
@@ -189,15 +189,15 @@ export function DashboardNotifications() {
               up here.
             </p>
           ) : (
-            <ul className="divide-y divide-[#2a3042]">
+            <ul className="divide-y divide-[var(--border)]">
               {items.map((item) => (
                 <li key={item.id}>
                   <button
                     type="button"
                     onClick={() => openItem(item)}
                     className={cn(
-                      "w-full px-4 py-3 text-left transition-colors hover:bg-[#1c2130]",
-                      !item.read && "bg-[#1a2838]",
+                      "w-full px-4 py-3 text-left transition-colors hover:bg-[var(--surface-2)]",
+                      !item.read && "bg-[var(--background)]",
                     )}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -232,7 +232,7 @@ export function DashboardNotifications() {
         </div>
 
         <div
-          className="border-t border-[#2a3042] px-4 py-2"
+          className="border-t border-[var(--border)] px-4 py-2"
           style={{ backgroundColor: PANEL_HEADER_BG }}
         >
           <Link
