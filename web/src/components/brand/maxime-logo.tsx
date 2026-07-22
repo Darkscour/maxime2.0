@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-/** Full stacked lockup: emblem above the MAXIME wordmark (transparent). */
+/** Full stacked lockup: emblem above the MAXIME wordmark (transparent, copper). */
 const STACKED_SRC = "/maxime-logo-stacked.png";
 const STACKED_W = 411;
 const STACKED_H = 301;
@@ -24,8 +24,12 @@ const markSize = {
 } as const;
 
 type MaximeLogoProps = {
-  /** `stacked` (default): emblem + MAXIME wordmark. `mark`: emblem only. */
-  variant?: "stacked" | "mark";
+  /**
+   * `stacked` (default): emblem above MAXIME wordmark.
+   * `mark`: emblem only.
+   * `lockup`: emblem + inline “Maxime” wordmark (nav / desk).
+   */
+  variant?: "stacked" | "mark" | "lockup";
   size?: keyof typeof stackedHeight;
   href?: string | null;
   className?: string;
@@ -41,7 +45,33 @@ export function MaximeLogo({
 }: MaximeLogoProps) {
   let content: React.ReactNode;
 
-  if (variant === "mark") {
+  if (variant === "lockup") {
+    const side = markSize[size];
+    content = (
+      <span
+        className={cn(
+          "inline-flex items-center gap-[0.65rem] text-[var(--accent)]",
+          className,
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={MARK_SRC}
+          alt=""
+          width={side}
+          height={side}
+          decoding="async"
+          fetchPriority={priority ? "high" : undefined}
+          aria-hidden
+          className="maxime-logo-img block shrink-0 object-contain"
+          style={{ width: side, height: side }}
+        />
+        <span className="font-heading text-[1.15rem] font-medium leading-none tracking-[-0.035em]">
+          Maxime
+        </span>
+      </span>
+    );
+  } else if (variant === "mark") {
     const side = markSize[size];
     content = (
       // Native img — avoids Vercel/Next image optimizer clipping transparent PNG lockups.
@@ -80,7 +110,8 @@ export function MaximeLogo({
   return (
     <Link
       href={href}
-      className="inline-flex shrink-0 items-center overflow-visible leading-none"
+      className="inline-flex shrink-0 items-center overflow-visible leading-none transition-opacity hover:opacity-75"
+      aria-label={href === "/dashboard" ? "Maxime desk" : "Maxime home"}
     >
       {content}
     </Link>

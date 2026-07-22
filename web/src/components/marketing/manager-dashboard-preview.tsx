@@ -155,7 +155,7 @@ export function ManagerDashboardPreview({
       {showSidebar ? (
         <aside className="hidden w-56 shrink-0 border-r border-[color-mix(in_srgb,var(--border)_50%,transparent)] bg-[color-mix(in_srgb,var(--background)_90%,transparent)] sm:flex sm:flex-col">
           <div className="border-b border-[color-mix(in_srgb,var(--border)_50%,transparent)] px-4 py-4">
-            <MaximeLogo size="nav" href={null} />
+            <MaximeLogo variant="lockup" size="nav" href={null} />
             <div className="mt-3 border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)] pt-3">
               <span className="inline-flex rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] px-2.5 py-1 text-[10px] font-medium tracking-wide text-[var(--foreground-muted)]">
                 Manager
