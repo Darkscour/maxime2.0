@@ -104,7 +104,7 @@ export function JoinRequestsPanel({
         {items.map((player) => (
           <article
             key={player.id}
-            className="desk-panel flex flex-col border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] p-5"
+            className="md-card flex flex-col !p-5 border-[color-mix(in_srgb,var(--md-accent)_30%,var(--md-card-border))]"
           >
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge tone="cyan">Requested to join</Badge>
@@ -122,13 +122,13 @@ export function JoinRequestsPanel({
                 game={player.game}
                 role={player.role}
                 rank={player.rank}
+                region={player.region}
                 school={player.school}
                 imageUrl={player.imageUrl}
-                className="border-0 bg-transparent p-0"
               />
             </Link>
 
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--border)] pt-4">
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--md-card-border)] pt-4">
               <Button
                 type="button"
                 size="sm"

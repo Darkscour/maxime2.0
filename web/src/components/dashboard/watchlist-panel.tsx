@@ -95,27 +95,27 @@ export function WatchlistPanel({
         {items.map((player) => (
           <div
             key={player.id}
-            className="desk-panel flex h-full flex-col transition-colors hover:border-[var(--accent)]"
+            className="md-card flex h-full flex-col !p-0 overflow-hidden transition-colors hover:border-[color-mix(in_srgb,var(--md-accent)_25%,var(--md-card-border))]"
           >
             <Link
               href={`/dashboard/scout/${player.handle}`}
-              className="block p-5 transition-colors hover:bg-[var(--surface-2)]"
+              className="block p-5 transition-colors hover:bg-[var(--md-chip-bg)]"
             >
               <PlayerScoutCard
                 handle={player.handle}
                 game={player.game}
                 role={player.role}
                 rank={player.rank}
+                region={player.region}
                 school={player.school}
                 imageUrl={player.imageUrl}
                 badge={
                   player.inviteStatus === "pending" ? "Invite sent" : undefined
                 }
-                className="border-0 bg-transparent p-0"
               />
             </Link>
 
-            <div className="mt-auto border-t border-[var(--border)] px-5 py-4">
+            <div className="mt-auto border-t border-[var(--md-card-border)] px-5 py-4">
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"

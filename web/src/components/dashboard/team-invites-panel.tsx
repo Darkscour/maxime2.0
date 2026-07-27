@@ -81,7 +81,7 @@ export function TeamInvitesPanel({
   }
 
   return (
-    <div className="desk-panel p-6 sm:p-8">
+    <div className="md-subpage-panel p-6 sm:p-8">
       {onTeam && currentTeamName && invites.length > 0 && (
         <div className="mb-6 flex items-start gap-3 border border-[color-mix(in_srgb,var(--warning)_45%,var(--border))] bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] px-4 py-3">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--warning)]" />

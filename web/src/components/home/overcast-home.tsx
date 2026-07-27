@@ -596,6 +596,7 @@ function FrameNav({ logoHref }: { logoHref: string }) {
               {item.label}
             </HashLink>
           ))}
+          <DashboardPreviewDropdown />
         </nav>
         <div className="flex items-center gap-4">
           <Link
@@ -610,6 +611,104 @@ function FrameNav({ logoHref }: { logoHref: string }) {
         </div>
       </div>
     </header>
+  );
+}
+
+const PREVIEW_OPTIONS: {
+  href: string;
+  label: string;
+  hint: string;
+  icon: LucideIcon;
+}[] = [
+  {
+    href: "/preview/dashboard/manager_collegiate",
+    label: "Collegiate org",
+    hint: "Manager · school-bound program",
+    icon: GraduationCap,
+  },
+  {
+    href: "/preview/dashboard/manager_grassroots",
+    label: "Grassroots org",
+    hint: "Manager · community team",
+    icon: Users,
+  },
+  {
+    href: "/preview/dashboard/player_collegiate",
+    label: "Collegiate player",
+    hint: "Player · school-bound scout card",
+    icon: UserRound,
+  },
+  {
+    href: "/preview/dashboard/player_grassroots",
+    label: "Grassroots player",
+    hint: "Player · free agent",
+    icon: Search,
+  },
+];
+
+function DashboardPreviewDropdown() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="oc-link inline-flex items-center gap-1"
+      >
+        See the dashboard
+        <ChevronDown
+          className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")}
+        />
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-50 mt-2 w-[19rem] border border-[var(--design-fg)] bg-[var(--design-surface)] shadow-none"
+        >
+          <div className="border-b border-[var(--design-line)] px-4 py-3">
+            <p className="font-mono-design text-[10px] uppercase tracking-[0.18em] text-[var(--design-accent)]">
+              Dashboard preview
+            </p>
+            <p className="mt-1 text-[12px] leading-5 text-[var(--design-muted)]">
+              Design mock of the signed-in desk — pick an account type to see
+              exactly what that user opens on Maxime.
+            </p>
+          </div>
+          <ul>
+            {PREVIEW_OPTIONS.map((opt) => {
+              const Icon = opt.icon;
+              return (
+                <li key={opt.href} className="border-b border-[var(--design-line)] last:border-b-0">
+                  <Link
+                    href={opt.href}
+                    role="menuitem"
+                    className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-[var(--design-bg)]"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="oc-mark" aria-hidden>
+                      <Icon className="h-4 w-4" strokeWidth={1.75} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[13px] font-medium tracking-[-0.01em] text-[var(--design-fg)]">
+                        {opt.label}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-4 text-[var(--design-muted)]">
+                        {opt.hint}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -632,7 +731,7 @@ function Hero() {
             Maxime
           </h1>
           <p className="oc-reveal oc-reveal-delay-2 mt-7 max-w-[22rem] text-[1.35rem] leading-snug tracking-[-0.02em] text-[var(--design-fg)] sm:text-[1.5rem]">
-            The desk that runs your amateur org.
+            The desk that runs your esports operations.
           </p>
           <p className="oc-reveal oc-reveal-delay-3 mt-4 max-w-[26rem] text-[0.95rem] leading-7 text-[var(--design-muted)]">
             Scout players, chase sponsors, keep the roster moving — built for

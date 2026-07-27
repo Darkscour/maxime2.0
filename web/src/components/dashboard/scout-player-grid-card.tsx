@@ -16,6 +16,7 @@ export type ScoutGridPlayer = {
   game: string;
   role: string;
   rank: string;
+  region?: string | null;
   school: string | null;
   imageUrl: string | null;
 };
@@ -102,30 +103,29 @@ export function ScoutPlayerGridCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-none border bg-[var(--surface)] transition-colors",
-        joinRequestPending
-          ? "border-[var(--accent)] hover:border-[var(--foreground)]"
-          : "border-[var(--border)] hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]",
+        "md-card md-scout-portal-card flex h-full flex-col !p-0 overflow-hidden transition-colors",
+        joinRequestPending &&
+          "border-[color-mix(in_srgb,var(--md-accent)_45%,#000)]",
       )}
     >
       <Link
         href={`/dashboard/scout/${player.handle}`}
-        className="block p-5 transition-colors hover:bg-[var(--surface-2)]"
+        className="block p-5 transition-colors hover:bg-[var(--md-chip-bg)]"
       >
         <PlayerScoutCard
           handle={player.handle}
           game={player.game}
           role={player.role}
           rank={player.rank}
+          region={player.region}
           school={player.school}
           imageUrl={player.imageUrl}
           badge={joinRequestPending ? "Requested to join" : undefined}
-          className="border-0 bg-transparent p-0"
         />
       </Link>
 
       {canManage && (
-        <div className="mt-auto border-t border-[var(--border)] px-5 py-4">
+        <div className="mt-auto border-t border-[var(--md-card-border)] px-5 py-4">
           {onRoster ? (
             <p className="text-xs text-[var(--foreground-muted)]">Already on your roster</p>
           ) : (

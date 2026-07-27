@@ -91,7 +91,7 @@ export function DuelsPanel({
 
   return (
     <div className="space-y-6">
-      <form onSubmit={createChallenge} className="desk-panel p-5">
+      <form onSubmit={createChallenge} className="md-subpage-panel">
         <h2 className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
           Send a challenge
         </h2>
@@ -172,7 +172,7 @@ function DuelList({
   onAction: (id: string, status: string) => Promise<void>;
 }) {
   return (
-    <section className="desk-panel p-5">
+    <section className="md-subpage-panel">
       <h3 className="font-heading text-base font-semibold tracking-[-0.01em] text-[var(--foreground)]">
         {title}
       </h3>

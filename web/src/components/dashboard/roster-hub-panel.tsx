@@ -85,7 +85,7 @@ export function RosterHubPanel({
       {staff.length > 0 && (
         <section className="space-y-2">
           {!compact && (
-            <p className="desk-kicker !text-[var(--foreground-muted)]">Leadership</p>
+            <p className="md-subpage-kicker">Leadership</p>
           )}
           <div
             className={
@@ -102,7 +102,7 @@ export function RosterHubPanel({
       {players.length > 0 && (
         <section className="space-y-2">
           {!compact && (
-            <p className="desk-kicker !text-[var(--foreground-muted)]">Players</p>
+            <p className="md-subpage-kicker">Players</p>
           )}
           <div
             className={
@@ -161,21 +161,20 @@ function MemberCard({
       school={member.school}
       imageUrl={member.imageUrl}
       badge={staffRole ?? undefined}
-      className="border-0 bg-transparent p-0"
     />
   );
 
   return (
     <article
       className={cn(
-        "desk-panel group flex flex-col transition-colors",
-        !compact && "hover:border-[var(--border-strong)]",
+        "md-card group flex h-full flex-col !p-0 overflow-hidden transition-colors",
+        !compact && "hover:border-[color-mix(in_srgb,var(--md-accent)_20%,var(--md-card-border))]",
       )}
     >
       {scoutHref ? (
         <Link
           href={scoutHref}
-          className="block p-5 transition-colors hover:bg-[var(--surface-2)]"
+          className="block p-5 transition-colors hover:bg-[var(--md-chip-bg)]"
         >
           {card}
         </Link>
@@ -184,7 +183,7 @@ function MemberCard({
       )}
 
       {canManage && member.role === "player" && onAskRemove && (
-        <div className="mt-auto border-t border-[var(--border)] px-5 py-3">
+        <div className="mt-auto border-t border-[var(--md-card-border)] px-5 py-3">
           {confirming ? (
             <div className="space-y-2">
               <p className="text-sm text-[var(--foreground-muted)]">

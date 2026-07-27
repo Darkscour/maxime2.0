@@ -152,6 +152,18 @@ export function derivePlayerRegionFromInstitutionState(
   return NA_WEST_STATE_CODES.has(code) ? "NA West" : "NA East";
 }
 
+/** Region label for desk cards — never substitute school name for region. */
+export function resolveCollegiateRegionDisplay(input: {
+  region: string | null | undefined;
+  institutionState: string | null | undefined;
+}): string {
+  const trimmed = input.region?.trim();
+  if (trimmed && isOnboardingRegion(trimmed)) return trimmed;
+  const derived = derivePlayerRegionFromInstitutionState(input.institutionState);
+  if (derived) return derived;
+  return trimmed || "—";
+}
+
 export const PLAYER_BIO_MAX_LENGTH = 150;
 
 export const PLAYER_STATUSES = [

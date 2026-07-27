@@ -17,24 +17,26 @@ export function ClerkUserButton({
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <span
-        aria-hidden
-        className={cn("inline-block shrink-0 rounded-none bg-[var(--surface-2)]", avatarClassName)}
-      />
-    );
-  }
-
   return (
-    <UserButton
-      appearance={{
-        ...clerkAuthAppearance,
-        elements: {
-          ...(clerkAuthAppearance as { elements?: Record<string, string> }).elements,
-          avatarBox: avatarClassName,
-        },
-      }}
-    />
+    <div className="inline-flex shrink-0 items-center">
+      {!mounted ? (
+        <span
+          aria-hidden
+          className={cn("inline-block rounded-none bg-[var(--surface-2)]", avatarClassName)}
+        />
+      ) : (
+        <UserButton
+          appearance={{
+            ...clerkAuthAppearance,
+            elements: {
+              ...(clerkAuthAppearance as { elements?: Record<string, string> }).elements,
+              avatarBox: avatarClassName,
+              userButtonPopoverFooter: "!hidden",
+              userProfileFooter: "!hidden",
+            },
+          }}
+        />
+      )}
+    </div>
   );
 }

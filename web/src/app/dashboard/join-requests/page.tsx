@@ -29,7 +29,7 @@ export default async function JoinRequestsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title="Join requests"
         job={

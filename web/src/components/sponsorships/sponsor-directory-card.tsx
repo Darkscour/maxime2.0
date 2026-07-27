@@ -119,7 +119,7 @@ export function SponsorDirectoryCard({
 }) {
   if (compact) {
     return (
-      <article className="group flex min-h-[15.5rem] flex-col rounded-none border border-[var(--border)] bg-[var(--surface)] p-4 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))]">
+      <article className="group flex min-h-[15.5rem] flex-col rounded-none border border-black bg-[var(--surface)] p-4 transition-colors hover:border-black">
         {tag && (
           <span className="mb-2 inline-block rounded-none bg-[color-mix(in_srgb,var(--foreground-muted)_10%,transparent)] px-2 py-0.5 text-[10px] text-[var(--foreground-muted)] ring-1 ring-inset ring-[var(--border)]">
             {tag}
@@ -176,7 +176,7 @@ export function SponsorDirectoryCard({
   return (
     <article
       className={cn(
-        "group flex min-h-[18rem] flex-col rounded-none border border-[var(--border)] bg-[var(--surface)] p-7 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_20%,var(--border))] sm:min-h-[19rem] sm:p-8",
+        "group flex min-h-[18rem] flex-col rounded-none border border-black bg-[var(--surface)] p-7 transition-colors hover:border-black sm:min-h-[19rem] sm:p-8",
       )}
     >
       {tag && (

@@ -6,6 +6,7 @@ export type PlayerScoutCardProps = {
   game: string;
   role: string;
   rank: string;
+  region?: string | null;
   school?: string | null;
   imageUrl?: string | null;
   className?: string;
@@ -26,14 +27,14 @@ function PlayerScoutCardAvatar({
       <img
         src={imageUrl}
         alt=""
-        className="h-12 w-12 shrink-0 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
+        className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-inset ring-[var(--md-card-border)]"
       />
     );
   }
 
   return (
     <span
-      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-[var(--foreground)] text-lg font-bold text-[var(--background)]"
+      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--md-primary)] text-lg font-bold text-white"
       aria-hidden
     >
       {initial}
@@ -46,34 +47,38 @@ export function PlayerScoutCard({
   game,
   role,
   rank,
+  region,
   school,
   imageUrl,
   className,
   badge,
 }: PlayerScoutCardProps) {
-  const detailLine = [game, role, rank].filter(Boolean).join(" · ");
+  const location = region?.trim() || school?.trim() || game;
+  const detailLine = [location, role, rank].filter(Boolean).join(" · ");
 
   return (
     <article
       className={cn(
-        "flex items-start gap-4 rounded-none border border-[var(--foreground)] bg-[var(--surface)] p-5",
+        "flex items-start gap-4",
         className,
       )}
     >
       <PlayerScoutCardAvatar handle={handle || "Player"} imageUrl={imageUrl} />
       <div className="min-w-0 flex-1">
         {badge && (
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--md-accent)]">
             {badge}
           </p>
         )}
-        <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
+        <h2 className="font-heading text-lg font-semibold text-[var(--md-text)]">
           {handle || "Your handle"}
         </h2>
-        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+        <p className="mt-1 text-sm text-[var(--md-text-muted)]">
           {detailLine || "Competitive details"}
         </p>
-        {school && <p className="mt-2 text-xs text-[var(--foreground-muted)]">{school}</p>}
+        {school && region && (
+          <p className="mt-2 text-xs text-[var(--md-text-faint)]">{school}</p>
+        )}
       </div>
     </article>
   );
@@ -86,12 +91,12 @@ export function PlayerScoutCardLink({
   return (
     <Link
       href={href}
-      className="group block transition-colors hover:[&_article]:border-[var(--accent-2)]"
+      className="group block transition-colors"
     >
       <PlayerScoutCard
         {...props}
         className={cn(
-          "transition-colors group-hover:bg-[var(--surface-2)]",
+          "transition-colors group-hover:opacity-90",
           props.className,
         )}
       />

@@ -24,7 +24,7 @@ export default async function DuelsPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title="Duels"
         job="Challenge other grassroots teams and track incoming, open, and past challenges."

@@ -14,17 +14,10 @@ export function DeskPageHeader({
   className?: string;
 }) {
   return (
-    <header
-      className={cn(
-        "flex flex-wrap items-end justify-between gap-4 border-b border-[var(--border-strong)] pb-5",
-        className,
-      )}
-    >
+    <header className={cn("md-subpage-header", className)}>
       <div className="min-w-0 max-w-2xl">
-        <h1 className="font-heading text-[1.75rem] font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-[2rem]">
-          {title}
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">{job}</p>
+        <h1 className="md-subpage-title sm:text-[2rem]">{title}</h1>
+        <p className="md-subpage-job">{job}</p>
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </header>
@@ -45,16 +38,11 @@ export function DeskEmpty({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "desk-sheet border-dashed px-6 py-10 text-center sm:px-10",
-        className,
-      )}
-    >
-      <p className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+    <div className={cn("md-subpage-empty", className)}>
+      <p className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--md-text)]">
         {title}
       </p>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--foreground-muted)]">
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--md-text-muted)]">
         {body}
       </p>
       {actionLabel && actionHref ? (
@@ -90,50 +78,52 @@ export function DeskQueue({
   className?: string;
 }) {
   return (
-    <section className={cn("desk-queue", className)} aria-label="Today's desk">
-      <div className="desk-queue-header">
-        <p className="desk-kicker">Today&apos;s desk</p>
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
-          {tickets.length === 0
-            ? "Clear"
-            : `${tickets.length} open`}
+    <section className={cn("md-subpage-panel", className)} aria-label="Today's desk">
+      <div className="flex items-center justify-between gap-4 border-b border-[var(--md-card-border)] pb-3">
+        <p className="md-subpage-kicker">Today&apos;s desk</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--md-text-faint)]">
+          {tickets.length === 0 ? "Clear" : `${tickets.length} open`}
         </p>
       </div>
 
       {tickets.length === 0 ? (
-        <div className="desk-queue-empty">
-          <p className="font-heading text-base font-semibold text-[var(--foreground)]">
+        <div className="py-8 text-center">
+          <p className="font-heading text-base font-semibold text-[var(--md-text)]">
             {emptyTitle}
           </p>
-          <p className="mt-2 max-w-lg text-[var(--foreground-muted)]">{emptyBody}</p>
+          <p className="mt-2 max-w-lg mx-auto text-sm text-[var(--md-text-muted)]">{emptyBody}</p>
           {emptyActionLabel && emptyActionHref ? (
             <Link
               href={emptyActionHref}
-              className="mt-4 inline-flex border border-[var(--border-strong)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="mt-4 inline-flex rounded-md border border-[var(--md-card-border)] bg-[var(--md-chip-bg)] px-3 py-2 text-sm font-semibold text-[var(--md-text)] transition-colors hover:border-[var(--md-accent)] hover:text-[var(--md-accent)]"
             >
               {emptyActionLabel}
             </Link>
           ) : null}
         </div>
       ) : (
-        tickets.map((ticket, index) => (
-          <div
-            key={ticket.id}
-            className="desk-ticket desk-ticket-enter"
-            style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
-          >
-            <div className="min-w-0">
-              <p className="desk-ticket-title">{ticket.title}</p>
-              <p className="desk-ticket-body">{ticket.body}</p>
-            </div>
-            <Link
-              href={ticket.href}
-              className="inline-flex shrink-0 items-center justify-center border border-[var(--accent)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--accent-ink)] transition-colors hover:bg-[var(--accent-strong)] hover:border-[var(--accent-strong)]"
+        <ul className="mt-4 divide-y divide-[var(--md-card-border)]">
+          {tickets.map((ticket, index) => (
+            <li
+              key={ticket.id}
+              className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+              style={{ animationDelay: `${Math.min(index, 6) * 40}ms` }}
             >
-              {ticket.actionLabel}
-            </Link>
-          </div>
-        ))
+              <div className="min-w-0">
+                <p className="font-heading text-sm font-semibold text-[var(--md-text)]">
+                  {ticket.title}
+                </p>
+                <p className="mt-1 text-sm text-[var(--md-text-muted)]">{ticket.body}</p>
+              </div>
+              <Link
+                href={ticket.href}
+                className="md-btn md-btn-primary shrink-0"
+              >
+                {ticket.actionLabel}
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   );
@@ -146,5 +136,15 @@ export function DeskPlate({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <aside className={cn("desk-plate", className)}>{children}</aside>;
+  return <aside className={cn("md-subpage-panel", className)}>{children}</aside>;
+}
+
+export function DeskPanel({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("md-subpage-panel", className)}>{children}</div>;
 }

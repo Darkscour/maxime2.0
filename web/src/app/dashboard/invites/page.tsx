@@ -26,12 +26,12 @@ export default async function TeamInvitesPage() {
   const isGrassroots = ctx.accountTier === "grassroots";
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title="Invites"
         job={
           isGrassroots
-            ? "Accept or decline recruitment invites from grassroots teams."
+            ? "Accept or decline recruitment invites from teams."
             : "Accept or decline recruitment invites from collegiate teams at your school."
         }
         action={

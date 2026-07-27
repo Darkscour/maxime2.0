@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Bell, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,7 +41,6 @@ export function DashboardNotifications() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [panelPos, setPanelPos] = useState<{ top: number; right: number } | null>(
     null,
   );
@@ -70,10 +68,6 @@ export function DashboardNotifications() {
   useAbortableIntervalFetch("/api/notifications", 60_000, onNotifications, {
     initialDelayMs: 500,
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!open || !buttonRef.current) {
@@ -145,8 +139,27 @@ export function DashboardNotifications() {
     }
   }
 
-  const panel =
-    open && panelPos ? (
+  const showPanel = open && panelPos;
+
+  return (
+    <div className="relative">
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-label="Notifications"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="relative rounded-lg p-2 text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
+      >
+        <Bell className="h-5 w-5" />
+        {unread > 0 && (
+          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-[var(--accent)] px-1 text-[10px] font-bold text-[var(--accent-ink)]">
+            {unread > 9 ? "9+" : unread}
+          </span>
+        )}
+      </button>
+
+      {showPanel ? (
       <div
         ref={panelRef}
         role="dialog"
@@ -244,27 +257,7 @@ export function DashboardNotifications() {
           </Link>
         </div>
       </div>
-    ) : null;
-
-  return (
-    <>
-      <button
-        ref={buttonRef}
-        type="button"
-        aria-label="Notifications"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className="relative rounded-lg p-2 text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
-      >
-        <Bell className="h-5 w-5" />
-        {unread > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-none bg-[var(--accent)] px-1 text-[10px] font-bold text-[var(--accent-ink)]">
-            {unread > 9 ? "9+" : unread}
-          </span>
-        )}
-      </button>
-
-      {mounted && panel ? createPortal(panel, document.body) : null}
-    </>
+      ) : null}
+    </div>
   );
 }

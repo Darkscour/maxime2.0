@@ -23,7 +23,7 @@ export default async function RosterHubPage() {
   const canManage = canEditTeam(ctx.membershipRole);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title={ctx.team.name}
         job={`${members.length} on the roster. Accepted invites land here automatically.`}

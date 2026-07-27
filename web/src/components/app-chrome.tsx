@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-const APP_PREFIXES = ["/dashboard", "/onboarding"];
+const APP_PREFIXES = ["/dashboard", "/onboarding", "/preview"];
 
 function isAppShellRoute(pathname: string) {
   return APP_PREFIXES.some(

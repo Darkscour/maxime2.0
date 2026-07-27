@@ -5,7 +5,7 @@ import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
 import { listPublicTeams } from "@/lib/teams-directory";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
-import { DeskPageHeader } from "@/components/dashboard/desk-ui";
+import { DeskPageHeader, DeskPanel } from "@/components/dashboard/desk-ui";
 import { parseTier } from "@/lib/audience-guards";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export default async function DashboardTeamsPage() {
     : [];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title="Teams"
         job={
@@ -46,7 +46,7 @@ export default async function DashboardTeamsPage() {
       />
 
       <section>
-        <p className="desk-kicker !text-[var(--foreground-muted)] mb-4">
+        <p className="md-subpage-kicker mb-4">
           {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
         </p>
         <TeamsDirectory
@@ -57,11 +57,11 @@ export default async function DashboardTeamsPage() {
         />
       </section>
 
-      <section className="desk-panel p-6">
-        <h2 className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+      <DeskPanel>
+        <h2 className="font-heading text-lg font-semibold tracking-[-0.01em] text-[var(--md-text)]">
           Join with an invite code
         </h2>
-        <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+        <p className="mt-1 text-sm text-[var(--md-text-muted)]">
           Found a team you like? Paste their code and join the roster.
         </p>
         <div className="mt-5">
@@ -71,7 +71,7 @@ export default async function DashboardTeamsPage() {
             membershipRole={ctx.membershipRole}
           />
         </div>
-      </section>
+      </DeskPanel>
     </div>
   );
 }

@@ -72,24 +72,25 @@ export default async function ScoutPlayerProfilePage({
   const showWatchlist = !onRoster && onWatchlist;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="space-y-6">
       <Link
         href="/dashboard/scout"
-        className="text-sm font-medium text-[var(--foreground-muted)] transition-colors hover:text-[var(--accent)]"
+        className="text-sm font-medium text-[var(--md-text-muted)] transition-colors hover:text-[var(--md-accent)]"
       >
         ← Scout
       </Link>
 
-      <article className="desk-panel p-8">
-        <p className="desk-kicker !text-[var(--foreground-muted)]">Player</p>
-        <h1 className="mt-2 font-heading text-3xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+      <article className="md-subpage-panel p-8">
+        <p className="md-subpage-kicker">Player</p>
+        <h1 className="mt-2 font-heading text-3xl font-semibold tracking-[-0.02em] text-[var(--md-accent)]">
           {profile.handle}
         </h1>
-        <p className="mt-2 text-sm text-[var(--foreground-muted)]">
-          {profile.game} · {profile.role} · {profile.rank}
+        <p className="mt-2 text-sm text-[var(--md-text-muted)]">
+          {[profile.region, profile.role, profile.rank].filter(Boolean).join(" · ")}
+          {profile.game ? ` · ${profile.game}` : ""}
         </p>
 
-        <dl className="mt-6 space-y-3 text-sm text-[var(--foreground-muted)]">
+        <dl className="mt-6 space-y-3 text-sm text-[var(--md-text-muted)]">
           {profile.region && (
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-[var(--accent-2)]" />
@@ -107,7 +108,7 @@ export default async function ScoutPlayerProfilePage({
         </dl>
 
         {profile.bio && (
-          <p className="mt-6 text-sm leading-7 text-[var(--foreground-muted)]">{profile.bio}</p>
+          <p className="mt-6 text-sm leading-7 text-[var(--md-text-muted)]">{profile.bio}</p>
         )}
 
         {profile.tags.length > 0 && (
@@ -120,7 +121,7 @@ export default async function ScoutPlayerProfilePage({
           </div>
         )}
 
-        <div className="mt-8 border-t border-[var(--border)] pt-6">
+        <div className="mt-8 border-t border-[var(--md-card-border)] pt-6">
           {onRoster ? (
             <p className="text-sm text-emerald-400">Already on your roster</p>
           ) : canManage && (joinRequestPending || invitePending) ? (

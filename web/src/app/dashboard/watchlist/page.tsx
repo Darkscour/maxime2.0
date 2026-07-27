@@ -29,7 +29,7 @@ export default async function WatchlistPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-6">
       <DeskPageHeader
         title="Watchlist"
         job={
