@@ -6,13 +6,13 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  Building2,
   Check,
   Clock,
   Copy,
   Minus,
-  Star,
+  MoreHorizontal,
 } from "lucide-react";
+import { DeskIdentityAvatar } from "@/components/dashboard/desk-identity-avatar";
 
 /*
   ─── Mantine-styled Maxime desk ────────────────────────────────────────
@@ -55,7 +55,17 @@ export type DeskIdentity = {
   chainValue: string;
   primaryCta: { label: string; href: string };
   secondaryCta: { label: string; href: string };
+  editProfileHref: string;
   imageUrl?: string | null;
+};
+
+export type DeskTeamProfileSnapshot = {
+  name: string;
+  school: string;
+  games: string[];
+  region: string;
+  rosterSize: number | null;
+  discordUrl: string | null;
 };
 
 export type DeskComplianceItem = {
@@ -97,8 +107,7 @@ export type DeskMovement = {
 export type DeskOverview = {
   title: string;
   labels: string[];
-  seriesA: { label: string; values: number[] };
-  seriesB: { label: string; values: number[] };
+  series: { label: string; values: number[] };
 };
 
 export type DeskActivityItem = {
@@ -114,6 +123,7 @@ export type DeskActivityItem = {
 export type DeskViewProps = {
   audience: DeskAudience;
   identity: DeskIdentity;
+  teamProfileSnapshot?: DeskTeamProfileSnapshot | null;
   compliance: DeskCompliance;
   signals: [DeskSignal, DeskSignal, DeskSignal];
   movement: DeskMovement;
@@ -182,45 +192,26 @@ function DeskInviteCodeCopy({ inviteCode }: { inviteCode: string }) {
 // ────────────────────────────────────────────────────────────────────────
 // 1. Identity card — replaces reference "Profile / balance" card
 
-export function DeskIdentityCard({ identity }: { identity: DeskIdentity }) {
+export function DeskIdentityCard({
+  identity,
+  teamProfileSnapshot,
+}: {
+  identity: DeskIdentity;
+  teamProfileSnapshot?: DeskTeamProfileSnapshot | null;
+}) {
   return (
     <section className="md-card md-col-profile">
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 999,
-            background: "var(--md-chip-bg)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            color: "var(--md-text-faint)",
-          }}
-          aria-hidden
-        >
-          {identity.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={identity.imageUrl}
-              alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : identity.kind === "org" ? (
-            <Building2 size={20} />
-          ) : (
-            <Star size={20} />
-          )}
-        </div>
-        <button
-          type="button"
+        <DeskIdentityAvatar identity={identity} teamProfileSnapshot={teamProfileSnapshot} />
+        <Link
+          href={identity.editProfileHref}
           className="md-top-icon-btn"
-          style={{ width: 28, height: 28, background: "transparent", border: 0, color: "var(--md-text-faint)" }}
-          aria-label="More"
+          style={{ width: 32, height: 32, background: "transparent", border: 0, color: "var(--md-text-faint)" }}
+          aria-label="Edit profile"
+          title="Edit profile"
         >
-          ⋯
-        </button>
+          <MoreHorizontal size={18} />
+        </Link>
       </div>
 
       <div style={{ marginTop: 14 }}>
@@ -352,9 +343,70 @@ function DeskSignalMini({ signal }: { signal: DeskSignal }) {
 // ────────────────────────────────────────────────────────────────────────
 // 4. Movement card — replaces "Wallet balance" wide card
 
-export function DeskMovementCard({ movement }: { movement: DeskMovement }) {
+function parseHoursValue(primaryValue: string): number {
+  const n = parseInt(primaryValue.replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+export function DeskMovementCard({
+  movement,
+  gridClass = "md-col-overview",
+}: {
+  movement: DeskMovement;
+  gridClass?: "md-col-movement" | "md-col-overview";
+}) {
+  const compact = movement.title === "Play cadence";
+  const hours = parseHoursValue(movement.primaryValue);
+  const hoursBarPct = hours > 0 ? Math.min(100, (hours / 40) * 100) : 8;
+
+  if (compact) {
+    return (
+      <section className={`md-card ${gridClass}`}>
+        <div className="md-num" style={{ fontSize: 18 }}>{movement.title}</div>
+        <div style={{ marginTop: 16 }}>
+          <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.primaryLabel}</div>
+          <div className="md-num md-num-lg" style={{ marginTop: 6 }}>{movement.primaryValue}</div>
+          <div
+            aria-hidden
+            style={{
+              marginTop: 10,
+              height: 4,
+              width: `${hoursBarPct}%`,
+              maxWidth: "100%",
+              borderRadius: 2,
+              background: "var(--md-text)",
+              opacity: hours > 0 ? 1 : 0.35,
+            }}
+          />
+          <div style={{ marginTop: 8, fontSize: 12, color: "var(--md-text-muted)" }}>
+            {movement.changeAnnotation === "Steady week"
+              ? "Steady week — —"
+              : movement.changeAnnotation ?? "Steady week — —"}
+          </div>
+        </div>
+        <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.splitA.label}</div>
+            <div className="md-num md-num-md" style={{ marginTop: 4 }}>{movement.splitA.value}</div>
+          </div>
+          <div>
+            <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.splitB.label}</div>
+            <div className="md-num md-num-md" style={{ marginTop: 4 }}>{movement.splitB.value}</div>
+          </div>
+        </div>
+        <Link
+          href={movement.ctaHref}
+          className="md-btn md-btn-primary"
+          style={{ marginTop: 20, alignSelf: "flex-start" }}
+        >
+          {movement.ctaLabel} <ArrowRight size={14} />
+        </Link>
+      </section>
+    );
+  }
+
   return (
-    <section className="md-card md-col-movement">
+    <section className={`md-card ${gridClass}`}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <div className="md-num" style={{ fontSize: 18 }}>{movement.title}</div>
         <select className="md-select" defaultValue={movement.monthLabel} aria-label="Timeframe">
@@ -427,76 +479,100 @@ export function DeskMovementCard({ movement }: { movement: DeskMovement }) {
 // ────────────────────────────────────────────────────────────────────────
 // 5. Overview chart — replaces reference "Overview" line chart
 
-export function DeskOverviewCard({ overview }: { overview: DeskOverview }) {
+export function DeskOverviewCard({
+  overview,
+  gridClass = "md-col-movement",
+}: {
+  overview: DeskOverview;
+  gridClass?: "md-col-movement" | "md-col-overview";
+}) {
   return (
-    <section className="md-card md-col-overview">
+    <section className={`md-card md-overview-card ${gridClass}`}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <div className="md-num" style={{ fontSize: 18 }}>{overview.title}</div>
-        <div style={{ display: "inline-flex", gap: 6 }}>
-          <span
-            className="md-chart-legend-swatch"
-            style={{ ["--_swatch" as never]: "var(--md-accent-a)" } as React.CSSProperties}
-          >
-            {overview.seriesA.label}
-          </span>
-          <span
-            className="md-chart-legend-swatch"
-            style={{ ["--_swatch" as never]: "var(--md-accent-b)" } as React.CSSProperties}
-          >
-            {overview.seriesB.label}
-          </span>
-        </div>
+        <span
+          className="md-chart-legend-swatch"
+          style={{ ["--_swatch" as never]: "var(--md-accent-a)" } as React.CSSProperties}
+        >
+          {overview.series.label}
+        </span>
       </div>
-      <div style={{ marginTop: 12 }}>
-        <DualLineChart
-          labels={overview.labels}
-          seriesA={overview.seriesA.values}
-          seriesB={overview.seriesB.values}
-        />
+      <div className="md-trend-chart-wrap">
+        <TrendLineChart labels={overview.labels} values={overview.series.values} />
       </div>
     </section>
   );
 }
 
-function DualLineChart({
+function smoothLinePath(
+  values: number[],
+  xAt: (i: number) => number,
+  yFor: (v: number) => number,
+  baselineY: number,
+): string {
+  if (values.length === 0) return "";
+  const clampY = (y: number) => Math.min(y, baselineY);
+
+  if (values.length === 1) {
+    const x = xAt(0);
+    const y = clampY(yFor(values[0]!));
+    return `M ${x} ${y}`;
+  }
+
+  const pts = values.map((v, i) => ({ x: xAt(i), y: clampY(yFor(v)) }));
+  let d = `M ${pts[0]!.x} ${pts[0]!.y}`;
+
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i]!;
+    const p1 = pts[i]!;
+    const p2 = pts[i + 1]!;
+    const p3 = pts[i + 2] ?? p2;
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = clampY(p1.y + (p2.y - p0.y) / 6);
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = clampY(p2.y - (p3.y - p1.y) / 6);
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  }
+
+  return d;
+}
+
+function TrendLineChart({
   labels,
-  seriesA,
-  seriesB,
+  values,
 }: {
   labels: string[];
-  seriesA: number[];
-  seriesB: number[];
+  values: number[];
 }) {
-  const w = 340;
-  const h = 180;
-  const padL = 32;
-  const padR = 10;
-  const padT = 10;
-  const padB = 28;
+  const [hovered, setHovered] = useState<number | null>(null);
+  const w = 400;
+  const h = 200;
+  const padL = 28;
+  const padR = 6;
+  const padT = 18;
+  const padB = 30;
 
-  const combined = [...seriesA, ...seriesB, 1];
-  const rawMax = Math.max(...combined);
-  const niceMax = niceCeil(rawMax);
+  const rawMax = Math.max(...values, 0);
+  const niceMax = niceCeil(Math.max(rawMax, 1));
+  const domainMax = niceMax * 1.15;
   const innerH = h - padT - padB;
   const innerW = w - padL - padR;
-  const n = Math.max(labels.length, seriesA.length, seriesB.length);
+  const n = Math.max(labels.length, values.length);
   const stepX = innerW / Math.max(n - 1, 1);
-  const yFor = (v: number) => padT + innerH * (1 - v / niceMax);
+  const xAt = (i: number) => padL + i * stepX;
+  const baselineY = padT + innerH;
+  const yFor = (v: number) => padT + innerH * (1 - v / domainMax);
 
-  const pathFor = (values: number[]) => {
-    if (values.length === 0) return "";
-    return values
-      .map((v, i) => `${i === 0 ? "M" : "L"} ${padL + i * stepX} ${yFor(v)}`)
-      .join(" ");
-  };
-
-  const yTicks = 4;
+  const yTicks = niceMax <= 4 ? niceMax : 4;
   const tickValues = Array.from({ length: yTicks + 1 }, (_, i) =>
     Math.round((niceMax * i) / yTicks),
-  );
+  ).filter((val, i, arr) => i === 0 || val !== arr[i - 1]);
+
+  const linePath = smoothLinePath(values, xAt, yFor, baselineY);
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img" aria-label="Weekly trend">
+    <div className="md-trend-chart">
+      <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Weekly trend" overflow="visible">
       {tickValues.map((val, i) => {
         const y = yFor(val);
         return (
@@ -506,7 +582,7 @@ function DualLineChart({
               x2={w - padR}
               y1={y}
               y2={y}
-              stroke="rgba(24,22,60,0.06)"
+              stroke="var(--md-chart-grid)"
               strokeWidth={1}
             />
             <text
@@ -522,25 +598,70 @@ function DualLineChart({
         );
       })}
       <path
-        d={pathFor(seriesB)}
-        fill="none"
-        stroke="var(--md-accent-b)"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={pathFor(seriesA)}
+        d={linePath}
         fill="none"
         stroke="var(--md-accent-a)"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {values.map((v, i) => {
+        const cx = xAt(i);
+        const cy = yFor(v);
+        const active = hovered === i;
+        return (
+          <g key={`pt-${i}`}>
+            <circle
+              cx={cx}
+              cy={cy}
+              r={14}
+              fill="transparent"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              onFocus={() => setHovered(i)}
+              onBlur={() => setHovered(null)}
+              tabIndex={0}
+              role="button"
+              aria-label={`${labels[i] ?? `Point ${i + 1}`}: ${v}`}
+            />
+            <circle
+              cx={cx}
+              cy={cy}
+              r={active ? 5 : 3.5}
+              fill="var(--md-card)"
+              stroke="var(--md-accent-a)"
+              strokeWidth={2}
+              pointerEvents="none"
+            />
+            {active ? (
+              <g pointerEvents="none">
+                <rect
+                  x={cx - 18}
+                  y={cy - 28}
+                  width={36}
+                  height={20}
+                  rx={4}
+                  fill="var(--md-text)"
+                />
+                <text
+                  x={cx}
+                  y={cy - 15}
+                  fontSize={10}
+                  fontWeight={600}
+                  fill="var(--md-card)"
+                  textAnchor="middle"
+                >
+                  {v}
+                </text>
+              </g>
+            ) : null}
+          </g>
+        );
+      })}
       {labels.map((label, i) => (
         <text
           key={i}
-          x={padL + i * stepX}
+          x={xAt(i)}
           y={h - 8}
           fontSize={9}
           fill="var(--md-text-faint)"
@@ -549,7 +670,8 @@ function DualLineChart({
           {label}
         </text>
       ))}
-    </svg>
+      </svg>
+    </div>
   );
 }
 
@@ -632,11 +754,14 @@ export function DeskMantineView(props: DeskViewProps) {
     <>
       <h1 className="md-page-title">Dashboard</h1>
       <div className="md-grid">
-        <DeskIdentityCard identity={props.identity} />
+        <DeskIdentityCard
+          identity={props.identity}
+          teamProfileSnapshot={props.teamProfileSnapshot}
+        />
         <DeskComplianceCard compliance={props.compliance} />
         <DeskSignalsRow signals={props.signals} />
-        <DeskMovementCard movement={props.movement} />
-        <DeskOverviewCard overview={props.overview} />
+        <DeskOverviewCard overview={props.overview} gridClass="md-col-movement" />
+        <DeskMovementCard movement={props.movement} gridClass="md-col-overview" />
         <DeskActivityCard activity={props.activity} />
       </div>
     </>

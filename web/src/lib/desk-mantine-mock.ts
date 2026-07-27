@@ -34,6 +34,7 @@ const MANAGER_COLLEGIATE: DeskViewProps = {
     chainValue: "NA East",
     primaryCta: { label: "Invite", href: "/dashboard/roster" },
     secondaryCta: { label: "Roster", href: "/dashboard/roster" },
+    editProfileHref: "/dashboard/settings/team",
   },
   compliance: {
     title: "Program health",
@@ -72,12 +73,8 @@ const MANAGER_COLLEGIATE: DeskViewProps = {
     labels: [
       "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",
     ],
-    seriesA: {
-      label: "Scout views",
-      values: makeSeries(600, [0, 120, 260, 180, 320, 380, 440, 520, 640, 720, 820, 900]),
-    },
-    seriesB: {
-      label: "Roster joins",
+    series: {
+      label: "Roster size",
       values: makeSeries(2, [0, 1, 2, 3, 2, 4, 3, 5, 4, 5, 6, 7]),
     },
   },
@@ -140,6 +137,7 @@ const MANAGER_GRASSROOTS: DeskViewProps = {
     chainValue: "NA West",
     primaryCta: { label: "Invite", href: "/dashboard/roster" },
     secondaryCta: { label: "Roster", href: "/dashboard/roster" },
+    editProfileHref: "/dashboard/settings/team",
   },
   compliance: {
     title: "Team health",
@@ -176,12 +174,8 @@ const MANAGER_GRASSROOTS: DeskViewProps = {
   overview: {
     title: "Analytics",
     labels: ["W-11","W-10","W-9","W-8","W-7","W-6","W-5","W-4","W-3","W-2","W-1","Now"],
-    seriesA: {
-      label: "Scout views",
-      values: makeSeries(180, [0, 40, 80, 120, 90, 160, 220, 260, 300, 340, 380, 412]),
-    },
-    seriesB: {
-      label: "Scrim count",
+    series: {
+      label: "Roster size",
       values: makeSeries(1, [0, 1, 1, 2, 2, 3, 2, 3, 4, 3, 4, 5]),
     },
   },
@@ -242,6 +236,7 @@ const PLAYER_COLLEGIATE: DeskViewProps = {
     chainValue: "NA East",
     primaryCta: { label: "Browse teams", href: "/dashboard/teams" },
     secondaryCta: { label: "Edit profile", href: "/dashboard/settings/profile" },
+    editProfileHref: "/dashboard/settings/profile",
   },
   compliance: {
     title: "Scout status",
@@ -277,13 +272,9 @@ const PLAYER_COLLEGIATE: DeskViewProps = {
   overview: {
     title: "Analytics",
     labels: ["W-5","W-4","W-3","W-2","W-1","Now"],
-    seriesA: {
+    series: {
       label: "Profile views",
       values: [22, 34, 40, 52, 68, 84],
-    },
-    seriesB: {
-      label: "Play hours",
-      values: [12, 14, 10, 16, 15, 18],
     },
   },
   activity: activity([
@@ -336,6 +327,7 @@ const PLAYER_GRASSROOTS: DeskViewProps = {
     chainValue: "NA West",
     primaryCta: { label: "Browse teams", href: "/dashboard/teams" },
     secondaryCta: { label: "Edit profile", href: "/dashboard/settings/profile" },
+    editProfileHref: "/dashboard/settings/profile",
   },
   compliance: {
     title: "Scout status",
@@ -371,13 +363,9 @@ const PLAYER_GRASSROOTS: DeskViewProps = {
   overview: {
     title: "Analytics",
     labels: ["W-5","W-4","W-3","W-2","W-1","Now"],
-    seriesA: {
+    series: {
       label: "Profile views",
       values: [18, 24, 32, 44, 55, 63],
-    },
-    seriesB: {
-      label: "Play hours",
-      values: [14, 16, 18, 20, 18, 22],
     },
   },
   activity: activity([

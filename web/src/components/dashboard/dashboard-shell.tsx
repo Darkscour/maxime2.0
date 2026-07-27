@@ -24,7 +24,9 @@ import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { ClerkSignOutButton } from "@/components/auth/clerk-sign-out-button";
 import { DashboardNotifications } from "@/components/dashboard/dashboard-notifications";
 import { DashboardSearch } from "@/components/dashboard/dashboard-search";
+import { DashboardThemeToggle } from "@/components/dashboard/dashboard-theme-toggle";
 import { useDashboardNavBadges } from "@/hooks/use-dashboard-nav-badges";
+import { useDashboardTheme } from "@/hooks/use-dashboard-theme";
 import { cn } from "@/lib/utils";
 
 type BadgeKey = "joinRequests" | "teamInvites";
@@ -161,9 +163,14 @@ export function DashboardShell({
     [accountType, accountTier],
   );
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, toggle, ready } = useDashboardTheme();
 
   return (
-    <div className={cn("md-desk", className)}>
+    <div
+      className={cn("md-desk", className)}
+      data-md-theme={ready ? theme : "light"}
+      suppressHydrationWarning
+    >
       <div className="md-shell">
         <aside className="md-side md-side-desktop">
           <Brand />
@@ -194,8 +201,9 @@ export function DashboardShell({
             </div>
             <div className="md-top-right">
               <DashboardSearch accountType={accountType} accountTier={accountTier} />
+              <DashboardThemeToggle theme={theme} onToggle={toggle} />
               <DashboardNotifications />
-              <ClerkUserButton avatarClassName="h-8 w-8" />
+              <ClerkUserButton avatarClassName="h-8 w-8" syncDashboardTheme />
             </div>
           </header>
 
@@ -249,7 +257,7 @@ export function DashboardShell({
 function Brand() {
   return (
     <Link href="/dashboard" className="md-side-brand">
-      Maxime<em>·</em>
+      Maxime
     </Link>
   );
 }

@@ -296,12 +296,8 @@ function buildManagerView(input: {
   // Overview
   const overview: DeskOverview = {
     title: "Analytics",
-    labels: managerAnalytics?.scoutViews.weekly.map((p) => p.label) ?? [],
-    seriesA: {
-      label: "Scout views",
-      values: managerAnalytics?.scoutViews.weekly.map((p) => p.value) ?? [],
-    },
-    seriesB: {
+    labels: managerAnalytics?.rosterSize.weekly.map((p) => p.label) ?? [],
+    series: {
       label: "Roster size",
       values: managerAnalytics?.rosterSize.weekly.map((p) => p.value) ?? [],
     },
@@ -320,9 +316,20 @@ function buildManagerView(input: {
       chainLabel: "Region",
       chainValue: regionDisplay,
       imageUrl: team?.profileImageUrl ?? null,
+      editProfileHref: "/dashboard/settings/team",
       primaryCta: { label: "Invite", href: "/dashboard/roster" },
       secondaryCta: { label: "Roster", href: "/dashboard/roster" },
     },
+    teamProfileSnapshot: team
+      ? {
+          name: team.name,
+          school: team.school ?? "",
+          games: team.games ?? [],
+          region: team.region ?? "",
+          rosterSize: team.rosterSize,
+          discordUrl: team.discordUrl ?? null,
+        }
+      : null,
     compliance: {
       title: isGrassroots ? "Team health" : "Program health",
       subtitle: team?.name ? `${team.name} · ${CURRENT_MONTH()}` : CURRENT_MONTH(),
@@ -434,13 +441,9 @@ function buildPlayerView(input: {
   const overview: DeskOverview = {
     title: "Analytics",
     labels: playerAnalytics?.weekLabels ?? [],
-    seriesA: {
+    series: {
       label: "Profile views",
       values: playerAnalytics?.weeklyProfileViews ?? [],
-    },
-    seriesB: {
-      label: "Play hours",
-      values: playerAnalytics?.weeklyPlayTime ?? [],
     },
   };
 
@@ -469,6 +472,7 @@ function buildPlayerView(input: {
         href: teamName ? "/dashboard/roster" : "/dashboard/teams",
       },
       secondaryCta: { label: "Edit profile", href: "/dashboard/settings/profile" },
+      editProfileHref: "/dashboard/settings/profile",
     },
     compliance: {
       title: "Scout status",

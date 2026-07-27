@@ -17,8 +17,8 @@ type NotificationItem = {
   createdAt: string;
 };
 
-const PANEL_BG = "var(--surface)";
-const PANEL_HEADER_BG = "var(--surface-2)";
+const PANEL_BG = "var(--md-card, var(--surface))";
+const PANEL_HEADER_BG = "var(--md-chip-bg, var(--surface-2))";
 
 function formatWhen(iso: string) {
   const date = new Date(iso);
@@ -149,7 +149,7 @@ export function DashboardNotifications() {
         aria-label="Notifications"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-lg p-2 text-[var(--foreground-muted)] transition-colors hover:bg-[var(--background)] hover:text-[var(--foreground)]"
+        className="relative md-top-icon-btn"
       >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
@@ -164,7 +164,7 @@ export function DashboardNotifications() {
         ref={panelRef}
         role="dialog"
         aria-label="Notifications"
-        className="fixed z-[9999] w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-none border border-[var(--border)] shadow-[0_24px_64px_rgba(12,12,14,0.15)]"
+        className="fixed z-[9999] w-[min(calc(100vw-2rem),20rem)] overflow-hidden rounded-lg border border-[var(--md-card-border,var(--border))] shadow-[var(--md-card-shadow,0_24px_64px_rgba(12,12,14,0.15))]"
         style={{
           top: panelPos.top,
           right: panelPos.right,
