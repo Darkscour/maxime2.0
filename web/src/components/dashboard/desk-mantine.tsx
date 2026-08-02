@@ -494,11 +494,9 @@ export function DeskMovementCard({
     <section className={`md-card ${gridClass}`}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <div className="md-num" style={{ fontSize: 18 }}>{movement.title}</div>
-        {movement.variant !== "roster" ? (
-          <select className="md-select" defaultValue={movement.monthLabel} aria-label="Timeframe">
-            <option>{movement.monthLabel}</option>
-          </select>
-        ) : null}
+        <select className="md-select" defaultValue={movement.monthLabel} aria-label="Timeframe">
+          <option>{movement.monthLabel}</option>
+        </select>
       </div>
 
       <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 24 }}>
