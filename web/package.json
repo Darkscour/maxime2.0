@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "next dev",
+    "dev": "node scripts/dev.mjs",
+    "dev:next": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

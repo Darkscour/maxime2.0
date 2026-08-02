@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Mail, Trash2 } from "lucide-react";
 import type { WatchlistListing } from "@/lib/player-watchlist-db";
+import type { PlayerRecruitmentFitResult } from "@/lib/player-recruitment-fit";
+import { PlayerScoutFitMeter } from "@/components/dashboard/player-scout-fit-meter";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
 import { Button } from "@/components/ui/button";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
@@ -15,7 +17,7 @@ export function WatchlistPanel({
   items,
   teamName,
 }: {
-  items: WatchlistListing[];
+  items: (WatchlistListing & { fit?: PlayerRecruitmentFitResult })[];
   teamName: string;
 }) {
   const router = useRouter();
@@ -113,6 +115,13 @@ export function WatchlistPanel({
                   player.inviteStatus === "pending" ? "Invite sent" : undefined
                 }
               />
+              {player.fit ? (
+                <PlayerScoutFitMeter
+                  score={player.fit.score}
+                  reason={player.fit.reason}
+                  className="mt-3"
+                />
+              ) : null}
             </Link>
 
             <div className="mt-auto border-t border-[var(--md-card-border)] px-5 py-4">
@@ -120,7 +129,7 @@ export function WatchlistPanel({
                 <Button
                   type="button"
                   size="sm"
-                  variant="primary"
+                  variant={player.inviteStatus === "pending" ? "outline" : "primary"}
                   disabled={
                     loadingId === player.playerProfileId ||
                     player.inviteStatus === "pending"

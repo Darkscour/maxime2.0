@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bookmark, BookmarkCheck, Mail } from "lucide-react";
 import { PlayerScoutCard } from "@/components/dashboard/player-scout-card";
+import type { PlayerRecruitmentFitResult } from "@/lib/player-recruitment-fit";
+import { PlayerScoutFitMeter } from "@/components/dashboard/player-scout-fit-meter";
 import { InviteMessageModal } from "@/components/dashboard/invite-message-modal";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,7 @@ export function ScoutPlayerGridCard({
   invitePending,
   joinRequestPending,
   onRoster,
+  fit,
 }: {
   player: ScoutGridPlayer;
   teamName: string;
@@ -37,6 +40,7 @@ export function ScoutPlayerGridCard({
   invitePending: boolean;
   joinRequestPending: boolean;
   onRoster: boolean;
+  fit?: PlayerRecruitmentFitResult | null;
 }) {
   const router = useRouter();
   const [saved, setSaved] = useState(onWatchlist);
@@ -122,6 +126,9 @@ export function ScoutPlayerGridCard({
           imageUrl={player.imageUrl}
           badge={joinRequestPending ? "Requested to join" : undefined}
         />
+        {fit ? (
+          <PlayerScoutFitMeter score={fit.score} reason={fit.reason} className="mt-3" />
+        ) : null}
       </Link>
 
       {canManage && (
@@ -153,7 +160,7 @@ export function ScoutPlayerGridCard({
               <Button
                 type="button"
                 size="sm"
-                variant="primary"
+                variant={invited ? "outline" : "primary"}
                 disabled={inviteLoading || invited}
                 onClick={() => setInviteOpen(true)}
                 className="gap-1.5"

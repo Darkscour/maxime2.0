@@ -26,6 +26,11 @@
   --accent-2: #8f3d18;
   --accent-2-strong: #6f2f12;
 
+  --btn-primary-bg: var(--foreground);
+  --btn-primary-fg: var(--background);
+  --btn-primary-hover-bg: var(--accent);
+  --btn-primary-hover-fg: var(--accent-ink);
+
   --danger: #c44b4b;
   --success: #2f8f6b;
   --warning: #b8860b;
@@ -1198,6 +1203,11 @@ html:has(.overcast-frame) {
    the signed-in dashboard uses light gray wash + copper accents. */
 
 .md-desk {
+  --btn-primary-bg: var(--md-accent);
+  --btn-primary-fg: #ffffff;
+  --btn-primary-hover-bg: var(--md-accent-strong);
+  --btn-primary-hover-fg: #ffffff;
+
   --md-page-a: #f2f2f4;
   --md-page-b: #e8e9ec;
   --md-sidebar-bg: #ffffff;
@@ -1374,13 +1384,28 @@ html[data-dashboard-theme="light"] {
   color: var(--md-primary-ink);
 }
 
-.md-desk .bg-\[var\(--foreground\)\],
-.md-desk button.bg-\[var\(--foreground\)\] {
-  color: #ffffff !important;
+.md-desk button.bg-\[var\(--surface-2\)\],
+.md-desk a.bg-\[var\(--surface-2\)\] {
+  background-color: var(--md-chip-bg) !important;
+  color: var(--md-text) !important;
+  border-color: var(--md-card-border) !important;
 }
 
-.md-desk .bg-\[var\(--foreground\)\] svg {
-  color: currentColor;
+.md-desk button.border-\[var\(--border\)\],
+.md-desk a.border-\[var\(--border\)\] {
+  border-color: var(--md-card-border) !important;
+  color: var(--md-text) !important;
+}
+
+.md-desk button.text-\[var\(--foreground-muted\)\],
+.md-desk a.text-\[var\(--foreground-muted\)\] {
+  color: var(--md-text-muted) !important;
+}
+
+.md-desk button.text-\[var\(--foreground-muted\)\]:hover:not(:disabled),
+.md-desk a.text-\[var\(--foreground-muted\)\]:hover:not(:disabled) {
+  color: var(--md-text) !important;
+  background-color: var(--md-chip-bg) !important;
 }
 
 .md-desk .desk-panel {
@@ -1721,6 +1746,16 @@ html[data-dashboard-theme="light"] {
 }
 .md-scout-portal-card {
   border: 1px solid #000 !important;
+}
+.md-scout-fit-track {
+  margin-top: 0.3rem;
+  height: 2px;
+  background: var(--md-card-border);
+}
+.md-scout-fit-fill {
+  display: block;
+  height: 100%;
+  background: var(--md-accent);
 }
 .md-col-movement { grid-column: span 8; }
 .md-col-overview { grid-column: span 4; }

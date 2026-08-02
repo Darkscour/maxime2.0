@@ -343,7 +343,7 @@ function SidebarGroupBlock({
   onNavigate?: () => void;
 }) {
   const activeSomewhere = isGroupActive(pathname, group);
-  const [open, setOpen] = useState(activeSomewhere);
+  const [open, setOpen] = useState(true);
   const Icon = group.icon;
   const anyBadgeInside = group.items.reduce(
     (sum, l) => sum + (l.badgeKey ? badges[l.badgeKey] : 0),

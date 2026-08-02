@@ -254,10 +254,20 @@ export async function listScoutablePlayers(input?: {
 }
 
 export async function getScoutPlayerProfile(handle: string) {
-  return db.playerProfile.findUnique({
+  const profile = await db.playerProfile.findUnique({
     where: { handle },
     include: {
-      user: { select: { id: true, displayName: true } },
+      user: { select: { id: true, displayName: true, clerkId: true } },
     },
   });
+  if (!profile) return null;
+
+  const imageByClerkId = await clerkImageUrlMap([profile.user.clerkId]);
+  const { user, ...rest } = profile;
+  return {
+    ...rest,
+    userId: user.id,
+    displayName: user.displayName,
+    imageUrl: imageByClerkId.get(user.clerkId) ?? null,
+  };
 }

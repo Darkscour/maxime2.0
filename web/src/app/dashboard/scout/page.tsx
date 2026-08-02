@@ -4,6 +4,11 @@ import { listScoutablePlayers } from "@/lib/player-analytics";
 import { filterPlayersForScout } from "@/lib/player-scout-visibility";
 import { fetchTeamScoutCardContext } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestPlayerIdsForTeam } from "@/lib/team-join-request-db";
+import { fetchTeamRoster } from "@/lib/team-roster";
+import {
+  buildTeamRecruitmentContext,
+  rankPlayersByRecruitmentFit,
+} from "@/lib/player-recruitment-fit";
 import { ScoutPlayerGridCard } from "@/components/dashboard/scout-player-grid-card";
 import { DeskEmpty, DeskPageHeader } from "@/components/dashboard/desk-ui";
 import { Button } from "@/components/ui/button";
@@ -31,7 +36,7 @@ export default async function DashboardScoutPage() {
     institutionId: ctx.team.institutionId ?? null,
   });
 
-  const [players, scoutContext, joinRequestPlayerIds] = await Promise.all([
+  const [players, scoutContext, joinRequestPlayerIds, roster] = await Promise.all([
     listScoutablePlayers({
       managerTeamTier: teamTier,
       managerInstitutionId: ctx.team?.institutionId ?? null,
@@ -40,6 +45,7 @@ export default async function DashboardScoutPage() {
     teamId
       ? fetchPendingJoinRequestPlayerIdsForTeam(teamId, managerPool)
       : Promise.resolve([]),
+    teamId ? fetchTeamRoster(teamId) : Promise.resolve([]),
   ]);
 
   const joinRequestIds = new Set(joinRequestPlayerIds);
@@ -47,6 +53,17 @@ export default async function DashboardScoutPage() {
   const pendingInviteIds = new Set(scoutContext?.pendingInvitePlayerIds ?? []);
   const rosterIds = new Set(scoutContext?.rosterPlayerProfileIds ?? []);
   const visiblePlayers = filterPlayersForScout(players, rosterIds);
+
+  const recruitmentContext = buildTeamRecruitmentContext(
+    {
+      games: ctx.team.games ?? [],
+      region: ctx.team.region ?? null,
+      school: ctx.team.school ?? null,
+      rosterSize: ctx.team.rosterSize ?? null,
+    },
+    roster,
+  );
+  const playersByFit = rankPlayersByRecruitmentFit(recruitmentContext, visiblePlayers);
 
   return (
     <div className="space-y-6">
@@ -64,7 +81,7 @@ export default async function DashboardScoutPage() {
         }
       />
 
-      {visiblePlayers.length === 0 ? (
+      {playersByFit.length === 0 ? (
         <DeskEmpty
           title="No players to scout yet"
           body={
@@ -75,7 +92,7 @@ export default async function DashboardScoutPage() {
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {visiblePlayers.map((player) => (
+          {playersByFit.map((player) => (
             <ScoutPlayerGridCard
               key={player.id}
               player={player}
@@ -85,6 +102,12 @@ export default async function DashboardScoutPage() {
               invitePending={pendingInviteIds.has(player.id)}
               joinRequestPending={joinRequestIds.has(player.id)}
               onRoster={rosterIds.has(player.id)}
+              fit={{
+                score: player.score,
+                reason: player.reason,
+                reasons: player.reasons,
+                breakdown: player.breakdown,
+              }}
             />
           ))}
         </div>

@@ -89,6 +89,12 @@ export type DeskSignal = {
   href?: string;
 };
 
+export type DeskMovementStat = {
+  label: string;
+  value: string;
+  href?: string;
+};
+
 export type DeskMovement = {
   title: string;
   primaryLabel: string;
@@ -102,6 +108,11 @@ export type DeskMovement = {
   ctaLabel: string;
   ctaHref: string;
   monthLabel: string;
+  /** Roster card uses a dedicated layout with fill bar + stat grid */
+  variant?: "roster" | "default";
+  fillPct?: number | null;
+  fillCaption?: string | null;
+  stats?: DeskMovementStat[];
 };
 
 export type DeskOverview = {
@@ -343,9 +354,28 @@ function DeskSignalMini({ signal }: { signal: DeskSignal }) {
 // ────────────────────────────────────────────────────────────────────────
 // 4. Movement card — replaces "Wallet balance" wide card
 
-function parseHoursValue(primaryValue: string): number {
+function parseMetricValue(primaryValue: string): number {
   const n = parseInt(primaryValue.replace(/[^\d]/g, ""), 10);
   return Number.isFinite(n) ? n : 0;
+}
+
+function MovementStatCell({ stat }: { stat: DeskMovementStat }) {
+  const cell = (
+    <>
+      <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{stat.label}</div>
+      <div className="md-num md-num-md" style={{ marginTop: 4 }}>{stat.value}</div>
+    </>
+  );
+
+  if (stat.href) {
+    return (
+      <Link href={stat.href} style={{ color: "inherit", textDecoration: "none" }}>
+        {cell}
+      </Link>
+    );
+  }
+
+  return <div>{cell}</div>;
 }
 
 export function DeskMovementCard({
@@ -355,9 +385,66 @@ export function DeskMovementCard({
   movement: DeskMovement;
   gridClass?: "md-col-movement" | "md-col-overview";
 }) {
-  const compact = movement.title === "Play cadence";
-  const hours = parseHoursValue(movement.primaryValue);
-  const hoursBarPct = hours > 0 ? Math.min(100, (hours / 40) * 100) : 8;
+  const compact = movement.title === "Scout visibility";
+  const metricValue = parseMetricValue(movement.primaryValue);
+  const metricBarPct = metricValue > 0 ? Math.min(100, (metricValue / 50) * 100) : 8;
+  const annotation =
+    movement.changeAnnotation ?? movement.fillCaption ?? null;
+  const statCells =
+    movement.stats && movement.stats.length > 0
+      ? movement.stats
+      : [
+          { label: movement.splitA.label, value: movement.splitA.value },
+          { label: movement.splitB.label, value: movement.splitB.value },
+        ];
+
+  if (movement.variant === "roster") {
+    const leftStats = statCells.filter((_, i) => i % 2 === 0);
+    const rightStats = statCells.filter((_, i) => i % 2 === 1);
+
+    return (
+      <section className={`md-card ${gridClass}`}>
+        <div className="md-num" style={{ fontSize: 18 }}>{movement.title}</div>
+
+        <div style={{ marginTop: 18 }}>
+          <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.primaryLabel}</div>
+          <div className="md-num md-num-2xl" style={{ marginTop: 6 }}>{movement.primaryValue}</div>
+          {annotation ? (
+            <div style={{ marginTop: 4, fontSize: 12, color: "var(--md-text-muted)" }}>{annotation}</div>
+          ) : null}
+        </div>
+
+        <div
+          style={{
+            marginTop: 24,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 24,
+            alignItems: "start",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {leftStats.map((stat) => (
+              <MovementStatCell key={stat.label} stat={stat} />
+            ))}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "flex-end", textAlign: "right" }}>
+            {rightStats.map((stat) => (
+              <MovementStatCell key={stat.label} stat={stat} />
+            ))}
+          </div>
+        </div>
+
+        <Link
+          href={movement.ctaHref}
+          className="md-btn md-btn-primary"
+          style={{ marginTop: 20, alignSelf: "flex-start" }}
+        >
+          {movement.ctaLabel} <ArrowRight size={14} />
+        </Link>
+      </section>
+    );
+  }
 
   if (compact) {
     return (
@@ -371,17 +458,15 @@ export function DeskMovementCard({
             style={{
               marginTop: 10,
               height: 4,
-              width: `${hoursBarPct}%`,
+              width: `${metricBarPct}%`,
               maxWidth: "100%",
               borderRadius: 2,
               background: "var(--md-text)",
-              opacity: hours > 0 ? 1 : 0.35,
+              opacity: metricValue > 0 ? 1 : 0.35,
             }}
           />
           <div style={{ marginTop: 8, fontSize: 12, color: "var(--md-text-muted)" }}>
-            {movement.changeAnnotation === "Steady week"
-              ? "Steady week — —"
-              : movement.changeAnnotation ?? "Steady week — —"}
+            {movement.changeAnnotation ?? "No views yet"}
           </div>
         </div>
         <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -409,9 +494,11 @@ export function DeskMovementCard({
     <section className={`md-card ${gridClass}`}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <div className="md-num" style={{ fontSize: 18 }}>{movement.title}</div>
-        <select className="md-select" defaultValue={movement.monthLabel} aria-label="Timeframe">
-          <option>{movement.monthLabel}</option>
-        </select>
+        {movement.variant !== "roster" ? (
+          <select className="md-select" defaultValue={movement.monthLabel} aria-label="Timeframe">
+            <option>{movement.monthLabel}</option>
+          </select>
+        ) : null}
       </div>
 
       <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 24 }}>
@@ -419,22 +506,24 @@ export function DeskMovementCard({
         <div>
           <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.primaryLabel}</div>
           <div className="md-num md-num-2xl" style={{ marginTop: 6 }}>{movement.primaryValue}</div>
-          {movement.changeAnnotation ? (
+          {annotation ? (
             <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-              <span style={{ color: "var(--md-text-muted)" }}>{movement.changeAnnotation}</span>
-              <TrendBadge pct={movement.trendPct} />
+              <span style={{ color: "var(--md-text-muted)" }}>{annotation}</span>
+              {movement.changeAnnotation ? <TrendBadge pct={movement.trendPct} /> : null}
             </div>
           ) : null}
 
-          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            <div>
-              <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.splitA.label}</div>
-              <div className="md-num md-num-md" style={{ marginTop: 4 }}>{movement.splitA.value}</div>
-            </div>
-            <div>
-              <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{movement.splitB.label}</div>
-              <div className="md-num md-num-md" style={{ marginTop: 4 }}>{movement.splitB.value}</div>
-            </div>
+          <div
+            style={{
+              marginTop: 20,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+            }}
+          >
+            {statCells.map((stat) => (
+              <MovementStatCell key={stat.label} stat={stat} />
+            ))}
           </div>
 
           <Link

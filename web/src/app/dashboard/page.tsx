@@ -257,40 +257,60 @@ function buildManagerView(input: {
   });
 
   // Movement
-  const rosterWeekly = managerAnalytics?.rosterSize.weekly.map((p) => p.value) ?? [];
-  const rosterNow = rosterWeekly.at(-1) ?? memberCount;
-  const rosterPrior = rosterWeekly.at(-2) ?? rosterNow;
   const joinsThisWindow = managerAnalytics?.rosterSummary.weekly.newJoins ?? 0;
-  const invitesSent = managerAnalytics?.scoutSummary.weekly.invitesSent ?? 0;
-
-  const roleCounts = new Map<string, number>();
-  for (const m of rosterMembers) {
-    const key = (m.roleInGame ?? m.role ?? "Player").trim() || "Player";
-    roleCounts.set(key, (roleCounts.get(key) ?? 0) + 1);
-  }
-  const breakdown = Array.from(roleCounts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
-    .map(([label, count]) => ({
-      label,
-      value: `${count} player${count === 1 ? "" : "s"}`,
-    }));
+  const pendingInvites = managerAnalytics?.pendingInvites ?? 0;
+  const pendingJoinRequests = managerAnalytics?.pendingJoinRequests ?? 0;
+  const playerCount = managerAnalytics?.playerCount ?? memberCount;
+  const openSlots =
+    rosterSize != null && rosterSize > 0 ? Math.max(0, rosterSize - memberCount) : null;
+  const fillPct =
+    rosterSize != null && rosterSize > 0
+      ? Math.round((memberCount / rosterSize) * 100)
+      : null;
+  const fillCaption =
+    openSlots != null
+      ? openSlots === 0
+        ? "Roster full"
+        : openSlots === 1
+          ? "1 slot open"
+          : `${openSlots} slots open`
+      : `${memberCount} member${memberCount === 1 ? "" : "s"}`;
 
   const movement: DeskMovement = {
     title: "Roster movement",
     monthLabel: CURRENT_MONTH(),
     primaryLabel: "Active roster",
     primaryValue: rosterLabel,
-    changeAnnotation:
-      joinsThisWindow > 0
-        ? `+${joinsThisWindow} in the last window`
-        : "No new joins this window",
-    trendPct: trendPct(rosterNow, rosterPrior),
+    changeAnnotation: null,
+    trendPct: null,
     splitA: { label: "Joined", value: String(joinsThisWindow) },
-    splitB: { label: "Invites sent", value: String(invitesSent) },
-    breakdown,
+    splitB: { label: "Open slots", value: openSlots != null ? String(openSlots) : "—" },
+    breakdown: [],
     ctaLabel: "Manage roster",
     ctaHref: "/dashboard/roster",
+    variant: "roster",
+    fillPct,
+    fillCaption,
+    stats: [
+      {
+        label: "Joined this week",
+        value: String(joinsThisWindow),
+      },
+      {
+        label: "Pending invites",
+        value: String(pendingInvites),
+        href: pendingInvites > 0 ? "/dashboard/roster" : undefined,
+      },
+      {
+        label: "Join requests",
+        value: String(pendingJoinRequests),
+        href: pendingJoinRequests > 0 ? "/dashboard/join-requests" : undefined,
+      },
+      {
+        label: "Players",
+        value: String(playerCount),
+      },
+    ],
   };
 
   // Overview
@@ -365,9 +385,9 @@ function buildPlayerView(input: {
 
   const viewsNow =
     playerAnalytics?.weeklyProfileViews.at(-1) ?? 0;
-  const hoursNow = profile?.hoursPerWeek ?? 0;
-  const hoursPrior =
-    playerAnalytics?.weeklyPlayTime?.at(-2) ?? hoursNow;
+  const viewsPrior =
+    playerAnalytics?.weeklyProfileViews.at(-2) ?? 0;
+  const scoutsWatching = playerAnalytics?.uniqueScoutTeams ?? 0;
 
   const signals: [DeskSignal, DeskSignal, DeskSignal] = [
     {
@@ -408,33 +428,41 @@ function buildPlayerView(input: {
       status: pendingInvitesCount > 0 ? "warn" : "pending",
     },
     {
-      label: hoursNow > 0 ? "Weekly hours logged" : "Log weekly hours",
-      status: hoursNow > 0 ? "good" : "pending",
+      label:
+        scoutsWatching > 0
+          ? `${scoutsWatching} scout team${scoutsWatching === 1 ? "" : "s"} watching`
+          : "No scout teams watching yet",
+      status: scoutsWatching > 0 ? "good" : "pending",
     },
   ];
 
+  const viewsTrend = trendPct(viewsNow, viewsPrior);
+  const viewsChangeAnnotation =
+    viewsPrior > 0 && viewsNow !== viewsPrior
+      ? `${viewsNow > viewsPrior ? "+" : ""}${viewsNow - viewsPrior} vs last week`
+      : viewsNow > 0
+        ? "Steady week"
+        : "Get discovered — complete your scout card";
+
   const movement: DeskMovement = {
-    title: "Play cadence",
+    title: "Scout visibility",
     monthLabel: CURRENT_MONTH(),
-    primaryLabel: "Weekly hours",
-    primaryValue: hoursNow > 0 ? `${hoursNow}h` : "—",
-    changeAnnotation:
-      hoursNow > 0 && hoursPrior !== hoursNow
-        ? `${hoursNow > hoursPrior ? "+" : ""}${hoursNow - hoursPrior}h vs last week`
-        : "Steady week",
-    trendPct: hoursNow > 0 && hoursPrior > 0 ? trendPct(hoursNow, hoursPrior) : null,
-    splitA: { label: "Active weeks", value: String(playerAnalytics?.activeWeeks ?? 0) },
-    splitB: { label: "Views (wk)", value: String(viewsNow) },
+    primaryLabel: "Profile views",
+    primaryValue: String(viewsNow),
+    changeAnnotation: viewsChangeAnnotation,
+    trendPct: viewsTrend,
+    splitA: { label: "Scouts watching", value: String(scoutsWatching) },
+    splitB: { label: "Invites", value: String(pendingInvitesCount) },
     breakdown: profile
       ? [
-          { label: profile.game, value: hoursNow > 0 ? `${hoursNow}h` : "0h" },
+          { label: "Game", value: profile.game },
           ...(profile.role
             ? [{ label: "Role", value: profile.role }]
             : []),
           ...(profile.rank ? [{ label: "Rank", value: profile.rank }] : []),
         ]
       : [],
-    ctaLabel: "Update hours",
+    ctaLabel: "Edit scout profile",
     ctaHref: "/dashboard/settings/profile",
   };
 
@@ -458,8 +486,8 @@ function buildPlayerView(input: {
       code: profile
         ? `${profile.region ?? "—"} · ${teamName ? `Roster · ${teamName}` : "Free agent"}`
         : "no profile yet",
-      balanceLabel: "Weekly hours",
-      balanceValue: hoursNow > 0 ? `${hoursNow}h` : "—",
+      balanceLabel: teamName ? "Team" : "Status",
+      balanceValue: teamName ?? "Free agent",
       chainLabel: "Region",
       chainValue: isGrassroots
         ? profile?.region?.trim() || "—"
