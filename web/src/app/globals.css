@@ -160,13 +160,61 @@ select option {
 
 /* ── Overcast Ink Frame (production + design lab) ─────────────────────── */
 
+/*
+  Home / auth / privacy chrome — default light,
+  dark when data-home-theme="dark".
+*/
+html:has(.overcast-frame),
+html[data-home-theme="light"] {
+  --background: #ececef;
+  --background-elevated: #f7f7f8;
+  --surface: #f7f7f8;
+  --surface-2: #e4e5e9;
+  --border: #c9ccd3;
+  --border-strong: #a8adb8;
+  --foreground: #0c0c0e;
+  --foreground-muted: #5a5d66;
+  --foreground-subtle: #7a7e88;
+  --soft: #e4e5e9;
+  --line: #c9ccd3;
+  --md-card: #ffffff;
+  --md-card-border: #c9ccd3;
+  --md-card-shadow: 0 4px 12px rgba(20, 20, 24, 0.08);
+  color-scheme: light;
+}
+
+html:has(.overcast-frame) {
+  /* Instant hash jumps — scroll reveals use Framer Motion instead */
+  scroll-behavior: auto;
+}
+
+html:has(.overcast-frame[data-home-theme="dark"]),
+html[data-home-theme="dark"] {
+  --background: #22222a;
+  --background-elevated: #2a2a34;
+  --surface: #2a2a34;
+  --surface-2: #33333f;
+  --border: #3c3c48;
+  --border-strong: #4a4a58;
+  --foreground: #f2f2f5;
+  --foreground-muted: #a8acb6;
+  --foreground-subtle: #6e7380;
+  --soft: #33333f;
+  --line: #3c3c48;
+  /* Clerk popover portals to body — keep card tokens in sync with home theme */
+  --md-card: #2a2a34;
+  --md-card-border: #3c3c48;
+  --md-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
 .overcast-frame {
-  --design-bg: var(--background);
-  --design-fg: var(--foreground);
-  --design-muted: var(--foreground-muted);
-  --design-surface: var(--surface);
-  --design-soft: var(--surface-2);
-  --design-line: var(--border);
+  --design-bg: #ececef;
+  --design-fg: #0c0c0e;
+  --design-muted: #5a5d66;
+  --design-surface: #f7f7f8;
+  --design-soft: #e4e5e9;
+  --design-line: #c9ccd3;
   --design-accent: var(--accent);
   --design-accent-ink: var(--accent-ink);
   --design-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
@@ -174,6 +222,17 @@ select option {
   --design-mono: var(--font-mono), ui-monospace, monospace;
   background: var(--design-bg);
   color: var(--design-fg);
+  color-scheme: light;
+}
+
+.overcast-frame[data-home-theme="dark"] {
+  --design-bg: #22222a;
+  --design-fg: #f2f2f5;
+  --design-muted: #a8acb6;
+  --design-surface: #2a2a34;
+  --design-soft: #33333f;
+  --design-line: #3c3c48;
+  color-scheme: dark;
 }
 
 .overcast-frame .font-display {
@@ -195,15 +254,19 @@ select option {
 }
 
 .oc-hero-field {
-  background:
-    linear-gradient(180deg, rgba(12, 12, 14, 0.03) 0%, transparent 42%),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 71px,
-      rgba(12, 12, 14, 0.045) 71px,
-      rgba(12, 12, 14, 0.045) 72px
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(12, 12, 14, 0.03) 0%,
+    transparent 42%
+  );
+}
+
+.overcast-frame[data-home-theme="dark"] .oc-hero-field {
+  background: linear-gradient(
+    180deg,
+    rgba(242, 242, 245, 0.04) 0%,
+    transparent 42%
+  );
 }
 
 .oc-ink-frame {
@@ -268,8 +331,8 @@ select option {
   border-color: var(--foreground);
 }
 .oc-btn-on-dark {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--design-bg);
+  color: var(--design-fg);
   padding: 0.8rem 1.15rem;
 }
 .oc-btn-on-dark:hover {
@@ -277,13 +340,13 @@ select option {
   color: var(--accent-ink);
 }
 .oc-btn-ghost-on-dark {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid color-mix(in srgb, var(--design-bg) 28%, transparent);
+  color: color-mix(in srgb, var(--design-bg) 88%, transparent);
   padding: 0.8rem 1.15rem;
 }
 .oc-btn-ghost-on-dark:hover {
-  border-color: rgba(255, 255, 255, 0.55);
-  color: #fff;
+  border-color: color-mix(in srgb, var(--design-bg) 55%, transparent);
+  color: var(--design-bg);
 }
 .oc-inline-cta {
   transition: color 0.15s ease, gap 0.15s ease;
@@ -295,6 +358,30 @@ select option {
 
 .oc-desk-panel {
   background: linear-gradient(135deg, #e0e1e6 0%, #ececef 48%, #d8dae0 100%);
+}
+
+.overcast-frame[data-home-theme="dark"] .oc-desk-panel {
+  background: linear-gradient(135deg, #262630 0%, #22222a 48%, #2e2e3a 100%);
+}
+
+.oc-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border: 1px solid var(--design-line);
+  background: transparent;
+  color: var(--design-muted);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.oc-theme-toggle:hover {
+  color: var(--design-fg);
+  border-color: var(--design-fg);
+  background: color-mix(in srgb, var(--design-fg) 4%, transparent);
 }
 
 .oc-desk-row {
@@ -415,11 +502,6 @@ select option {
   scroll-margin-top: calc(3.5rem + 2.75rem + 0.75rem);
 }
 
-/* Instant hash jumps — scroll reveals use Framer Motion instead */
-html:has(.overcast-frame) {
-  scroll-behavior: auto;
-}
-
 .oc-features {
   --background: var(--design-bg);
   --background-elevated: var(--design-surface);
@@ -497,7 +579,7 @@ html:has(.overcast-frame) {
   opacity: 0.28;
 }
 
-/* ── Clerk UI overrides (light Overcast readability) ──────────────────── */
+/* ── Clerk UserButton (follows home / dashboard theme tokens) ─────────── */
 
 [class*="userButtonPopover"] {
   color: var(--foreground) !important;
@@ -508,7 +590,7 @@ html:has(.overcast-frame) {
 [class*="userButtonPopoverUserPreview"],
 [class*="userButtonPopover"] [class*="cl-userPreview"],
 [class*="userButtonPopover"] [class*="cl-card"] {
-  background-color: var(--md-card, #ffffff) !important;
+  background-color: var(--md-card, var(--surface)) !important;
 }
 
 [class*="userButtonPopoverCard"] {
@@ -527,7 +609,7 @@ html:has(.overcast-frame) {
 }
 
 .md-clerk-user-popover {
-  background-color: var(--md-card, #ffffff) !important;
+  background-color: var(--md-card, var(--surface)) !important;
   border: 1px solid var(--md-card-border, var(--border)) !important;
   box-shadow: var(--md-card-shadow, 0 4px 12px rgba(20, 20, 24, 0.08)) !important;
   border-radius: 10px !important;
@@ -539,7 +621,7 @@ html:has(.overcast-frame) {
 }
 
 .md-clerk-user-popover-main {
-  background-color: var(--md-card, #ffffff) !important;
+  background-color: var(--md-card, var(--surface)) !important;
   gap: 0 !important;
   padding: 0 !important;
 }
@@ -594,7 +676,14 @@ html:has(.overcast-frame) {
   overflow: hidden !important;
 }
 
-[class*="userButtonPopover"] [class*="userPreviewSecondaryIdentifier"] {
+[class*="userButtonPopover"] [class*="userPreviewMainIdentifier"],
+[class*="userButtonPopover"] [class*="userPreviewMainIdentifierText"] {
+  color: var(--foreground) !important;
+}
+
+[class*="userButtonPopover"] [class*="userPreviewSecondaryIdentifier"],
+[class*="userButtonPopover"] [class*="userPreviewSecondaryIdentifierText"] {
+  color: var(--foreground-muted) !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
@@ -607,12 +696,65 @@ html:has(.overcast-frame) {
 }
 
 .md-clerk-user-popover-action:hover {
-  background: color-mix(in srgb, var(--foreground) 8%, var(--md-card, #ffffff)) !important;
+  background: color-mix(
+    in srgb,
+    var(--foreground) 8%,
+    var(--md-card, var(--surface))
+  ) !important;
+}
+
+.md-clerk-user-btn {
+  line-height: 0;
+}
+
+.md-clerk-user-btn [class*="userButtonBox"],
+.md-clerk-user-btn [class*="userButtonTrigger"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
 }
 
 .md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] {
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
   border-radius: 9999px !important;
   overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] img,
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] [class*="avatarImage"],
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] span {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+[class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] span {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
 }
 
 [class*="userButtonPopoverMain"] {

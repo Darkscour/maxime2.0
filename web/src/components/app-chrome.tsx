@@ -25,6 +25,16 @@ function isAuthRoute(pathname: string) {
   );
 }
 
+/** Sign-in / create-org / privacy follow the home light/dark preference. */
+function isHomeThemeRoute(pathname: string) {
+  return (
+    isHomeRoute(pathname) ||
+    isAuthRoute(pathname) ||
+    pathname === "/privacy" ||
+    pathname.startsWith("/privacy/")
+  );
+}
+
 export function AppShellOnly({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (!isAppShellRoute(pathname)) return null;
@@ -43,6 +53,13 @@ export function MarketingOnly({ children }: { children: React.ReactNode }) {
 export function AuthOnly({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (!isAuthRoute(pathname)) return null;
+  return <>{children}</>;
+}
+
+/** Sync home theme onto auth + privacy (home already mounts its own hook). */
+export function HomeThemeOnly({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (!isHomeThemeRoute(pathname) || isHomeRoute(pathname)) return null;
   return <>{children}</>;
 }
 

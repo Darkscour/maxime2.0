@@ -16,11 +16,19 @@ import {
   ClipboardList,
   Clock,
   GraduationCap,
+  Moon,
   Search,
+  Sun,
   UserRound,
   Users,
   type LucideIcon,
 } from "lucide-react";
+import {
+  ClerkLoading,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
+import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import {
   AiCoachArt,
   DiscordArt,
@@ -36,6 +44,7 @@ import {
   PlayerProfileArt,
   TeamDiscoveryArt,
 } from "@/components/home/solution-features-panel";
+import { useHomeTheme } from "@/hooks/use-home-theme";
 import { marketingAvatarUrl } from "@/lib/marketing-dashboard-mock";
 import { cn } from "@/lib/utils";
 
@@ -560,10 +569,12 @@ export function OvercastHome({
     return cleanup;
   }, [hashRoot]);
 
+  const { theme, toggle } = useHomeTheme();
+
   return (
     <OvercastHashContext.Provider value={hashRoot}>
-      <div className="overcast-frame font-body">
-        <FrameNav logoHref={hashRoot} />
+      <div className="overcast-frame font-body" data-home-theme={theme}>
+        <FrameNav logoHref={hashRoot} theme={theme} onToggleTheme={toggle} />
         <div>
           <Hero />
           <GamesRail />
@@ -580,17 +591,27 @@ export function OvercastHome({
   );
 }
 
-function FrameNav({ logoHref }: { logoHref: string }) {
+function FrameNav({
+  logoHref,
+  theme,
+  onToggleTheme,
+}: {
+  logoHref: string;
+  theme: "light" | "dark";
+  onToggleTheme: () => void;
+}) {
+  const isDark = theme === "dark";
+
   return (
     <header className="oc-nav sticky top-0 z-40 border-b border-[var(--design-line)] bg-[var(--design-bg)]/92 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6">
         <Link
           href={logoHref}
-          className="font-display text-[1.05rem] font-medium tracking-[-0.03em] text-[var(--design-fg)]"
+          className="justify-self-start font-display text-[1.05rem] font-medium tracking-[-0.03em] text-[var(--design-fg)]"
         >
           Maxime
         </Link>
-        <nav className="hidden items-center gap-6 text-[13px] text-[var(--design-muted)] lg:flex">
+        <nav className="hidden items-center justify-center gap-6 text-[13px] text-[var(--design-muted)] lg:flex">
           {FRAME_NAV.map((item) => (
             <HashLink key={item.href} href={item.href} className="oc-link">
               {item.label}
@@ -598,16 +619,43 @@ function FrameNav({ logoHref }: { logoHref: string }) {
           ))}
           <DashboardPreviewDropdown />
         </nav>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/sign-in"
-            className="hidden text-[13px] text-[var(--design-muted)] transition-colors hover:text-[var(--design-fg)] sm:inline"
+        <div className="flex items-center justify-end gap-3 justify-self-end sm:gap-4">
+          <button
+            type="button"
+            className="oc-theme-toggle"
+            onClick={onToggleTheme}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Light mode" : "Dark mode"}
           >
-            Sign in
-          </Link>
-          <Link href="/sign-up" className="oc-btn oc-btn-solid">
-            Create your org
-          </Link>
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <ClerkLoading>
+            <span className="hidden h-8 w-[10.5rem] sm:block" aria-hidden />
+          </ClerkLoading>
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              className="hidden text-[13px] text-[var(--design-muted)] transition-colors hover:text-[var(--design-fg)] sm:inline"
+            >
+              Sign in
+            </Link>
+            <Link href="/sign-up" className="oc-btn oc-btn-solid">
+              Create your org
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <Link
+              href="/dashboard"
+              prefetch={false}
+              className="oc-btn oc-btn-solid"
+            >
+              Dashboard
+            </Link>
+            <ClerkUserButton
+              avatarClassName="h-8 w-8 shrink-0 ring-1 ring-[var(--design-line)]"
+              popoverTheme={theme}
+            />
+          </SignedIn>
         </div>
       </div>
     </header>
@@ -1270,7 +1318,7 @@ function Close() {
         <h2 className="font-display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.25rem)] font-medium leading-[1.08] tracking-[-0.045em]">
           Put the org on Maxime before next week&apos;s scrims.
         </h2>
-        <p className="mt-5 max-w-md text-[0.95rem] leading-7 text-white/55">
+        <p className="mt-5 max-w-md text-[0.95rem] leading-7 text-[color-mix(in_srgb,var(--design-bg)_55%,transparent)]">
           Captains scout and invite. Players get discovered. Sponsors stop living
           in a forgotten tab.
         </p>
@@ -1309,6 +1357,9 @@ function FrameFooter() {
               {item.label}
             </HashLink>
           ))}
+          <Link href="/privacy" className="oc-link">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>

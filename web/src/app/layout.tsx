@@ -5,8 +5,14 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { clerkAuthAppearance } from "@/lib/clerk-appearance";
 import { authContinueSignupPath } from "@/lib/auth-intent";
 import "./globals.css";
-import { AuthOnly, MarketingFooterOnly, MarketingOnly } from "@/components/app-chrome";
+import {
+  AuthOnly,
+  HomeThemeOnly,
+  MarketingFooterOnly,
+  MarketingOnly,
+} from "@/components/app-chrome";
 import { AuthPageHeader } from "@/components/auth/auth-page-header";
+import { HomeThemeSync } from "@/components/home/home-theme-sync";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BenignNavigationErrors } from "@/components/providers/benign-navigation-errors";
@@ -71,6 +77,9 @@ export default function RootLayout({
           signUpFallbackRedirectUrl={authContinueSignupPath()}
         >
           <BenignNavigationErrors />
+          <HomeThemeOnly>
+            <HomeThemeSync />
+          </HomeThemeOnly>
           <MarketingOnly>
             <Navbar />
           </MarketingOnly>

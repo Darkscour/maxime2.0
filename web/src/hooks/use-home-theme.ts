@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "maxime-dashboard-theme";
+const STORAGE_KEY = "maxime-home-theme";
 
-export type DashboardTheme = "light" | "dark";
+export type HomeTheme = "light" | "dark";
 
-export function useDashboardTheme({ apply = true }: { apply?: boolean } = {}) {
-  const [theme, setThemeState] = useState<DashboardTheme>("light");
+export function useHomeTheme() {
+  const [theme, setThemeState] = useState<HomeTheme>("light");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -19,23 +19,23 @@ export function useDashboardTheme({ apply = true }: { apply?: boolean } = {}) {
   }, []);
 
   useEffect(() => {
-    if (!ready || !apply) return;
-    document.documentElement.dataset.dashboardTheme = theme;
+    if (!ready) return;
+    document.documentElement.dataset.homeTheme = theme;
     document.documentElement.style.colorScheme = theme;
     return () => {
-      delete document.documentElement.dataset.dashboardTheme;
+      delete document.documentElement.dataset.homeTheme;
       document.documentElement.style.colorScheme = "";
     };
-  }, [theme, ready, apply]);
+  }, [theme, ready]);
 
-  const setTheme = useCallback((next: DashboardTheme) => {
+  const setTheme = useCallback((next: HomeTheme) => {
     setThemeState(next);
     localStorage.setItem(STORAGE_KEY, next);
   }, []);
 
   const toggle = useCallback(() => {
     setThemeState((prev) => {
-      const next: DashboardTheme = prev === "dark" ? "light" : "dark";
+      const next: HomeTheme = prev === "dark" ? "light" : "dark";
       localStorage.setItem(STORAGE_KEY, next);
       return next;
     });

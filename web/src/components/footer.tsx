@@ -39,6 +39,7 @@ export function Footer({ hashRoot = "/", logoHref = "/" }: FooterProps = {}) {
         { label: "Pricing", href: "/coming-soon/pricing" },
         { label: "Careers", href: "/coming-soon/careers" },
         { label: "Contact", href: "/coming-soon/contact" },
+        { label: "Privacy Policy", href: "/privacy" },
       ],
     },
   ];
