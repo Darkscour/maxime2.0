@@ -51,20 +51,22 @@ export function ClerkUserButton({
               rootBox: "flex items-center justify-center leading-none",
               userButtonBox: "flex items-center justify-center leading-none",
               userButtonTrigger:
-                "!m-0 !flex !h-8 !w-8 !items-center !justify-center !rounded-full !p-0 !leading-none focus:shadow-none",
+                "!m-0 !flex !h-8 !w-8 !items-center !justify-center !overflow-visible !rounded-full !p-0 !leading-none focus:shadow-none",
               avatarBox: cn(
                 avatarClassName,
-                "!flex !items-center !justify-center !overflow-hidden !rounded-full !leading-none",
+                "!relative !block !aspect-square !overflow-hidden !rounded-full !leading-none",
               ),
               userButtonAvatarBox:
-                "!flex !h-full !w-full !items-center !justify-center !overflow-hidden !rounded-full",
-              userButtonAvatarImage: "!h-full !w-full !object-cover !object-center",
+                "!relative !block !h-full !w-full !overflow-hidden !rounded-full !aspect-square",
+              userButtonAvatarImage:
+                "!absolute !inset-0 !m-0 !block !h-full !w-full !max-w-none !rounded-full !object-cover !object-center",
               userButtonPopoverCard: "md-clerk-user-popover",
               userButtonPopoverMain: "md-clerk-user-popover-main",
               userPreview: "md-clerk-user-preview",
               userPreviewAvatarBox:
-                "!flex !h-10 !w-10 !shrink-0 !items-center !justify-center !overflow-hidden !rounded-full",
-              userPreviewAvatarImage: "!h-full !w-full !object-cover !object-center",
+                "!relative !block !h-10 !w-10 !shrink-0 !overflow-hidden !rounded-full !aspect-square",
+              userPreviewAvatarImage:
+                "!absolute !inset-0 !m-0 !block !h-full !w-full !max-w-none !rounded-full !object-cover !object-center",
               userButtonPopoverActions: "!p-1 !pt-0 !pb-1 !gap-0",
               userButtonPopoverActionButton: "md-clerk-user-popover-action",
               userButtonPopoverFooter:

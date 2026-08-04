@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   buildTeamRecruitmentContext,
   scorePlayerRecruitmentFit,
+  scoreTeamFitForPlayer,
 } from "./player-recruitment-fit";
 
 const baseTeam = buildTeamRecruitmentContext(
@@ -32,6 +33,17 @@ const baseTeam = buildTeamRecruitmentContext(
   ],
 );
 
+const strongPlayer = {
+  game: "VALORANT",
+  role: "Duelist",
+  rank: "Diamond",
+  region: "NA East",
+  school: "UC Berkeley",
+  status: "Available",
+  tags: [],
+  hoursPerWeek: 28,
+};
+
 describe("scorePlayerRecruitmentFit", () => {
   it("returns zero when game not on org", () => {
     const fit = scorePlayerRecruitmentFit(baseTeam, {
@@ -49,16 +61,7 @@ describe("scorePlayerRecruitmentFit", () => {
   });
 
   it("scores high for role gap, rank band, and campus match", () => {
-    const fit = scorePlayerRecruitmentFit(baseTeam, {
-      game: "VALORANT",
-      role: "Duelist",
-      rank: "Diamond",
-      region: "NA East",
-      school: "UC Berkeley",
-      status: "Available",
-      tags: [],
-      hoursPerWeek: 28,
-    });
+    const fit = scorePlayerRecruitmentFit(baseTeam, strongPlayer);
     assert.ok(fit.score >= 85, `expected high fit, got ${fit.score}`);
     assert.ok(fit.reasons.some((r) => /duelist/i.test(r)));
   });
@@ -142,5 +145,41 @@ describe("scorePlayerRecruitmentFit", () => {
       hoursPerWeek: 20,
     });
     assert.ok(fit.breakdown.role < 55);
+  });
+});
+
+describe("scoreTeamFitForPlayer", () => {
+  it("matches manager score with player-facing copy", () => {
+    const managerFit = scorePlayerRecruitmentFit(baseTeam, strongPlayer);
+    const playerFit = scoreTeamFitForPlayer(baseTeam, strongPlayer);
+    assert.equal(playerFit.score, managerFit.score);
+    assert.deepEqual(playerFit.breakdown, managerFit.breakdown);
+    assert.match(playerFit.reason, /their|your /i);
+  });
+
+  it("uses player-facing zero-fit message when titles missing", () => {
+    const noTitles = buildTeamRecruitmentContext(
+      {
+        games: [],
+        region: "NA East",
+        school: null,
+        rosterSize: 8,
+      },
+      [],
+    );
+    const fit = scoreTeamFitForPlayer(noTitles, strongPlayer);
+    assert.equal(fit.score, 0);
+    assert.match(fit.reason, /hasn't listed competitive titles/i);
+  });
+
+  it("uses player-facing zero-fit message when game mismatch", () => {
+    const fit = scoreTeamFitForPlayer(baseTeam, {
+      ...strongPlayer,
+      game: "Rocket League",
+      role: "Striker",
+      rank: "Grand Champion",
+    });
+    assert.equal(fit.score, 0);
+    assert.match(fit.reason, /don't compete in Rocket League/i);
   });
 });

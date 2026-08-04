@@ -14,6 +14,7 @@ import { hasPendingJoinRequest } from "@/lib/team-join-request-db";
 import { ScoutWatchlistButton } from "@/components/dashboard/scout-watchlist-button";
 import { ScoutJoinRequestActions } from "@/components/dashboard/scout-join-request-actions";
 import { Badge } from "@/components/ui/badge";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { canEditTeam } from "@/lib/permissions";
 import { fetchTeamRoster } from "@/lib/team-roster";
 import {
@@ -173,20 +174,19 @@ export default async function ScoutPlayerProfilePage({
       <article className="md-subpage-panel overflow-hidden">
         <div className="border-b border-[var(--md-card-border)] px-6 py-6 sm:px-8">
           <div className="flex flex-wrap items-start gap-4">
-            {profile.imageUrl ? (
-              <img
-                src={profile.imageUrl}
-                alt=""
-                className="h-14 w-14 shrink-0 rounded-full object-cover ring-1 ring-inset ring-[var(--md-card-border)]"
-              />
-            ) : (
-              <span
-                className="font-heading flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--md-primary)] text-xl font-bold text-white"
-                aria-hidden
-              >
-                {initial}
-              </span>
-            )}
+            <ProfileAvatar
+              src={profile.imageUrl}
+              size={56}
+              className="ring-1 ring-inset ring-[var(--md-card-border)] bg-[var(--md-primary)]"
+              fallback={
+                <span
+                  className="font-heading text-xl font-bold text-white"
+                  aria-hidden
+                >
+                  {initial}
+                </span>
+              }
+            />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-heading text-2xl font-semibold tracking-[-0.02em] text-[var(--md-text)] sm:text-3xl">

@@ -495,10 +495,9 @@ function buildPlayerView(input: {
             region: profile?.region,
             institutionState: playerInstitutionState,
           }),
-      primaryCta: {
-        label: teamName ? "Roster" : "Browse teams",
-        href: teamName ? "/dashboard/roster" : "/dashboard/teams",
-      },
+      primaryCta: teamName
+        ? { label: "Leave team", action: "leave-team" }
+        : { label: "Browse teams", href: "/dashboard/teams" },
       secondaryCta: { label: "Edit profile", href: "/dashboard/settings/profile" },
       editProfileHref: "/dashboard/settings/profile",
     },

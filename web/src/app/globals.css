@@ -402,9 +402,13 @@ html[data-home-theme="dark"] {
   height: 2.75rem;
   width: 2.75rem;
   flex-shrink: 0;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
+  object-position: center center;
+  border-radius: 9999px;
   border: 1px solid var(--border);
   background: var(--surface-2);
+  display: block;
 }
 
 .oc-profile-avatar {
@@ -412,8 +416,11 @@ html[data-home-theme="dark"] {
   height: 2.75rem;
   width: 2.75rem;
   flex-shrink: 0;
+  aspect-ratio: 1 / 1;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  border-radius: 9999px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--foreground) 6%, var(--surface));
   font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
@@ -421,6 +428,36 @@ html[data-home-theme="dark"] {
   font-weight: 500;
   letter-spacing: -0.03em;
   color: var(--foreground);
+}
+
+/* Shared circular profile crop — any uploaded / remote photo */
+.profile-avatar {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  aspect-ratio: 1 / 1;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+img.profile-avatar,
+.profile-avatar > img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  border-radius: inherit;
+}
+
+.profile-avatar > img {
+  position: absolute;
+  inset: 0;
 }
 
 .oc-profile-rank {
@@ -632,6 +669,7 @@ html[data-home-theme="dark"] {
   gap: 0.625rem !important;
   padding: 0.75rem !important;
   overflow: visible !important;
+  min-height: 0 !important;
 }
 
 [class*="userButtonPopoverMain"],
@@ -644,29 +682,74 @@ html[data-home-theme="dark"] {
   align-items: center !important;
 }
 
+/* Clerk avatar boxes: force square circle, absolute-fill media */
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"],
+[class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] {
+  position: relative !important;
+  flex-shrink: 0 !important;
+  align-self: center !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+  display: block !important;
+  line-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+}
+
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] {
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
+}
+
 [class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] {
   width: 2.5rem !important;
   height: 2.5rem !important;
   min-width: 2.5rem !important;
   min-height: 2.5rem !important;
-  border-radius: 9999px !important;
-  overflow: hidden !important;
-  flex-shrink: 0 !important;
-  line-height: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
 }
 
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] img,
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] [class*="avatarImage"],
 [class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] img,
 [class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] [class*="avatarImage"] {
+  position: absolute !important;
+  inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  min-width: 100% !important;
-  min-height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   object-fit: cover !important;
   object-position: center center !important;
   display: block !important;
+  border-radius: 9999px !important;
+}
+
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] span,
+[class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] span {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
+}
+
+.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] span {
+  font-size: 0.75rem !important;
+}
+
+[class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] span {
+  font-size: 0.9rem !important;
 }
 
 [class*="userButtonPopover"] [class*="userPreviewTextContainer"],
@@ -715,46 +798,7 @@ html[data-home-theme="dark"] {
   margin: 0 !important;
   padding: 0 !important;
   line-height: 0 !important;
-}
-
-.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] {
-  width: 2rem !important;
-  height: 2rem !important;
-  min-width: 2rem !important;
-  min-height: 2rem !important;
-  border-radius: 9999px !important;
-  overflow: hidden !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 0 !important;
-  flex-shrink: 0 !important;
-}
-
-.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] img,
-.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] [class*="avatarImage"],
-.md-clerk-user-btn [class*="userButtonTrigger"] [class*="avatarBox"] span {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  font-size: 0.75rem !important;
-  font-weight: 600 !important;
-}
-
-[class*="userButtonPopover"] [class*="userPreview"] [class*="avatarBox"] span {
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
+  overflow: visible !important;
 }
 
 [class*="userButtonPopoverMain"] {
@@ -1470,6 +1514,7 @@ html[data-dashboard-theme="light"] {
   position: relative;
   width: 56px;
   height: 56px;
+  aspect-ratio: 1 / 1;
   border-radius: 999px;
   background: var(--md-chip-bg);
   display: flex;
@@ -1478,12 +1523,19 @@ html[data-dashboard-theme="light"] {
   overflow: hidden;
   color: var(--md-text-faint);
   flex-shrink: 0;
+  line-height: 0;
 }
 
 .md-identity-avatar-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
+  object-position: center center;
+  display: block;
+  border-radius: inherit;
 }
 
 .md-identity-avatar-btn {

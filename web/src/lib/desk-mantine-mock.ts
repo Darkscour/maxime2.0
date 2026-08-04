@@ -332,7 +332,7 @@ const PLAYER_GRASSROOTS: DeskViewProps = {
     balanceValue: "Blackline VLR",
     chainLabel: "Region",
     chainValue: "NA West",
-    primaryCta: { label: "Roster", href: "/dashboard/roster" },
+    primaryCta: { label: "Leave team", action: "leave-team" },
     secondaryCta: { label: "Edit profile", href: "/dashboard/settings/profile" },
     editProfileHref: "/dashboard/settings/profile",
   },

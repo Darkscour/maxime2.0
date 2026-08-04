@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 
 export type PlayerScoutCardProps = {
   handle: string;
@@ -22,23 +23,20 @@ function PlayerScoutCardAvatar({
 }) {
   const initial = handle.trim().charAt(0).toUpperCase() || "?";
 
-  if (imageUrl) {
-    return (
-      <img
-        src={imageUrl}
-        alt=""
-        className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-inset ring-[var(--md-card-border)]"
-      />
-    );
-  }
-
   return (
-    <span
-      className="font-heading flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--md-primary)] text-lg font-bold text-white"
-      aria-hidden
-    >
-      {initial}
-    </span>
+    <ProfileAvatar
+      src={imageUrl}
+      size={48}
+      className="ring-1 ring-inset ring-[var(--md-card-border)] bg-[var(--md-primary)]"
+      fallback={
+        <span
+          className="font-heading text-lg font-bold text-white"
+          aria-hidden
+        >
+          {initial}
+        </span>
+      }
+    />
   );
 }
 

@@ -108,36 +108,60 @@ function scoreGameMatch(team: TeamRecruitmentContext, player: PlayerRecruitmentP
   return team.games.includes(player.game) ? 100 : 0;
 }
 
+export type RecruitmentFitAudience = "manager" | "player";
+
 function scoreRoleNeed(
   team: TeamRecruitmentContext,
   player: PlayerRecruitmentProfile,
+  audience: RecruitmentFitAudience,
 ): { score: number; reason: string | null } {
   const onTitle = team.rosterPlayers.filter((m) => m.game === player.game);
   if (onTitle.length === 0) {
     return {
       score: team.games.includes(player.game) ? 95 : 60,
       reason: team.games.includes(player.game)
-        ? `First ${player.game} player you'd add`
+        ? audience === "player"
+          ? `You'd be their first ${player.game} player`
+          : `First ${player.game} player you'd add`
         : null,
     };
   }
 
   const sameRole = onTitle.filter((m) => m.role && rolesMatch(m.role, player.role)).length;
   if (sameRole === 0) {
-    return { score: 100, reason: `${player.role} not on your ${player.game} roster` };
+    return {
+      score: 100,
+      reason:
+        audience === "player"
+          ? `${player.role} gap on their ${player.game} roster`
+          : `${player.role} not on your ${player.game} roster`,
+    };
   }
   if (sameRole === 1) {
     return { score: 72, reason: `Depth at ${player.role}` };
   }
   if (sameRole === 2) {
-    return { score: 48, reason: `You already have two ${player.role} players` };
+    return {
+      score: 48,
+      reason:
+        audience === "player"
+          ? `They already have two ${player.role} players`
+          : `You already have two ${player.role} players`,
+    };
   }
-  return { score: 28, reason: `${player.role} slot likely covered` };
+  return {
+    score: 28,
+    reason:
+      audience === "player"
+        ? `${player.role} slot likely covered on their roster`
+        : `${player.role} slot likely covered`,
+  };
 }
 
 function scoreRankBand(
   team: TeamRecruitmentContext,
   player: PlayerRecruitmentProfile,
+  audience: RecruitmentFitAudience,
 ): { score: number; reason: string | null } {
   const playerIdx = rankIndex(player.game, player.rank);
   if (playerIdx === null) {
@@ -150,21 +174,51 @@ function scoreRankBand(
     .filter((i): i is number => i !== null);
 
   if (peerRanks.length === 0) {
-    return { score: 88, reason: `${player.rank} sets the bar for ${player.game}` };
+    return {
+      score: 88,
+      reason:
+        audience === "player"
+          ? `Your ${player.rank} would set their ${player.game} bar`
+          : `${player.rank} sets the bar for ${player.game}`,
+    };
   }
 
   const avg = peerRanks.reduce((a, b) => a + b, 0) / peerRanks.length;
   const diff = Math.abs(playerIdx - avg);
   if (diff <= 0.5) {
-    return { score: 100, reason: `${player.rank} matches your roster level` };
+    return {
+      score: 100,
+      reason:
+        audience === "player"
+          ? `Your ${player.rank} matches their roster level`
+          : `${player.rank} matches your roster level`,
+    };
   }
   if (diff <= 1.5) {
-    return { score: 84, reason: `${player.rank} close to roster rank band` };
+    return {
+      score: 84,
+      reason:
+        audience === "player"
+          ? `Your ${player.rank} is close to their rank band`
+          : `${player.rank} close to roster rank band`,
+    };
   }
   if (diff <= 2.5) {
-    return { score: 62, reason: `${player.rank} a step from roster average` };
+    return {
+      score: 62,
+      reason:
+        audience === "player"
+          ? `Your ${player.rank} is a step from their average`
+          : `${player.rank} a step from roster average`,
+    };
   }
-  return { score: 38, reason: `${player.rank} far from roster average` };
+  return {
+    score: 38,
+    reason:
+      audience === "player"
+        ? `Your ${player.rank} is far from their roster average`
+        : `${player.rank} far from roster average`,
+  };
 }
 
 function scoreAvailability(player: PlayerRecruitmentProfile): {
@@ -267,16 +321,23 @@ function scoreRosterNeed(team: TeamRecruitmentContext): {
 
 type WeightedPart = { key: keyof PlayerRecruitmentFitBreakdown; weight: number; reason: string | null };
 
-/** Rule-based fit for managers scouting players into their org. */
+/** Rule-based fit between a team org and a player scout card. */
 export function scorePlayerRecruitmentFit(
   team: TeamRecruitmentContext,
   player: PlayerRecruitmentProfile,
+  options?: { audience?: RecruitmentFitAudience },
 ): PlayerRecruitmentFitResult {
+  const audience = options?.audience ?? "manager";
+
   if (team.games.length === 0) {
+    const reason =
+      audience === "player"
+        ? "This org hasn't listed competitive titles yet"
+        : "Add competitive titles on your team profile to score fit";
     return {
       score: 0,
-      reason: "Add competitive titles on your team profile to score fit",
-      reasons: ["Add competitive titles on your team profile to score fit"],
+      reason,
+      reasons: [reason],
       breakdown: {
         game: 0,
         role: 0,
@@ -291,10 +352,14 @@ export function scorePlayerRecruitmentFit(
 
   const game = scoreGameMatch(team, player);
   if (game === 0) {
+    const reason =
+      audience === "player"
+        ? `They don't compete in ${player.game}`
+        : `Plays ${player.game} — not on your org titles`;
     return {
       score: 0,
-      reason: `Plays ${player.game} — not on your org titles`,
-      reasons: [`Plays ${player.game} — not on your org titles`],
+      reason,
+      reasons: [reason],
       breakdown: {
         game: 0,
         role: 0,
@@ -307,8 +372,8 @@ export function scorePlayerRecruitmentFit(
     };
   }
 
-  const role = scoreRoleNeed(team, player);
-  const rank = scoreRankBand(team, player);
+  const role = scoreRoleNeed(team, player, audience);
+  const rank = scoreRankBand(team, player, audience);
   const availability = scoreAvailability(player);
   const region = scoreRegion(team, player);
   const school = scoreSchool(team, player);
@@ -380,4 +445,26 @@ export function rankPlayersByRecruitmentFit<
       ...scorePlayerRecruitmentFit(team, player),
     }))
     .sort((a, b) => b.score - a.score || a.handle.localeCompare(b.handle));
+}
+
+/** Same weights as manager scout fit, with player-facing reason copy. */
+export function scoreTeamFitForPlayer(
+  team: TeamRecruitmentContext,
+  player: PlayerRecruitmentProfile,
+): PlayerRecruitmentFitResult {
+  return scorePlayerRecruitmentFit(team, player, { audience: "player" });
+}
+
+export function rankTeamsByRecruitmentFit<
+  T extends { id: string; name: string; recruitmentContext: TeamRecruitmentContext },
+>(
+  player: PlayerRecruitmentProfile,
+  teams: T[],
+): Array<T & PlayerRecruitmentFitResult> {
+  return teams
+    .map((team) => ({
+      ...team,
+      ...scoreTeamFitForPlayer(team.recruitmentContext, player),
+    }))
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 }

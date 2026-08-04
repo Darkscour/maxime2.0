@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { getDashboardContext } from "@/lib/auth-user";
 import { fetchPendingInvitesForPlayer } from "@/lib/player-watchlist-db";
 import { fetchPendingJoinRequestTeamIds } from "@/lib/team-join-request-db";
-import { listPublicTeams } from "@/lib/teams-directory";
+import { listPublicTeamsWithFitContext } from "@/lib/teams-directory";
+import { rankTeamsByRecruitmentFit } from "@/lib/player-recruitment-fit";
 import { TeamsDirectory } from "@/components/dashboard/teams-directory";
 import { DashboardJoinTeamPanel } from "@/components/dashboard/dashboard-join-team-panel";
 import { DeskPageHeader, DeskPanel } from "@/components/dashboard/desk-ui";
@@ -21,15 +22,35 @@ export default async function DashboardTeamsPage() {
     redirect("/dashboard/settings/profile");
   }
 
-  const teams = await listPublicTeams(playerTier);
-  const pendingRequestTeamIds = ctx.playerProfile
-    ? await fetchPendingJoinRequestTeamIds(ctx.playerProfile.id)
+  const teams = await listPublicTeamsWithFitContext(playerTier);
+  const profile = ctx.playerProfile;
+  const teamsWithFit = profile
+    ? rankTeamsByRecruitmentFit(
+        {
+          game: profile.game,
+          role: profile.role,
+          rank: profile.rank,
+          region: profile.region,
+          school: profile.school,
+          status: profile.status,
+          tags: profile.tags,
+          hoursPerWeek: profile.hoursPerWeek,
+        },
+        teams,
+      ).map(({ recruitmentContext: _ctx, score, reason, reasons, breakdown, ...team }) => ({
+        ...team,
+        fit: { score, reason, reasons, breakdown },
+      }))
+    : teams.map(({ recruitmentContext: _ctx, ...team }) => ({ ...team, fit: null }));
+
+  const pendingRequestTeamIds = profile
+    ? await fetchPendingJoinRequestTeamIds(profile.id)
     : [];
-  const pendingInviteTeamIds = ctx.playerProfile
+  const pendingInviteTeamIds = profile
     ? (
-        await fetchPendingInvitesForPlayer(ctx.playerProfile.id, {
-          accountTier: ctx.playerProfile.accountTier ?? ctx.accountTier,
-          institutionId: ctx.playerProfile.institutionId,
+        await fetchPendingInvitesForPlayer(profile.id, {
+          accountTier: profile.accountTier ?? ctx.accountTier,
+          institutionId: profile.institutionId,
         })
       ).map((invite) => invite.teamId)
     : [];
@@ -47,11 +68,13 @@ export default async function DashboardTeamsPage() {
 
       <section>
         <p className="md-subpage-kicker mb-4">
-          {teams.length} team{teams.length === 1 ? "" : "s"} on Maxime
+          {teamsWithFit.length} team{teamsWithFit.length === 1 ? "" : "s"} on Maxime
         </p>
         <TeamsDirectory
-          teams={teams}
+          teams={teamsWithFit}
           playerOnTeam={!!ctx.team}
+          currentTeamName={ctx.team?.name}
+          membershipRole={ctx.membershipRole}
           pendingRequestTeamIds={pendingRequestTeamIds}
           pendingInviteTeamIds={pendingInviteTeamIds}
         />

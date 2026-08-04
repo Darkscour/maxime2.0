@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { parseJsonResponse } from "@/lib/safe-json";
 import {
   ArrowDownRight,
   ArrowRight,
@@ -38,6 +40,10 @@ export type DeskAudience =
   | "player_grassroots"
   | "player_collegiate";
 
+export type DeskIdentityPrimaryCta =
+  | { label: string; href: string }
+  | { label: string; action: "leave-team" };
+
 export type DeskIdentity = {
   kind: "org" | "player";
   name: string;
@@ -53,7 +59,7 @@ export type DeskIdentity = {
   /** e.g. "Region" — mirrors reference "Chain" label */
   chainLabel: string;
   chainValue: string;
-  primaryCta: { label: string; href: string };
+  primaryCta: DeskIdentityPrimaryCta;
   secondaryCta: { label: string; href: string };
   editProfileHref: string;
   imageUrl?: string | null;
@@ -200,6 +206,86 @@ function DeskInviteCodeCopy({ inviteCode }: { inviteCode: string }) {
   );
 }
 
+function DeskIdentityActions({ identity }: { identity: DeskIdentity }) {
+  const router = useRouter();
+  const [confirming, setConfirming] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const isLeaveTeam =
+    "action" in identity.primaryCta && identity.primaryCta.action === "leave-team";
+
+  async function leave() {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/player/leave-team", { method: "POST" });
+      const data = await parseJsonResponse<{ error?: string }>(res);
+      if (!res.ok) {
+        setError(data?.error || "Could not leave team.");
+        return;
+      }
+      setConfirming(false);
+      router.refresh();
+    } catch {
+      setError("Network error. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+      {error ? (
+        <p style={{ margin: 0, fontSize: 12, color: "var(--md-status-warn, #f87171)" }}>{error}</p>
+      ) : null}
+      <div style={{ display: "flex", gap: 8 }}>
+        {confirming && isLeaveTeam ? (
+          <>
+            <button
+              type="button"
+              className="md-btn md-btn-ghost"
+              disabled={loading}
+              onClick={() => {
+                setConfirming(false);
+                setError("");
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="md-btn md-btn-primary"
+              disabled={loading}
+              onClick={leave}
+            >
+              {loading ? "Leaving…" : "Confirm leave"}
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href={identity.secondaryCta.href} className="md-btn md-btn-ghost">
+              {identity.secondaryCta.label}
+            </Link>
+            {"href" in identity.primaryCta ? (
+              <Link href={identity.primaryCta.href} className="md-btn md-btn-primary">
+                {identity.primaryCta.label}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="md-btn md-btn-primary"
+                onClick={() => setConfirming(true)}
+              >
+                {identity.primaryCta.label}
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ────────────────────────────────────────────────────────────────────────
 // 1. Identity card — replaces reference "Profile / balance" card
 
@@ -255,25 +341,34 @@ export function DeskIdentityCard({
         )}
       </div>
 
-      <div style={{ marginTop: 16, paddingTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, borderTop: "1px solid var(--md-card-border)" }}>
-        <div>
+      <div
+        style={{
+          marginTop: 16,
+          paddingTop: 16,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: 20,
+          borderTop: "1px solid var(--md-card-border)",
+        }}
+      >
+        <div style={{ minWidth: 0, flex: "1 1 auto" }}>
           <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{identity.balanceLabel}</div>
-          <div className="md-num md-num-lg" style={{ marginTop: 4 }}>{identity.balanceValue}</div>
+          <div
+            className="md-num md-num-lg"
+            style={{ marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+            title={identity.balanceValue}
+          >
+            {identity.balanceValue}
+          </div>
         </div>
-        <div>
+        <div style={{ flex: "0 0 auto", textAlign: "right" }}>
           <div className="md-eyebrow" style={{ color: "var(--md-text-muted)" }}>{identity.chainLabel}</div>
-          <div className="md-num md-num-md" style={{ marginTop: 4 }}>{identity.chainValue}</div>
+          <div className="md-num md-num-md" style={{ marginTop: 4, whiteSpace: "nowrap" }}>{identity.chainValue}</div>
         </div>
       </div>
 
-      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-        <Link href={identity.secondaryCta.href} className="md-btn md-btn-ghost">
-          {identity.secondaryCta.label}
-        </Link>
-        <Link href={identity.primaryCta.href} className="md-btn md-btn-primary">
-          {identity.primaryCta.label}
-        </Link>
-      </div>
+      <DeskIdentityActions identity={identity} />
     </section>
   );
 }

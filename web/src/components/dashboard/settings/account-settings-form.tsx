@@ -11,6 +11,7 @@ import {
   SettingsInput,
   SettingsSection,
 } from "@/components/dashboard/settings/settings-ui";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { parseJsonResponse } from "@/lib/safe-json";
 
 export function AccountSettingsForm({
@@ -115,18 +116,16 @@ export function AccountSettingsForm({
             disabled={photoLoading}
             className="group relative shrink-0"
           >
-            {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={avatarUrl}
-                alt=""
-                className="h-16 w-16 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
-              />
-            ) : (
-              <span className="font-heading flex h-16 w-16 items-center justify-center rounded-none bg-[var(--foreground)] text-xl font-bold text-[var(--background)]">
-                {initial}
-              </span>
-            )}
+            <ProfileAvatar
+              src={avatarUrl}
+              size={64}
+              className="ring-1 ring-inset ring-[var(--border)] bg-[var(--foreground)]"
+              fallback={
+                <span className="font-heading text-xl font-bold text-[var(--background)]">
+                  {initial}
+                </span>
+              }
+            />
             <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface)] ring-1 ring-[var(--border)]">
               <Camera className="h-3.5 w-3.5 text-[var(--foreground-muted)] group-hover:text-[var(--foreground)]" />
             </span>

@@ -13,6 +13,7 @@ import {
   estimateDataUrlBytes,
   TEAM_PROFILE_IMAGE_DATA_URL_PATTERN,
 } from "@/lib/team-profile-image";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import {
   SettingsAlert,
   SettingsChip,
@@ -105,18 +106,13 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
         description="Your team's public identity — titles, region, and roster size."
         preview={
           <div className="inline-flex items-center gap-3 rounded-none border border-[var(--border)] bg-[var(--background)] px-4 py-3 backdrop-blur-sm">
-            {profileImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profileImageUrl}
-                alt={`${name || "Team"} profile`}
-                className="h-11 w-11 rounded-none object-cover ring-1 ring-inset ring-[var(--border)]"
-              />
-            ) : (
-              <span className="flex h-11 w-11 items-center justify-center rounded-none bg-[var(--background)] ring-1 ring-inset ring-[var(--border)]">
-                <Building2 className="h-5 w-5 text-[var(--accent-2)]" />
-              </span>
-            )}
+            <ProfileAvatar
+              src={profileImageUrl || null}
+              alt={`${name || "Team"} profile`}
+              size={44}
+              className="ring-1 ring-inset ring-[var(--border)] bg-[var(--background)]"
+              fallback={<Building2 className="h-5 w-5 text-[var(--accent-2)]" />}
+            />
             <div>
               <p className="font-heading text-base font-semibold text-[var(--foreground)]">
                 {name || "Your team"}
@@ -239,18 +235,15 @@ export function TeamProfileEditForm({ initial }: { initial: TeamProfileFormData 
             hint="PNG, JPG, or WEBP up to roughly 500KB recommended"
           >
             <div className="flex flex-wrap items-center gap-3">
-              {profileImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profileImageUrl}
-                  alt={`${name || "Team"} profile`}
-                  className="h-16 w-16 rounded-none border border-[var(--border)] object-cover"
-                />
-              ) : (
-                <span className="flex h-16 w-16 items-center justify-center rounded-none border border-dashed border-[var(--border)] bg-[var(--background)]">
+              <ProfileAvatar
+                src={profileImageUrl || null}
+                alt={`${name || "Team"} profile`}
+                size={64}
+                className="border border-[var(--border)] bg-[var(--background)]"
+                fallback={
                   <Building2 className="h-5 w-5 text-[var(--foreground-muted)]" />
-                </span>
-              )}
+                }
+              />
               <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground-muted)] transition-colors hover:border-[var(--foreground)] hover:text-[var(--foreground)]">
                 <Upload className="h-4 w-4" />
                 {uploadingImage ? "Uploading..." : "Upload image"}
